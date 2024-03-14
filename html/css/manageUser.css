@@ -1,0 +1,60 @@
+body {
+    color: white;
+    background-image:url("../upload/media/editUser.jpeg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+}
+main {
+    min-height: 60vh;
+    width: 90%;
+    margin: auto;
+    padding: 0;
+}
+a:hover {
+    background-color: none;
+}
+table {
+    border-collapse: collapse;
+}
+td,th{
+    padding: 10px 0;
+    border-bottom:1px inset grey;
+    height:100px;
+	width: 500px;
+}
+::placeholder {
+    color: #cccccc;
+}
+button{
+    background-color: #696969;
+    border-radius: 10px;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+#username{
+    background-color: #696969;
+    border-radius: 10px;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    margin: 4px 2px;
+}
+table a {
+    margin-top: 10px;
+    text-decoration: none;
+}
+a{
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+}
+#xml {
+    padding: 10px;
+    text-align: center;
+}

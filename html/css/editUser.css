@@ -1,0 +1,54 @@
+body{
+    color: white;
+    background-image:url("../upload/media/editUser.jpeg");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.konten{
+    width: 80%;
+    border-radius: 15px;
+    padding: 2%;
+    margin-top: 2%;
+    margin-left: 10.5%;
+    background-color:black;
+    background: rgba(0, 0, 0, .5);
+}
+input[type=text], input[type=email]{
+    color: white;
+    width: 20%;
+    height: 5%;
+    padding: 12px 10px;
+    background-color: #696969;
+    border-radius: 4px;
+}
+textarea{
+    color: white;
+    width: 80%;
+    height: 20%;
+    padding: 12px 10px;
+    background-color: #696969;
+    border-radius: 4px;
+}
+input[type=file]{
+    background-color: #696969;
+    border-radius: 10px;
+    border: none;
+    color: white;
+    padding: 10px 10px;
+    text-decoration: none;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+input[type=submit]{
+    background-color: #696969;
+    border-radius: 10px;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+h2{
+    font-size: 40px;
+}
