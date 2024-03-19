@@ -4,6 +4,7 @@ import (
 	"RPLL/api/model"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 // File ini memuat function-function yang berkaitan dengan userLog
@@ -15,11 +16,11 @@ func GetUserLogUsingId(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
 
-	// Ambil user id dari form HTML
-	userId := r.Form.Get("userId")
+	// Ambil user id dari url query
+	userId := r.URL.Query().Get("userId")
 
 	// Query ke SQL
-	query := "SELECT * FROM userlog WHERE userId = " + userId
+	query := "SELECT * FROM userlog WHERE userId = '" + userId + "'"
 
 	rows, err := db.Query(query)
 
@@ -30,16 +31,19 @@ func GetUserLogUsingId(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var userLog model.UserLog
+	var userLogList []model.UserLog
 
 	for rows.Next() {
 		if err := rows.Scan(&userLog.LogNo, &userLog.UserID, &userLog.LogType, &userLog.IpAddress, &userLog.LogTime); err != nil {
 			log.Println(err)
 			sendErrorResponse(w, "Something went wrong, please try again")
 			return
+		} else {
+			userLogList = append(userLogList, userLog)
 		}
 	}
 
-	sendSuccessResponse(w, "Success", userLog)
+	sendSuccessResponse(w, "Success", userLogList)
 }
 
 // Insert/create sebuah userLog baru
@@ -50,15 +54,20 @@ func InsertUserLog(w http.ResponseWriter, r *http.Request) {
 	// Ambil data log dari form HTML
 	// logNo tidak diperlukan karena sudah auto increment di database
 	// logTime juga sudah diatur default timestamp
-	userId := r.Form.Get("userId")
+	err := r.ParseForm()
+	if err != nil {
+		sendErrorResponse(w, "Something went wrong, please try again")
+		return
+	}
+	userId, _ := strconv.Atoi(r.Form.Get("userId"))
 	logType := r.Form.Get("logType")
-	IpAddress := r.Form.Get("ipAddress")
+	ipAddress := r.Form.Get("ipAddress")
 
 	// Query ke SQL
 	_, errQuery := db.Exec("INSERT INTO userlog(userId,logType,ipAddress)values(?,?,?)",
 		userId,
 		logType,
-		IpAddress,
+		ipAddress,
 	)
 
 	if errQuery == nil {
