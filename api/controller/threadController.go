@@ -230,7 +230,7 @@ func DeleteThread(w http.ResponseWriter, r *http.Request) {
 	} else {
 		var response model.ErrorResponse
 		response.Status = 400
-		response.Message = "fail to update thread ban status"
+		response.Message = "failed to update thread ban status"
 		json.NewEncoder(w).Encode(response)
 	}
 
