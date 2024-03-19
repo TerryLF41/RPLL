@@ -8,11 +8,11 @@ import (
 )
 
 func sendErrorResponse(w http.ResponseWriter, message string) {
-	var response model.ErrorResponse
-	response.Status = 400
-	response.Message = message
+	var errorResponse model.ErrorResponse
+	errorResponse.Status = 400
+	errorResponse.Message = message
 	w.Header().Set("Content=Type", "application/json")
-	err := json.NewEncoder(w).Encode(response)
+	err := json.NewEncoder(w).Encode(errorResponse)
 	if err != nil {
 		log.Println(err)
 	}
