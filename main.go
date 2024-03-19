@@ -38,12 +38,12 @@ func main() {
 	router.HandleFunc("/topic/{topicNo}", controller.GetUserLogUsingId).Methods("DELETE")
 
 	// Handler untuk thread
-	router.HandleFunc("/thread", controller.getAllThreads).Methods("GET")
-	router.HandleFunc("/thread", controller.insertThread).Methods("POST")
-	router.HandleFunc("/thread/Title/{threadNo}", controller.updateThreadTitle).Methods("PUT")
-	router.HandleFunc("/thread/Desc/{threadNo}", controller.updateThreadDesc).Methods("PUT")
-	router.HandleFunc("/thread/Status/{threadNo}", controller.updateThreadBanStatus).Methods("PUT")
-	router.HandleFunc("/thread/{threadNo}", controller.deleteThread).Methods("DELETE")
+	router.HandleFunc("/thread", controller.GetAllThreads).Methods("GET")
+	router.HandleFunc("/thread", controller.InsertThread).Methods("POST")
+	router.HandleFunc("/thread/Title/{threadNo}", controller.UpdateThreadTitle).Methods("PUT")
+	router.HandleFunc("/thread/Desc/{threadNo}", controller.UpdateThreadDesc).Methods("PUT")
+	router.HandleFunc("/thread/Status/{threadNo}", controller.UpdateThreadBanStatus).Methods("PUT")
+	router.HandleFunc("/thread/{threadNo}", controller.DeleteThread).Methods("DELETE")
 
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"localhost:8181"},
