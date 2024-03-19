@@ -11,7 +11,7 @@ import (
 )
 
 // GET all threads
-func getThreads(w http.ResponseWriter, r *http.Request) {
+func getAllThreads(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
 
@@ -53,7 +53,7 @@ func getThreads(w http.ResponseWriter, r *http.Request) {
 }
 
 // INSERT a new thread
-func createThread(w http.ResponseWriter, r *http.Request) {
+func insertThread(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
 
