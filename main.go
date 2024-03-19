@@ -1,7 +1,7 @@
 package main
 
 import (
-	"PBP-Tubes-API-Tokopedia/controller"
+	"RPLL/api/controller"
 	"fmt"
 	"log"
 	"net/http"
@@ -13,9 +13,6 @@ import (
 
 func main() {
 	router := mux.NewRouter()
-
-	//Scheduler monthly report
-	controller.SetMonthlyReportScheduler()
 
 	//Note
 	//0 = Admin
