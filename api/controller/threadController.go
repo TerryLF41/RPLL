@@ -11,7 +11,7 @@ import (
 )
 
 // GET all threads
-func getAllThreads(w http.ResponseWriter, r *http.Request) {
+func GetAllThreads(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
 
@@ -53,7 +53,7 @@ func getAllThreads(w http.ResponseWriter, r *http.Request) {
 }
 
 // INSERT a new thread
-func insertThread(w http.ResponseWriter, r *http.Request) {
+func InsertThread(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
 
@@ -88,7 +88,7 @@ func insertThread(w http.ResponseWriter, r *http.Request) {
 }
 
 // update thraed title
-func updateThreadTitle(w http.ResponseWriter, r *http.Request) {
+func UpdateThreadTitle(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
 
@@ -128,7 +128,7 @@ func updateThreadTitle(w http.ResponseWriter, r *http.Request) {
 }
 
 // update thread Description
-func updateThreadDesc(w http.ResponseWriter, r *http.Request) {
+func UpdateThreadDesc(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
 
@@ -167,7 +167,7 @@ func updateThreadDesc(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 }
 
-func updateThreadBanStatus(w http.ResponseWriter, r *http.Request) {
+func UpdateThreadBanStatus(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
 
@@ -207,7 +207,7 @@ func updateThreadBanStatus(w http.ResponseWriter, r *http.Request) {
 }
 
 // DELETE a thread
-func deleteThread(w http.ResponseWriter, r *http.Request) {
+func DeleteThread(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
 
