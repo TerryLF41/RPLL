@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 // GET all posts
@@ -52,4 +53,37 @@ func GetAllPostByThreadNo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(postList)
+}
+
+func InsertPost(w http.ResponseWriter, r *http.Request) {
+	db := connect()
+	defer db.Close()
+
+	// Ambil data log dari form HTML
+	err := r.ParseForm()
+	if err != nil {
+		sendErrorResponse(w, "Something went wrong, please try again")
+		return
+	}
+	threadNo, _ := strconv.Atoi(r.Form.Get("threadNo"))
+	userId, _ := strconv.Atoi(r.Form.Get("userId"))
+	replyTo, _ := strconv.Atoi(r.Form.Get("replyTo"))
+	postText := r.Form.Get("postText")
+	postImage := r.Form.Get("postImage")
+
+	// Query ke SQL
+	_, errQuery := db.Exec("INSERT INTO post(threadNo,userId,replyTo,postText,postImage)values(?,?,?,?,?)",
+		threadNo,
+		userId,
+		replyTo,
+		postText,
+		postImage,
+	)
+
+	if errQuery == nil {
+		sendSuccessResponse(w, "Successfully inserted new Post", nil)
+	} else {
+		log.Println(errQuery)
+		sendErrorResponse(w, "Failed to insert post")
+	}
 }
