@@ -87,3 +87,41 @@ func InsertPost(w http.ResponseWriter, r *http.Request) {
 		sendErrorResponse(w, "Failed to insert post")
 	}
 }
+
+func UpdatePostBanStatus(w http.ResponseWriter, r *http.Request) {
+	db := connect()
+	defer db.Close()
+
+	err := r.ParseForm()
+	if err != nil {
+		sendErrorResponse(w, "failed")
+		return
+	}
+
+	postNo, _ := strconv.Atoi(r.Form.Get("postNo"))
+	ban, _ := strconv.Atoi(r.Form.Get("ban"))
+
+	sqlStatement := `
+		UPDATE post 
+		SET banStatus = ?
+		WHERE postNo = ?`
+
+	_, errQuery := db.Exec(sqlStatement,
+		ban,
+		postNo,
+	)
+
+	if errQuery == nil {
+		var response model.GenericResponse
+		response.Status = 200
+		response.Message = "Success"
+		json.NewEncoder(w).Encode(response)
+	} else {
+		var response model.ErrorResponse
+		response.Status = 400
+		response.Message = "fail to update post ban status"
+		json.NewEncoder(w).Encode(response)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+}
