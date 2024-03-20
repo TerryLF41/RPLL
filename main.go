@@ -45,6 +45,11 @@ func main() {
 	router.HandleFunc("/thread/Status/{threadNo}", controller.UpdateThreadBanStatus).Methods("PUT")
 	router.HandleFunc("/thread/{threadNo}", controller.DeleteThread).Methods("DELETE")
 
+	// Handler untuk post
+	router.HandleFunc("/post", controller.GetAllPostByThreadNo).Methods("GET")
+	router.HandleFunc("/post", controller.InsertPost).Methods("POST")
+	router.HandleFunc("/post", controller.UpdatePostBanStatus).Methods("PUT")
+
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"localhost:8181"},
 		AllowedMethods:   []string{"POST", "GET", "PUT", "DELETE"},
