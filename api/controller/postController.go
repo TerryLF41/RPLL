@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-// GET all posts
+// Get semua post berdasarkan threadNo
 func GetAllPostByThreadNo(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
@@ -48,13 +48,14 @@ func GetAllPostByThreadNo(w http.ResponseWriter, r *http.Request) {
 	} else {
 		var response model.ErrorResponse
 		response.Status = 400
-		response.Message = "failed to get data from the database"
+		response.Message = "Failed to get data from the database"
 		json.NewEncoder(w).Encode(response)
 	}
 
 	json.NewEncoder(w).Encode(postList)
 }
 
+// Insert sebuah post baru
 func InsertPost(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
@@ -81,20 +82,22 @@ func InsertPost(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if errQuery == nil {
-		sendSuccessResponse(w, "Successfully inserted new Post", nil)
+		sendSuccessResponse(w, "Success", nil)
 	} else {
 		log.Println(errQuery)
 		sendErrorResponse(w, "Failed to insert post")
 	}
 }
 
+// Update status post menjadi 0(unbanned) atau 1(banned)
+// Digunakan oleh admin untuk menban post offensive
 func UpdatePostBanStatus(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
 
 	err := r.ParseForm()
 	if err != nil {
-		sendErrorResponse(w, "failed")
+		sendErrorResponse(w, "Failed")
 		return
 	}
 
@@ -119,7 +122,7 @@ func UpdatePostBanStatus(w http.ResponseWriter, r *http.Request) {
 	} else {
 		var response model.ErrorResponse
 		response.Status = 400
-		response.Message = "fail to update post ban status"
+		response.Message = "Failed to update post ban status"
 		json.NewEncoder(w).Encode(response)
 	}
 
