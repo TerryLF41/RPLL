@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// GET all threads
+// Get semua thread yang ada
 func GetAllThreads(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
@@ -24,42 +24,42 @@ func GetAllThreads(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var thread model.Thread
-	var threads []model.Thread
+	var threadList []model.Thread
 	for rows.Next() {
 		if err := rows.Scan(&thread.ThreadNo, &thread.ThreadTitle, &thread.ThreadDesc,
 			&thread.CreateDate, &thread.BanStatus); err != nil {
 			log.Println(err)
 			return
 		} else {
-			threads = append(threads, thread)
+			threadList = append(threadList, thread)
 		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	if len(threads) >= 1 {
+	if len(threadList) >= 1 {
 		var response model.GenericResponse
 		response.Status = 200
 		response.Message = "Success"
-		response.Data = threads
+		response.Data = threadList
 		json.NewEncoder(w).Encode(response)
 	} else {
 		var response model.ErrorResponse
 		response.Status = 400
-		response.Message = "failed to get data from the database"
+		response.Message = "Failed to get data from the database"
 		json.NewEncoder(w).Encode(response)
 	}
 
-	json.NewEncoder(w).Encode(threads)
+	json.NewEncoder(w).Encode(threadList)
 }
 
-// INSERT a new thread
+// Insert sebuah thread baru
 func InsertThread(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
 
 	err := r.ParseForm()
 	if err != nil {
-		sendErrorResponse(w, "failed to insert a new thread")
+		sendErrorResponse(w, "Failed to insert a new thread")
 		return
 	}
 	threadTitle := r.Form.Get("title")
@@ -80,21 +80,21 @@ func InsertThread(w http.ResponseWriter, r *http.Request) {
 	} else {
 		var response model.ErrorResponse
 		response.Status = 400
-		response.Message = "fail to insert data to thread"
+		response.Message = "Failed to insert new topic"
 		json.NewEncoder(w).Encode(response)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 }
 
-// update thraed title
+// Update judul/title sebuah thread
 func UpdateThreadTitle(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
 
 	err := r.ParseForm()
 	if err != nil {
-		sendErrorResponse(w, "failed")
+		sendErrorResponse(w, "Failed")
 		return
 	}
 	vars := mux.Vars(r)
@@ -120,14 +120,14 @@ func UpdateThreadTitle(w http.ResponseWriter, r *http.Request) {
 	} else {
 		var response model.ErrorResponse
 		response.Status = 400
-		response.Message = "fail to update thread title"
+		response.Message = "Failed to update thread title"
 		json.NewEncoder(w).Encode(response)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 }
 
-// update thread Description
+// Update description sebuah thread
 func UpdateThreadDesc(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
@@ -160,13 +160,15 @@ func UpdateThreadDesc(w http.ResponseWriter, r *http.Request) {
 	} else {
 		var response model.ErrorResponse
 		response.Status = 400
-		response.Message = "fail to update thread description"
+		response.Message = "Failed to update thread description"
 		json.NewEncoder(w).Encode(response)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 }
 
+// Update status thread menjadi 0(unbanned) atau 1(banned)
+// Digunakan oleh admin untuk menban thread offensive
 func UpdateThreadBanStatus(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
@@ -199,14 +201,14 @@ func UpdateThreadBanStatus(w http.ResponseWriter, r *http.Request) {
 	} else {
 		var response model.ErrorResponse
 		response.Status = 400
-		response.Message = "fail to update thread ban status"
+		response.Message = "Failed to update thread ban status"
 		json.NewEncoder(w).Encode(response)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 }
 
-// DELETE a thread
+// Delete sebuah thread
 func DeleteThread(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
@@ -230,7 +232,7 @@ func DeleteThread(w http.ResponseWriter, r *http.Request) {
 	} else {
 		var response model.ErrorResponse
 		response.Status = 400
-		response.Message = "failed to update thread ban status"
+		response.Message = "Failed to delete thread"
 		json.NewEncoder(w).Encode(response)
 	}
 

@@ -10,12 +10,12 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// GetAllTopic...
+// Get semua topic yang ada
 func GetAllTopic(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
 
-	query := "SELECT * FROM thread"
+	query := "SELECT * FROM topic"
 
 	rows, err := db.Query(query)
 	if err != nil {
@@ -25,22 +25,22 @@ func GetAllTopic(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var topic model.Topic
-	var topics []model.Topic
+	var topicList []model.Topic
 	for rows.Next() {
 		if err := rows.Scan(
 			&topic.TopicNo, &topic.TopicTitle, &topic.TopicDesc, &topic.CreateDate, &topic.BanStatus); err != nil {
 			log.Println(err)
 			return
 		} else {
-			topics = append(topics, topic)
+			topicList = append(topicList, topic)
 		}
 	}
 
-	if len(topics) > 1 {
+	if len(topicList) > 1 {
 		var response model.GenericResponse
 		response.Status = 200
 		response.Message = "Success"
-		response.Data = topics
+		response.Data = topicList
 		json.NewEncoder(w).Encode(response)
 	} else {
 		var response model.ErrorResponse
@@ -52,7 +52,7 @@ func GetAllTopic(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 }
 
-// Insert Topic...
+// Insert sebuah topic baru
 func InsertTopic(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
@@ -60,7 +60,7 @@ func InsertTopic(w http.ResponseWriter, r *http.Request) {
 	// Read from Request Body
 	err := r.ParseForm()
 	if err != nil {
-		sendErrorResponse(w, "failed")
+		sendErrorResponse(w, "Failed")
 		return
 	}
 	topicTitle, _ := strconv.Atoi(r.Form.Get("topicTitle"))
@@ -79,13 +79,13 @@ func InsertTopic(w http.ResponseWriter, r *http.Request) {
 	} else {
 		var response model.ErrorResponse
 		response.Status = 400
-		response.Message = "Error"
+		response.Message = "Failed to insert new topic"
 		json.NewEncoder(w).Encode(response)
 	}
 	w.Header().Set("Content-Type", "application/json")
 }
 
-// Update Topic Title...
+// Update judul/title sebuah topic
 func UpdateTopicTitle(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
@@ -93,7 +93,7 @@ func UpdateTopicTitle(w http.ResponseWriter, r *http.Request) {
 	// Read from Request Body
 	err := r.ParseForm()
 	if err != nil {
-		sendErrorResponse(w, "failed")
+		sendErrorResponse(w, "Failed")
 		return
 	}
 	vars := mux.Vars(r)
@@ -119,14 +119,14 @@ func UpdateTopicTitle(w http.ResponseWriter, r *http.Request) {
 	} else {
 		var response model.ErrorResponse
 		response.Status = 400
-		response.Message = "Error"
+		response.Message = "Failed to update topic title"
 		json.NewEncoder(w).Encode(response)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 }
 
-// Update Topic Description...
+// Update description sebuah topic
 func UpdateTopicDescription(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
@@ -160,14 +160,15 @@ func UpdateTopicDescription(w http.ResponseWriter, r *http.Request) {
 	} else {
 		var response model.ErrorResponse
 		response.Status = 400
-		response.Message = "Error"
+		response.Message = "Failed to update topic description"
 		json.NewEncoder(w).Encode(response)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 }
 
-// Update Topic Status...
+// Update status topic menjadi 0(unbanned) atau 1(banned)
+// Digunakan oleh admin untuk menban topic offensive
 func UpdateTopicStatus(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
@@ -201,14 +202,14 @@ func UpdateTopicStatus(w http.ResponseWriter, r *http.Request) {
 	} else {
 		var response model.ErrorResponse
 		response.Status = 400
-		response.Message = "Error"
+		response.Message = "Failed to update topic ban status"
 		json.NewEncoder(w).Encode(response)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 }
 
-// Delete Topic
+// Delete sebuah topic
 func DeleteTopic(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
@@ -232,7 +233,7 @@ func DeleteTopic(w http.ResponseWriter, r *http.Request) {
 	} else {
 		var response model.ErrorResponse
 		response.Status = 400
-		response.Message = "Error"
+		response.Message = "Failed to delete topic"
 		json.NewEncoder(w).Encode(response)
 	}
 	w.Header().Set("Content-Type", "application/json")

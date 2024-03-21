@@ -18,12 +18,11 @@ func main() {
 	//0 = User biasa
 	//1 = Admin
 
-	//User
-	//router.HandleFunc("/login", controller.Login).Methods("POST")
-	//router.HandleFunc("/logout", controller.Logout).Methods("POST")
-	//router.HandleFunc("/register", controller.RegisterUser).Methods("POST")
-	//router.HandleFunc("/password", controller.Authenticate(controller.ChangePassword, 1)).Methods("PUT")
-	//router.HandleFunc("/registerseller", controller.Authenticate(controller.RegisterSeller, 1)).Methods("PUT")
+	/*
+		TODO
+		- Handler untuk user
+		- Handler untuk report post
+	*/
 
 	// Handler untuk userLog
 	router.HandleFunc("/userLog", controller.GetUserLogUsingId).Methods("GET")
