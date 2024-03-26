@@ -55,7 +55,7 @@ func main() {
 	router.HandleFunc("/post", controller.UpdatePostBanStatus).Methods("PUT")
 
 	corsHandler := cors.New(cors.Options{
-		AllowedOrigins:   []string{"localhost:8181"},
+		AllowedOrigins:   []string{"localhost:5173", "localhost:8181"},
 		AllowedMethods:   []string{"POST", "GET", "PUT", "DELETE"},
 		AllowCredentials: true,
 	})
