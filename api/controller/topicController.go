@@ -2,7 +2,6 @@ package controller
 
 import (
 	"RPLL/api/model"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -15,25 +14,21 @@ func GetAllTopic(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
 
-	query := "SELECT * FROM topic"
-
-	rows, err := db.Query(query)
-	if err != nil {
-		log.Println(err)
-		sendErrorResponse(w, "Something went wrong, please try again")
-		return
-	}
-
-	var topic model.Topic
 	var topicList []model.Topic
-	for rows.Next() {
-		if err := rows.Scan(
-			&topic.TopicNo, &topic.TopicTitle, &topic.TopicDesc, &topic.CreateDate, &topic.BanStatus); err != nil {
-			log.Println(err)
-			return
-		} else {
-			topicList = append(topicList, topic)
-		}
+
+	searchType := r.URL.Query().Get("orderBy")
+
+	context := &SearchContext{}
+
+	if searchType == "time" {
+		// Cari dari topic yang paling baru dibuat
+		context.SetStrategy(&PopularitySearchStrategy{})
+		topicList = context.PerformSearch("SELECT * FROM topic ORDER BY createDate DESC")
+	} else {
+		// Cari dari dengan jumlah thread terbanyak
+		// TODO : Ganti query agar bisa cari berdasarkan jumlah thread terbanyak
+		context.SetStrategy(&PopularitySearchStrategy{})
+		topicList = context.PerformSearch("SELECT * FROM topic ORDER BY createDate ASC")
 	}
 
 	// Kirim response ke client
