@@ -2,7 +2,6 @@ package controller
 
 import (
 	"RPLL/api/model"
-	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
@@ -37,22 +36,13 @@ func GetAllTopic(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if len(topicList) > 1 {
-		responseFactory := model.NewSuccessResponseModelFactory()
-
-		response := responseFactory.CreateSuccessResponse(
-			"success",
-			nil,
-		)
-		json.NewEncoder(w).Encode(response)
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
+	if len(topicList) >= 1 {
+		sendSuccessResponse(w, "Successfully retrieved topic", topicList)
 	} else {
-		responseFactory := model.NewErrorResponseModelFactory()
-
-		response := responseFactory.CreateErrorResponse("Failed to get data from the database")
-		json.NewEncoder(w).Encode(response)
+		sendErrorResponse(w, "Failed to get data from the database")
 	}
-
-	w.Header().Set("Content-Type", "application/json")
 }
 
 // Insert sebuah topic baru
@@ -84,21 +74,13 @@ func InsertTopic(w http.ResponseWriter, r *http.Request) {
 		newTopic.TopicDesc,
 	)
 
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
 	if errQuery == nil {
-		responseFactory := model.NewSuccessResponseModelFactory()
-
-		response := responseFactory.CreateSuccessResponse(
-			"success",
-			nil,
-		)
-		json.NewEncoder(w).Encode(response)
+		sendSuccessResponse(w, "Successfully inserted new topic", nil)
 	} else {
-		responseFactory := model.NewErrorResponseModelFactory()
-
-		response := responseFactory.CreateErrorResponse("Failed to insert new topic")
-		json.NewEncoder(w).Encode(response)
+		sendErrorResponse(w, "Failed to insert topic to database")
 	}
-	w.Header().Set("Content-Type", "application/json")
 }
 
 // Update judul/title sebuah topic
@@ -127,22 +109,13 @@ func UpdateTopicTitle(w http.ResponseWriter, r *http.Request) {
 		topicNo,
 	)
 
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
 	if errQuery == nil {
-		responseFactory := model.NewSuccessResponseModelFactory()
-
-		response := responseFactory.CreateSuccessResponse(
-			"success",
-			nil,
-		)
-		json.NewEncoder(w).Encode(response)
+		sendSuccessResponse(w, "Successfully updated topic title", nil)
 	} else {
-		responseFactory := model.NewErrorResponseModelFactory()
-
-		response := responseFactory.CreateErrorResponse("Failed to update topic title")
-		json.NewEncoder(w).Encode(response)
+		sendErrorResponse(w, "Failed to update topic title")
 	}
-
-	w.Header().Set("Content-Type", "application/json")
 }
 
 // Update description sebuah topic
@@ -171,22 +144,13 @@ func UpdateTopicDescription(w http.ResponseWriter, r *http.Request) {
 		topicNo,
 	)
 
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
 	if errQuery == nil {
-		responseFactory := model.NewSuccessResponseModelFactory()
-
-		response := responseFactory.CreateSuccessResponse(
-			"success",
-			nil,
-		)
-		json.NewEncoder(w).Encode(response)
+		sendSuccessResponse(w, "Successfully updated topic description", nil)
 	} else {
-		responseFactory := model.NewErrorResponseModelFactory()
-
-		response := responseFactory.CreateErrorResponse("Failed to update topic description")
-		json.NewEncoder(w).Encode(response)
+		sendErrorResponse(w, "Failed to update topic description")
 	}
-
-	w.Header().Set("Content-Type", "application/json")
 }
 
 // Update status topic menjadi 0(unbanned) atau 1(banned)
@@ -216,22 +180,13 @@ func UpdateTopicStatus(w http.ResponseWriter, r *http.Request) {
 		topicNo,
 	)
 
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
 	if errQuery == nil {
-		responseFactory := model.NewSuccessResponseModelFactory()
-
-		response := responseFactory.CreateSuccessResponse(
-			"success",
-			nil,
-		)
-		json.NewEncoder(w).Encode(response)
+		sendSuccessResponse(w, "Successfully updated topic ban status", nil)
 	} else {
-		responseFactory := model.NewErrorResponseModelFactory()
-
-		response := responseFactory.CreateErrorResponse("Failed to update topic ban status")
-		json.NewEncoder(w).Encode(response)
+		sendErrorResponse(w, "Failed to update topic ban status")
 	}
-
-	w.Header().Set("Content-Type", "application/json")
 }
 
 // Delete sebuah topic
@@ -250,19 +205,11 @@ func DeleteTopic(w http.ResponseWriter, r *http.Request) {
 		topicNo,
 	)
 
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
 	if errQuery == nil {
-		responseFactory := model.NewSuccessResponseModelFactory()
-
-		response := responseFactory.CreateSuccessResponse(
-			"success",
-			nil,
-		)
-		json.NewEncoder(w).Encode(response)
+		sendSuccessResponse(w, "Successfully deleted topic", nil)
 	} else {
-		responseFactory := model.NewErrorResponseModelFactory()
-
-		response := responseFactory.CreateErrorResponse("Failed to delete topic")
-		json.NewEncoder(w).Encode(response)
+		sendErrorResponse(w, "Failed to delete topic")
 	}
-	w.Header().Set("Content-Type", "application/json")
 }

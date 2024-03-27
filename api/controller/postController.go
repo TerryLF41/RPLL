@@ -2,7 +2,6 @@ package controller
 
 import (
 	"RPLL/api/model"
-	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
@@ -39,23 +38,13 @@ func GetAllPostByThreadNo(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	w.Header().Set("Content-Type", "application/json")
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
 	if len(postList) >= 1 {
-		responseFactory := model.NewSuccessResponseModelFactory()
-
-		response := responseFactory.CreateSuccessResponse(
-			"success",
-			postList,
-		)
-		json.NewEncoder(w).Encode(response)
+		sendSuccessResponse(w, "Successfully retrieved post", postList)
 	} else {
-		responseFactory := model.NewErrorResponseModelFactory()
-
-		response := responseFactory.CreateErrorResponse("Failed to get data from the database")
-		json.NewEncoder(w).Encode(response)
+		sendErrorResponse(w, "Failed to retrieve post")
 	}
-
-	json.NewEncoder(w).Encode(postList)
 }
 
 // Insert sebuah post baru
@@ -96,11 +85,12 @@ func InsertPost(w http.ResponseWriter, r *http.Request) {
 		newPost.PostImage,
 	)
 
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
 	if errQuery == nil {
-		sendSuccessResponse(w, "Success", nil)
+		sendSuccessResponse(w, "Successfully inserted new post", nil)
 	} else {
-		log.Println(errQuery)
-		sendErrorResponse(w, "Failed to insert post")
+		sendErrorResponse(w, "Failed to insert post to database")
 	}
 }
 
@@ -129,20 +119,11 @@ func UpdatePostBanStatus(w http.ResponseWriter, r *http.Request) {
 		postNo,
 	)
 
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
 	if errQuery == nil {
-		responseFactory := model.NewSuccessResponseModelFactory()
-
-		response := responseFactory.CreateSuccessResponse(
-			"success",
-			nil,
-		)
-		json.NewEncoder(w).Encode(response)
+		sendSuccessResponse(w, "Successfully updated post ban status", nil)
 	} else {
-		responseFactory := model.NewErrorResponseModelFactory()
-
-		response := responseFactory.CreateErrorResponse("Failed to update post ban status")
-		json.NewEncoder(w).Encode(response)
+		sendErrorResponse(w, "Failed to update post ban status")
 	}
-
-	w.Header().Set("Content-Type", "application/json")
 }

@@ -44,7 +44,7 @@ func GetUserLogUsingId(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	sendSuccessResponse(w, "Success", userLogList)
+	sendSuccessResponse(w, "Successfully retrieved userlog", userLogList)
 }
 
 // Insert/create sebuah userLog baru
@@ -81,9 +81,9 @@ func InsertUserLog(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if errQuery == nil {
-		sendSuccessResponse(w, "Success", nil)
+		sendSuccessResponse(w, "Successfully inserted new userlog", nil)
 	} else {
 		log.Println(errQuery)
-		sendErrorResponse(w, "Failed to insert userLog")
+		sendErrorResponse(w, "Failed to insert userLog to database")
 	}
 }

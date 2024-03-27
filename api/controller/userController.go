@@ -59,9 +59,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		}
 		generateToken(w, user.UserID, user.Username, user.UserType)
 		sendSuccessResponse(w, "Login Success", nil)
-		//sendMailLogin(user2)
 	}
-
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
