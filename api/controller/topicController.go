@@ -37,15 +37,16 @@ func GetAllTopic(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(topicList) > 1 {
-		var response model.GenericResponse
-		response.Status = 200
-		response.Message = "Success"
-		response.Data = topicList
+		responseFactory := model.NewGenericResponseModelFactory()
+
+		response := responseFactory.CreateGenericResponse(
+			topicList,
+		)
 		json.NewEncoder(w).Encode(response)
 	} else {
-		var response model.ErrorResponse
-		response.Status = 400
-		response.Message = "Error"
+		responseFactory := model.NewErrorResponseModelFactory()
+
+		response := responseFactory.CreateErrorResponse("Failed to get data from the database")
 		json.NewEncoder(w).Encode(response)
 	}
 
@@ -72,14 +73,16 @@ func InsertTopic(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if errQuery == nil {
-		var response model.GenericResponse
-		response.Status = 200
-		response.Message = "Success"
+		responseFactory := model.NewGenericResponseModelFactory()
+
+		response := responseFactory.CreateGenericResponse(
+			nil,
+		)
 		json.NewEncoder(w).Encode(response)
 	} else {
-		var response model.ErrorResponse
-		response.Status = 400
-		response.Message = "Failed to insert new topic"
+		responseFactory := model.NewErrorResponseModelFactory()
+
+		response := responseFactory.CreateErrorResponse("Failed to insert new topic")
 		json.NewEncoder(w).Encode(response)
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -112,14 +115,16 @@ func UpdateTopicTitle(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if errQuery == nil {
-		var response model.GenericResponse
-		response.Status = 200
-		response.Message = "Success"
+		responseFactory := model.NewGenericResponseModelFactory()
+
+		response := responseFactory.CreateGenericResponse(
+			nil,
+		)
 		json.NewEncoder(w).Encode(response)
 	} else {
-		var response model.ErrorResponse
-		response.Status = 400
-		response.Message = "Failed to update topic title"
+		responseFactory := model.NewErrorResponseModelFactory()
+
+		response := responseFactory.CreateErrorResponse("Failed to update topic title")
 		json.NewEncoder(w).Encode(response)
 	}
 
@@ -153,14 +158,16 @@ func UpdateTopicDescription(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if errQuery == nil {
-		var response model.GenericResponse
-		response.Status = 200
-		response.Message = "Success"
+		responseFactory := model.NewGenericResponseModelFactory()
+
+		response := responseFactory.CreateGenericResponse(
+			nil,
+		)
 		json.NewEncoder(w).Encode(response)
 	} else {
-		var response model.ErrorResponse
-		response.Status = 400
-		response.Message = "Failed to update topic description"
+		responseFactory := model.NewErrorResponseModelFactory()
+
+		response := responseFactory.CreateErrorResponse("Failed to update topic description")
 		json.NewEncoder(w).Encode(response)
 	}
 
@@ -195,14 +202,16 @@ func UpdateTopicStatus(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if errQuery == nil {
-		var response model.GenericResponse
-		response.Status = 200
-		response.Message = "Success"
+		responseFactory := model.NewGenericResponseModelFactory()
+
+		response := responseFactory.CreateGenericResponse(
+			nil,
+		)
 		json.NewEncoder(w).Encode(response)
 	} else {
-		var response model.ErrorResponse
-		response.Status = 400
-		response.Message = "Failed to update topic ban status"
+		responseFactory := model.NewErrorResponseModelFactory()
+
+		response := responseFactory.CreateErrorResponse("Failed to update topic ban status")
 		json.NewEncoder(w).Encode(response)
 	}
 
@@ -226,14 +235,16 @@ func DeleteTopic(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if errQuery == nil {
-		var response model.GenericResponse
-		response.Status = 200
-		response.Message = "Success"
+		responseFactory := model.NewGenericResponseModelFactory()
+
+		response := responseFactory.CreateGenericResponse(
+			nil,
+		)
 		json.NewEncoder(w).Encode(response)
 	} else {
-		var response model.ErrorResponse
-		response.Status = 400
-		response.Message = "Failed to delete topic"
+		responseFactory := model.NewErrorResponseModelFactory()
+
+		response := responseFactory.CreateErrorResponse("Failed to delete topic")
 		json.NewEncoder(w).Encode(response)
 	}
 	w.Header().Set("Content-Type", "application/json")

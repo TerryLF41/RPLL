@@ -1,37 +1,47 @@
 package model
 
-// GenericResponse represents a generic response model
+// Response represents a generic response model
 type Response struct {
 	Status  int         `json:"status"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data,omitempty"`
 }
 
-// GenericResponseModelFactory interface defines methods for generic response model
-type ResponseModelFactory interface {
-	CreateGenericResponse(status int, message string, data interface{}) *GenericResponse
+//Generic Response
+type GenericResponseModelFactory interface {
+	CreateGenericResponse(data interface{}) *Response
 }
 
-// ConcreteResponseModelFactory struct implements GenericResponseModelFactory interface
-type ConcreteResponseModelFactory struct{}
+type ConcreteGenericResponseModelFactory struct{}
 
-// CreateGenericResponse creates a new generic response instance
-func (factory *ConcreteResponseModelFactory) CreateSuccessResponse(status int, message string, data interface{}) *Response {
+func (factory *ConcreteGenericResponseModelFactory) CreateGenericResponse(data interface{}) *Response {
 	return &Response{
-		Status:  status,
-		Message: message,
+		Status:  200,
+		Message: "Success",
 		Data:    data,
 	}
 }
 
-func (factory *ConcreteResponseModelFactory) CreateErrorResponse(status int, message string, data interface{}) *Response {
+// NewResponseModelFactory creates a new response model factory
+func NewGenericResponseModelFactory() GenericResponseModelFactory {
+	return &ConcreteGenericResponseModelFactory{}
+}
+
+//Error Response
+type ErrorResponseModelFactory interface {
+	CreateErrorResponse(message string) *Response
+}
+
+type ConcreteErrorResponseModelFactory struct{}
+
+func (factory *ConcreteErrorResponseModelFactory) CreateErrorResponse(message string) *Response {
 	return &Response{
-		Status:  status,
+		Status:  404,
 		Message: message,
+		Data:    nil,
 	}
 }
 
-// NewGenericResponseModelFactory creates a new generic response model factory
-func NewResponseModelFactory() ResponseModelFactory {
-	return &ConcreteGenericResponseModelFactory{}
+func NewErrorResponseModelFactory() ErrorResponseModelFactory {
+	return &ConcreteErrorResponseModelFactory{}
 }
