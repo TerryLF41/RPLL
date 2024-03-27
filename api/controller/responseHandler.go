@@ -11,7 +11,6 @@ func sendErrorResponse(w http.ResponseWriter, message string) {
 	w.Header().Set("Content=Type", "application/json")
 	responseFactory := model.NewErrorResponseModelFactory()
 	response := responseFactory.CreateErrorResponse(message)
-	json.NewEncoder(w).Encode(response)
 
 	err := json.NewEncoder(w).Encode(response)
 	if err != nil {
@@ -23,7 +22,6 @@ func sendUnauthorizedResponse(w http.ResponseWriter) {
 	w.Header().Set("Content=Type", "application/json")
 	responseFactory := model.NewErrorResponseModelFactory()
 	response := responseFactory.CreateErrorResponse("Unauthorized access")
-	json.NewEncoder(w).Encode(response)
 
 	err := json.NewEncoder(w).Encode(response)
 	if err != nil {
@@ -35,11 +33,9 @@ func sendSuccessResponse(w http.ResponseWriter, message string, value interface{
 	w.Header().Set("Content-Type", "application/json")
 	responseFactory := model.NewSuccessResponseModelFactory()
 	response := responseFactory.CreateSuccessResponse(
-		"Successfully retrieved topic",
+		message,
 		value,
 	)
-	json.NewEncoder(w).Encode(response)
-	w.Header().Set("Content=Type", "application/json")
 	err := json.NewEncoder(w).Encode(response)
 	if err != nil {
 		log.Println(err)

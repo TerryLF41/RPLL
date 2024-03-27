@@ -18,12 +18,6 @@ func main() {
 	//0 = User biasa
 	//1 = Admin
 
-	/*
-		TODO
-		- Handler untuk user
-		- Handler untuk report post
-	*/
-
 	// Handler untuk user
 	router.HandleFunc("/register", controller.RegisterUser).Methods("POST")
 	router.HandleFunc("/login", controller.Login).Methods("POST")
