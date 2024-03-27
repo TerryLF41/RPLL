@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 // File ini memuat function-function yang berkaitan dengan userLog
@@ -60,14 +61,23 @@ func InsertUserLog(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	userId, _ := strconv.Atoi(r.Form.Get("userId"))
-	logType := r.Form.Get("logType")
-	ipAddress := r.Form.Get("ipAddress")
+
+	userLogFactory := model.NewUserLogModelFactory()
+
+	// Create a new user log instance
+	newUserLog := userLogFactory.CreateUserLog(
+		0,
+		userId,
+		r.Form.Get("logType"),
+		r.Form.Get("ipAddress"),
+		time.Now(),
+	)
 
 	// Query ke SQL
 	_, errQuery := db.Exec("INSERT INTO userlog(userId,logType,ipAddress)values(?,?,?)",
-		userId,
-		logType,
-		ipAddress,
+		newUserLog.UserID,
+		newUserLog.LogType,
+		newUserLog.IpAddress,
 	)
 
 	if errQuery == nil {

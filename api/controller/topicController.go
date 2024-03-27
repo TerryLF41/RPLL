@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -37,10 +38,11 @@ func GetAllTopic(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(topicList) > 1 {
-		responseFactory := model.NewGenericResponseModelFactory()
+		responseFactory := model.NewSuccessResponseModelFactory()
 
-		response := responseFactory.CreateGenericResponse(
-			topicList,
+		response := responseFactory.CreateSuccessResponse(
+			"success",
+			nil,
 		)
 		json.NewEncoder(w).Encode(response)
 	} else {
@@ -64,18 +66,29 @@ func InsertTopic(w http.ResponseWriter, r *http.Request) {
 		sendErrorResponse(w, "Failed")
 		return
 	}
-	topicTitle, _ := strconv.Atoi(r.Form.Get("topicTitle"))
-	topicDesc, _ := strconv.Atoi(r.Form.Get("topicDesc"))
+
+	topicFactory := model.NewTopicModelFactory()
+
+	// Create a new topic instance
+	newTopic := topicFactory.CreateTopic(
+		0,
+		r.Form.Get("topicTitle"),
+		r.Form.Get("topicDesc"),
+		time.Now(),
+		false,
+		nil,
+	)
 
 	_, errQuery := db.Exec("INSERT INTO transactions(topicTitle, topicDesc) values (?,?)",
-		topicTitle,
-		topicDesc,
+		newTopic.TopicTitle,
+		newTopic.TopicDesc,
 	)
 
 	if errQuery == nil {
-		responseFactory := model.NewGenericResponseModelFactory()
+		responseFactory := model.NewSuccessResponseModelFactory()
 
-		response := responseFactory.CreateGenericResponse(
+		response := responseFactory.CreateSuccessResponse(
+			"success",
 			nil,
 		)
 		json.NewEncoder(w).Encode(response)
@@ -115,9 +128,10 @@ func UpdateTopicTitle(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if errQuery == nil {
-		responseFactory := model.NewGenericResponseModelFactory()
+		responseFactory := model.NewSuccessResponseModelFactory()
 
-		response := responseFactory.CreateGenericResponse(
+		response := responseFactory.CreateSuccessResponse(
+			"success",
 			nil,
 		)
 		json.NewEncoder(w).Encode(response)
@@ -158,9 +172,10 @@ func UpdateTopicDescription(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if errQuery == nil {
-		responseFactory := model.NewGenericResponseModelFactory()
+		responseFactory := model.NewSuccessResponseModelFactory()
 
-		response := responseFactory.CreateGenericResponse(
+		response := responseFactory.CreateSuccessResponse(
+			"success",
 			nil,
 		)
 		json.NewEncoder(w).Encode(response)
@@ -202,9 +217,10 @@ func UpdateTopicStatus(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if errQuery == nil {
-		responseFactory := model.NewGenericResponseModelFactory()
+		responseFactory := model.NewSuccessResponseModelFactory()
 
-		response := responseFactory.CreateGenericResponse(
+		response := responseFactory.CreateSuccessResponse(
+			"success",
 			nil,
 		)
 		json.NewEncoder(w).Encode(response)
@@ -235,9 +251,10 @@ func DeleteTopic(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if errQuery == nil {
-		responseFactory := model.NewGenericResponseModelFactory()
+		responseFactory := model.NewSuccessResponseModelFactory()
 
-		response := responseFactory.CreateGenericResponse(
+		response := responseFactory.CreateSuccessResponse(
+			"success",
 			nil,
 		)
 		json.NewEncoder(w).Encode(response)

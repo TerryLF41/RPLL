@@ -9,15 +9,15 @@ type Response struct {
 
 //Generic Response
 type GenericResponseModelFactory interface {
-	CreateGenericResponse(data interface{}) *Response
+	CreateGenericResponse(message string, data interface{}) *Response
 }
 
 type ConcreteGenericResponseModelFactory struct{}
 
-func (factory *ConcreteGenericResponseModelFactory) CreateGenericResponse(data interface{}) *Response {
+func (factory *ConcreteGenericResponseModelFactory) CreateGenericResponse(message string, data interface{}) *Response {
 	return &Response{
 		Status:  200,
-		Message: "Success",
+		Message: message,
 		Data:    data,
 	}
 }
@@ -36,7 +36,7 @@ type ConcreteErrorResponseModelFactory struct{}
 
 func (factory *ConcreteErrorResponseModelFactory) CreateErrorResponse(message string) *Response {
 	return &Response{
-		Status:  404,
+		Status:  400,
 		Message: message,
 		Data:    nil,
 	}

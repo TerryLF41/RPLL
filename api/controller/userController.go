@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 // Login untuk user
@@ -99,22 +100,31 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	hash := sha256.Sum256([]byte(password))
 	passwordHash := hex.EncodeToString(hash[:])
 
-	user := model.User{
-		Username: username,
-		Email:    email,
-		Password: passwordHash,
-	}
+	userFactory := model.NewUserModelFactory()
+
+	// Create a new user instance
+	newUser := userFactory.CreateUser(
+		0,
+		username,
+		passwordHash,
+		email,
+		"",
+		time.Now(),
+		0,
+		false,
+		nil,
+	)
 
 	// Query untuk cek apakah ada user yang terdaftar dengan email yang diinput
 	// jika ada, maka tidak bisa register
 	query := "SELECT userId FROM user WHERE email ='" + email + "'"
-	err1 := db.QueryRow(query).Scan(&user.UserID)
+	err1 := db.QueryRow(query).Scan(&newUser.UserID)
 	if err1 != nil {
 		if err1 == sql.ErrNoRows {
 			_, errQuery := db.Exec("INSERT INTO user(username, email, password) values(?,?,?)",
-				user.Username,
-				user.Email,
-				user.Password,
+				newUser.Username,
+				newUser.Email,
+				newUser.Password,
 			)
 			if errQuery != nil {
 				log.Println(errQuery)

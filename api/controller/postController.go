@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 // Get semua post berdasarkan threadNo
@@ -40,15 +41,17 @@ func GetAllPostByThreadNo(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	if len(postList) >= 1 {
-		var response model.GenericResponse
-		response.Status = 200
-		response.Message = "Success"
-		response.Data = postList
+		responseFactory := model.NewSuccessResponseModelFactory()
+
+		response := responseFactory.CreateSuccessResponse(
+			"success",
+			postList,
+		)
 		json.NewEncoder(w).Encode(response)
 	} else {
-		var response model.ErrorResponse
-		response.Status = 400
-		response.Message = "Failed to get data from the database"
+		responseFactory := model.NewErrorResponseModelFactory()
+
+		response := responseFactory.CreateErrorResponse("Failed to get data from the database")
 		json.NewEncoder(w).Encode(response)
 	}
 
@@ -69,16 +72,28 @@ func InsertPost(w http.ResponseWriter, r *http.Request) {
 	threadNo, _ := strconv.Atoi(r.Form.Get("threadNo"))
 	userId, _ := strconv.Atoi(r.Form.Get("userId"))
 	replyTo, _ := strconv.Atoi(r.Form.Get("replyTo"))
-	postText := r.Form.Get("postText")
-	postImage := r.Form.Get("postImage")
 
-	// Query ke SQL
-	_, errQuery := db.Exec("INSERT INTO post(threadNo,userId,replyTo,postText,postImage)values(?,?,?,?,?)",
+	postFactory := model.NewPostModelFactory()
+
+	// Create a new post instance
+	newPost := postFactory.CreatePost(
+		0,
 		threadNo,
 		userId,
 		replyTo,
-		postText,
-		postImage,
+		r.Form.Get("postText"),
+		r.Form.Get("postImage"),
+		time.Now(),
+		false,
+	)
+
+	// Query ke SQL
+	_, errQuery := db.Exec("INSERT INTO post(threadNo,userId,replyTo,postText,postImage)values(?,?,?,?,?)",
+		newPost.ThreadNo,
+		newPost.UserId,
+		newPost.ReplyTo,
+		newPost.PostText,
+		newPost.PostImage,
 	)
 
 	if errQuery == nil {
@@ -115,14 +130,17 @@ func UpdatePostBanStatus(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if errQuery == nil {
-		var response model.GenericResponse
-		response.Status = 200
-		response.Message = "Success"
+		responseFactory := model.NewSuccessResponseModelFactory()
+
+		response := responseFactory.CreateSuccessResponse(
+			"success",
+			nil,
+		)
 		json.NewEncoder(w).Encode(response)
 	} else {
-		var response model.ErrorResponse
-		response.Status = 400
-		response.Message = "Failed to update post ban status"
+		responseFactory := model.NewErrorResponseModelFactory()
+
+		response := responseFactory.CreateErrorResponse("Failed to update post ban status")
 		json.NewEncoder(w).Encode(response)
 	}
 
