@@ -8,13 +8,13 @@ type Response struct {
 }
 
 //Generic Response
-type GenericResponseModelFactory interface {
-	CreateGenericResponse(message string, data interface{}) *Response
+type SuccessResponseModelFactory interface {
+	CreateSuccessResponse(message string, data interface{}) *Response
 }
 
-type ConcreteGenericResponseModelFactory struct{}
+type ConcreteSuccessResponseModelFactory struct{}
 
-func (factory *ConcreteGenericResponseModelFactory) CreateGenericResponse(message string, data interface{}) *Response {
+func (factory *ConcreteSuccessResponseModelFactory) CreateSuccessResponse(message string, data interface{}) *Response {
 	return &Response{
 		Status:  200,
 		Message: message,
@@ -23,8 +23,8 @@ func (factory *ConcreteGenericResponseModelFactory) CreateGenericResponse(messag
 }
 
 // NewResponseModelFactory creates a new response model factory
-func NewGenericResponseModelFactory() GenericResponseModelFactory {
-	return &ConcreteGenericResponseModelFactory{}
+func NewSuccessResponseModelFactory() SuccessResponseModelFactory {
+	return &ConcreteSuccessResponseModelFactory{}
 }
 
 //Error Response
