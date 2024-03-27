@@ -1,0 +1,35 @@
+package model
+
+import (
+	"fmt"
+	"sync"
+)
+
+var lock = &sync.Mutex{}
+
+type SingletonUser struct {
+	UserSingleton User
+}
+
+var singleInstance *singletonUser
+
+func getInstance() *singletonUser {
+	if singleInstance == nil {
+		lock.Lock()
+		defer lock.Unlock()
+		if singleInstance == nil {
+			fmt.Println("Creating singletonUser instance now.")
+			singleInstance = &single{}
+		} else {
+			fmt.Println("singletonUser instance already created.")
+		}
+	} else {
+		fmt.Println("singletonUser instance already created.")
+	}
+
+	return singleInstance
+}
+
+func setInstance() *SingletonUser {
+
+}

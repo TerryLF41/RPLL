@@ -62,6 +62,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func initializeUserSingleton(user model.User) {
+
+}
+
 func Logout(w http.ResponseWriter, r *http.Request) {
 	//User id ambil pakai cookie
 	userid := getUserIdFromCookie(r)
