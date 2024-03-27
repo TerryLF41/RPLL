@@ -22,7 +22,7 @@ func GetAllTopic(w http.ResponseWriter, r *http.Request) {
 
 	if searchType == "time" {
 		// Cari dari topic yang paling baru dibuat
-		context.SetStrategy(&PopularitySearchStrategy{})
+		context.SetStrategy(&LatestTopicSearchStrategy{})
 		topicList = context.PerformSearch("SELECT * FROM topic ORDER BY createDate DESC")
 	} else {
 		// Cari dari dengan jumlah thread terbanyak
