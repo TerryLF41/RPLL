@@ -13,3 +13,30 @@ type User struct {
 	BanStatus      bool         `json:"banstatus,omitempty"`
 	ListReportPost []ReportPost `json:"ListReportPost,omitempty"`
 }
+
+// UserModelFactory interface defines methods for user model
+type UserModelFactory interface {
+	CreateUser(userID int, username, password, email, profileDesc string, joinDate time.Time, userType int, banStatus bool, listReportPost []ReportPost) *User
+}
+
+// ConcreteUserModelFactory struct implements UserModelFactory interface
+type ConcreteUserModelFactory struct{}
+
+func (factory *ConcreteUserModelFactory) CreateUser(userID int, username, password, email, profileDesc string, joinDate time.Time, userType int, banStatus bool, listReportPost []ReportPost) *User {
+	return &User{
+		UserID:         userID,
+		Username:       username,
+		Password:       password,
+		Email:          email,
+		ProfileDesc:    profileDesc,
+		JoinDate:       joinDate,
+		UserType:       userType,
+		BanStatus:      banStatus,
+		ListReportPost: listReportPost,
+	}
+}
+
+// NewUserModelFactory creates a new user model factory
+func NewUserModelFactory() UserModelFactory {
+	return &ConcreteUserModelFactory{}
+}
