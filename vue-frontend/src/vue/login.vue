@@ -1,23 +1,3 @@
-<script>
-// Specify the API endpoint for user data
-const apiUrl = 'http://localhost:8181/topic';
-
-// Make a GET request using the Fetch API
-fetch(apiUrl)
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  })
-  .then(userData => {
-    // Process the retrieved user data
-    console.log('User Data:', userData);
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
-</script>
 <template>
     <main>
         <form name="login" method="post">
@@ -28,12 +8,48 @@ fetch(apiUrl)
                 <label for="password">Password</label><br>
                 <input type="password" name="password" id="password" required placeholder="Input Password"><br>
                 <input id="remember" type="checkbox" name="remember" value="true">Remember Me<br>
-                <button type="submit">Login</button>
+                <button @click="login">Login</button>
                 <button id='register'type="reset" onclick="window.open('register.html','_self');">Register</button>
             </div>
         </form>
     </main>
 </template>
+
+<script>
+async function login() {
+    // Ambil data dari form
+    var username = document.getElementById("username").value;
+    var password = document.getElementById("password").value;
+
+    // Panggil API login
+    fetch('http://localhost:8181/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },    
+        body: new URLSearchParams({
+            'username': username,
+            'password': password,
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(response => {
+        // Print response di console
+        console.log('Response:', Response);
+    })
+    .catch(error => {
+        // Print error di console
+        console.error('Error:', error);
+    });
+    alert('Login berhasil!')
+}
+</script>
+
 <style scoped>
 body {
     background: url("../src/assets/background/bg-login.jpg") no-repeat center center

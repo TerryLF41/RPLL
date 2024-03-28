@@ -14,7 +14,6 @@
             <button id="submit" @click="register">Register</button><br>
         </div>
     </form>
-    <button @click="registerTest">RegisterTest</button><br>
     </main>
 </template>
 
@@ -24,20 +23,6 @@
         return Boolean(password === confirmPassword)
     }
 
-    async function registerTest(){
-        var username = document.getElementById("username").value;
-        var password = document.getElementById("password").value;
-        var confirmPassword = document.getElementById("confirmPassword").value;
-        var email = document.getElementById("email").value;
-
-        var passwordMatches = checkPassword(password,confirmPassword)
-
-        if(passwordMatches){
-            console.log("Matches");
-        } else {
-            console.log("Doesn't match");
-        }
-    }
     // Post data dari form ke API untuk register user
     async function register() {
         // Ambil data dari form
@@ -64,7 +49,7 @@
             })
             .then(response => {
                 if (!response.ok) {
-                throw new Error('Network response was not ok');
+                    throw new Error('Network response was not ok');
                 }
                 return response.json();
             })
