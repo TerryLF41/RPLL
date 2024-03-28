@@ -15,7 +15,7 @@
     </main>
 </template>
 
-<script>
+<script setup>
 async function login() {
     // Ambil data dari form
     var username = document.getElementById("username").value;
@@ -35,6 +35,7 @@ async function login() {
     .then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok');
+            return
         }
         return response.json();
     })
@@ -45,8 +46,10 @@ async function login() {
     .catch(error => {
         // Print error di console
         console.error('Error:', error);
+        return
     });
     alert('Login berhasil!')
+    window.open('homepage.html','_self')
 }
 </script>
 
