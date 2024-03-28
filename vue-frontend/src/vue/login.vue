@@ -29,7 +29,7 @@ fetch(apiUrl)
                 <input type="password" name="password" id="password" required placeholder="Input Password"><br>
                 <input id="remember" type="checkbox" name="remember" value="true">Remember Me<br>
                 <button type="submit">Login</button>
-                <button id='register'type="reset" @click=>Register</button>
+                <button id='register'type="reset" onclick="window.open('register.html','_self');">Register</button>
             </div>
         </form>
     </main>

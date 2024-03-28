@@ -4,18 +4,85 @@
         <div class="register">
             <h2>Register</h2>
             <label for="username">Username</label><br>
-            <input type="text" name="username" id="username" required placeholder="Input Username"><br>
+            <input type="text" name="username" id="username" required placeholder="Input Username" ><br>
             <label for="username">Password</label><br>
             <input type="password" name="password" id="password" required placeholder="Input Password"><br>
             <label for="username">Confirm Password</label><br>
-            <input type="password" name="confirm" id="confirm" required placeholder="Confirm Password" onkeyup="check()"><br>
+            <input type="password" name="confirmPassword" id="confirmPassword" required placeholder="Confirm Password"><br>
             <label for="email">Email</label><br>
             <input type="email" name="email" id="email" required placeholder="example123@gmail.com"><br>
-            <button id="submit" type="submit">Register</button><br>
+            <button id="submit" @click="register">Register</button><br>
         </div>
     </form>
+    <button @click="registerTest">RegisterTest</button><br>
     </main>
 </template>
+
+<script setup>
+    // Check password dengan confirm password
+    function checkPassword(password,confirmPassword) {
+        return Boolean(password === confirmPassword)
+    }
+
+    async function registerTest(){
+        var username = document.getElementById("username").value;
+        var password = document.getElementById("password").value;
+        var confirmPassword = document.getElementById("confirmPassword").value;
+        var email = document.getElementById("email").value;
+
+        var passwordMatches = checkPassword(password,confirmPassword)
+
+        if(passwordMatches){
+            console.log("Matches");
+        } else {
+            console.log("Doesn't match");
+        }
+    }
+    // Post data dari form ke API untuk register user
+    async function register() {
+        // Ambil data dari form
+        var username = document.getElementById("username").value;
+        var password = document.getElementById("password").value;
+        var confirmPassword = document.getElementById("confirmPassword").value;
+        var email = document.getElementById("email").value;
+
+        // Check kesamaan password
+        var passwordMatches = checkPassword(password,confirmPassword)
+
+        // Kalau sesuai, kirim request
+        if(passwordMatches){
+            fetch('http://localhost:8181/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },    
+                body: new URLSearchParams({
+                    'username': username,
+                    'password': password,
+                    'email': email
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(response => {
+                // Print response di console
+                console.log('Response:', Response);
+            })
+            .catch(error => {
+                // Print error di console
+                console.error('Error:', error);
+            });
+            alert('Register berhasil!')
+        } else {
+            // Kalau tidak, tampilkan alert box
+            alert('Password dengan konfirmasi password tidak sama!')
+        }
+    }
+</script>
 
 <style scoped>
 body{
