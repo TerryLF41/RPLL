@@ -1,45 +1,44 @@
 <template>
     <main>
-        <form name="login" method="post">
-            <div class="login">
-            <h2>Login</h2>
-                <label for="username">Username</label><br>
-                <input type="text" name="username" id="username" required placeholder="Input Username"><br>
-                <label for="password">Password</label><br>
-                <input type="password" name="password" id="password" required placeholder="Input Password"><br>
-                <input id="remember" type="checkbox" name="remember" value="true">Remember Me<br>
-                <button @click="login">Login</button>
-                <button id='register'type="reset" onclick="window.open('register.html','_self');">Register</button>
-            </div>
-        </form>
+      <form @submit.prevent="login" name="login" method="post">
+        <div class="login">
+          <h2>Login</h2>
+          <label for="username">Username</label><br>
+          <input type="text" v-model="username" name="username" id="username" required placeholder="Input Username"><br>
+          <label for="password">Password</label><br>
+          <input type="password" v-model="password" name="password" id="password" required placeholder="Input Password"><br>
+          <input type="checkbox" id="remember" name="remember" value="true">Remember Me<br>
+          <button type="submit">Login</button>
+          <button type="button" @click="goToRegister">Register</button>
+        </div>
+      </form>
     </main>
-</template>
-
-<script setup>
-async function login() {
-    // Ambil data dari form
-    var username = document.getElementById("username").value;
-    var password = document.getElementById("password").value;
-
-    // Panggil API login
-    fetch('http://localhost:8181/login', {
+  </template>
+  
+  <script setup>
+  import { ref } from 'vue';
+  
+  const username = ref('');
+  const password = ref('');
+  
+  async function login() {
+    try {
+      const response = await fetch('http://localhost:8181/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
-        },    
+        },
         body: new URLSearchParams({
             'username': username,
             'password': password,
-        })
-    })
-    .then(response => {
+        }),
+      }).then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok');
             return
         }
         return response.json();
-    })
-    .then(response => {
+    }).then(response => {
         // Print response di console
         console.log('Response:', Response);
     })
@@ -49,9 +48,19 @@ async function login() {
         return
     });
     alert('Login berhasil!')
-    window.open('homepage.html','_self')
-}
-</script>
+    window.open('homepage.html','_self');
+    } catch (error) {
+      console.error('Login error:', error);
+      // Display error message to the user
+      // You can use a reactive variable to show error message in the template
+    }
+  }
+  
+  function goToRegister() {
+    window.open('register.html','_self');
+  }
+  </script>
+  
 
 <style scoped>
 body {
