@@ -3,10 +3,10 @@
       <form @submit.prevent="login" name="login" method="post">
         <div class="login">
           <h2>Login</h2>
-          <label for="username">Username</label><br>
-          <input type="text" v-model="username" name="username" id="username" required placeholder="Input Username"><br>
+          <label for="email">Email</label><br>
+          <input type="text" name="email" id="email" required placeholder="Input Email"><br>
           <label for="password">Password</label><br>
-          <input type="password" v-model="password" name="password" id="password" required placeholder="Input Password"><br>
+          <input type="password" name="password" id="password" required placeholder="Input Password"><br>
           <input type="checkbox" id="remember" name="remember" value="true">Remember Me<br>
           <button type="submit">Login</button>
           <button type="button" @click="goToRegister">Register</button>
@@ -16,44 +16,42 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue';
-  
-  const username = ref('');
-  const password = ref('');
-  
+
   async function login() {
-    try {
-      const response = await fetch('http://localhost:8181/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: new URLSearchParams({
-            'username': username,
-            'password': password,
-        }),
-      }).then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-            return
-        }
-        return response.json();
-    }).then(response => {
-        // Print response di console
-        console.log('Response:', Response);
-    })
-    .catch(error => {
-        // Print error di console
-        console.error('Error:', error);
-        return
+    var email = document.getElementById("email").value;;
+    var password = document.getElementById("password").value;
+        const response = await fetch('http://localhost:8181/login', {
+          method: "POST",
+          body: new URLSearchParams({
+            "email": email,
+            "password": password
+          }),
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          }
     });
-    alert('Login berhasil!')
-    window.open('homepage.html','_self');
-    } catch (error) {
-      console.error('Login error:', error);
-      // Display error message to the user
-      // You can use a reactive variable to show error message in the template
+    if (response.ok) {
+      const data = await response.json()
+      console.log(data)
+      if (data.status == '200'){
+        console.log("Login successful!");
+        alert('Login successful!');
+        window.open('/homepage.html','_self');
+      } else {
+          console.error("Login failed:", data.message);
+          alert('Login gagal, pasword/username salah'); // Handle error message
+      }
     }
+
+    // Check login response
+    // const loginData = await response.json();
+    // if (loginData.success) { // Assuming response has a "success" property
+    //   alert('Login successful!');
+    //   window.open('/homepage.html','_self');
+    // } else {
+    //   alert('Login gagal, pasword/username salah') // Handle error message
+    //   console.log(email,password)
+    // }
   }
   
   function goToRegister() {
