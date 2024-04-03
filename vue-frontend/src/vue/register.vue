@@ -1,6 +1,6 @@
 <template>
     <main>
-    <form name="register" method="post">
+    <form @submit.prevent="register" name="register" method="post">
         <div class="register">
             <h2>Register</h2>
             <label for="username">Username</label><br>
@@ -11,7 +11,7 @@
             <input type="password" name="confirmPassword" id="confirmPassword" required placeholder="Confirm Password"><br>
             <label for="email">Email</label><br>
             <input type="email" name="email" id="email" required placeholder="example123@gmail.com"><br>
-            <button id="submit" @click="register">Register</button><br>
+            <button id="submit">Register</button><br>
         </div>
     </form>
     </main>
@@ -61,7 +61,8 @@
                 // Print error di console
                 console.error('Error:', error);
             });
-            alert('Register berhasil!')
+            alert('Register berhasil!');
+            window.open('/login.html','_self');
         } else {
             // Kalau tidak, tampilkan alert box
             alert('Password dengan konfirmasi password tidak sama!')
