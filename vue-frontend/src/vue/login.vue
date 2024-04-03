@@ -42,16 +42,6 @@
           alert('Login gagal, pasword/username salah'); // Handle error message
       }
     }
-
-    // Check login response
-    // const loginData = await response.json();
-    // if (loginData.success) { // Assuming response has a "success" property
-    //   alert('Login successful!');
-    //   window.open('/homepage.html','_self');
-    // } else {
-    //   alert('Login gagal, pasword/username salah') // Handle error message
-    //   console.log(email,password)
-    // }
   }
   
   function goToRegister() {
