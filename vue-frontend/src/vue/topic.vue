@@ -8,9 +8,34 @@ import Header from '../components/header.vue'
             <Header />
         </nav>
         <h1>Daftar Topik</h1>
-        <button type="button" @click="getTopic">Get Topic</button>
-        <div id="topicList">
-
+        <button type="button" @click="getTopic">Get Topic</button>     
+        <div class="container d-flex justify-content-center">
+            <ul class="list-group mt-5 text-white">
+                <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToThread">
+                    <div class="d-flex flex-row">
+                        <img src="../assets/userUploadedFiles/userProfile/default.png" width="100" />
+                        <div class="ml-2 topicDesc">
+                            <h6 class="mb-0">Ogivet Maither</h6>
+                            <div class="about">
+                                <span>22 Files</span>
+                                <span>Jan 21, 2020</span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToThread">
+                    <div class="d-flex flex-row">
+                        <img src="../assets/userUploadedFiles/userProfile/default.png" width="100" />
+                        <div class="ml-2 topicDesc">
+                            <h6 class="mb-0">Macan Worldgroup</h6>
+                            <div class="about">
+                                <span>62 Files</span>
+                                <span>Jan 22, 2020</span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
         </div>
     </main>
 </template>
@@ -36,13 +61,34 @@ import Header from '../components/header.vue'
   
   function displayTopic(topicJSON){
     console.log(topicJSON)
-    var textedTopic = JSON.stringify(topicJSON.data);
-    document.getElementById("topicList").innerHTML += textedTopic;
+    //var textedTopic = JSON.stringify(topicJSON.data);
   }
 
+  function goToThread() {
+    window.open('homepage.html?threadNo=1','_self');
+  }
 </script>
 
 <style scoped>
+.list-group{
+	width: 100% !important;
+}
+.list-group-item{
+	margin-top:15px;
+	cursor: pointer;
+	transition: all 0.3s ease-in-out;
+}
+.list-group-item:hover{
+	opacity: 0.8;
+}
+.about span{
+	font-size: 12px;
+	margin-right: 10px;
+}
+.topicDesc{
+    margin-left: 10px;
+}
+
 body {
     color: white;
     background-image:url("../upload/media/bg-topic.jpg");
