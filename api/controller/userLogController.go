@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 // File ini memuat function-function yang berkaitan dengan userLog
@@ -21,6 +22,7 @@ func GetUserLogUsingId(w http.ResponseWriter, r *http.Request) {
 
 	// Query ke SQL
 	query := "SELECT * FROM userlog WHERE userId = '" + userId + "'"
+	log.Println(query)
 
 	rows, err := db.Query(query)
 
@@ -43,7 +45,7 @@ func GetUserLogUsingId(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	sendSuccessResponse(w, "Success", userLogList)
+	sendSuccessResponse(w, "Successfully retrieved userlog", userLogList)
 }
 
 // Insert/create sebuah userLog baru
@@ -60,20 +62,29 @@ func InsertUserLog(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	userId, _ := strconv.Atoi(r.Form.Get("userId"))
-	logType := r.Form.Get("logType")
-	ipAddress := r.Form.Get("ipAddress")
+
+	userLogFactory := model.NewUserLogModelFactory()
+
+	// Create a new user log instance
+	newUserLog := userLogFactory.CreateUserLog(
+		0,
+		userId,
+		r.Form.Get("logType"),
+		r.Form.Get("ipAddress"),
+		time.Now(),
+	)
 
 	// Query ke SQL
 	_, errQuery := db.Exec("INSERT INTO userlog(userId,logType,ipAddress)values(?,?,?)",
-		userId,
-		logType,
-		ipAddress,
+		newUserLog.UserID,
+		newUserLog.LogType,
+		newUserLog.IpAddress,
 	)
 
 	if errQuery == nil {
-		sendSuccessResponse(w, "Success", nil)
+		sendSuccessResponse(w, "Successfully inserted new userlog", nil)
 	} else {
 		log.Println(errQuery)
-		sendErrorResponse(w, "Failed to insert userLog")
+		sendErrorResponse(w, "Failed to insert userLog to database")
 	}
 }

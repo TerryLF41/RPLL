@@ -2,10 +2,9 @@ package controller
 
 import (
 	"RPLL/api/model"
-	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -15,41 +14,30 @@ func GetAllTopic(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
 
-	query := "SELECT * FROM topic"
-
-	rows, err := db.Query(query)
-	if err != nil {
-		log.Println(err)
-		sendErrorResponse(w, "Something went wrong, please try again")
-		return
-	}
-
-	var topic model.Topic
 	var topicList []model.Topic
-	for rows.Next() {
-		if err := rows.Scan(
-			&topic.TopicNo, &topic.TopicTitle, &topic.TopicDesc, &topic.CreateDate, &topic.BanStatus); err != nil {
-			log.Println(err)
-			return
-		} else {
-			topicList = append(topicList, topic)
-		}
-	}
 
-	if len(topicList) > 1 {
-		var response model.GenericResponse
-		response.Status = 200
-		response.Message = "Success"
-		response.Data = topicList
-		json.NewEncoder(w).Encode(response)
+	searchType := r.URL.Query().Get("orderBy")
+
+	context := &SearchContext{}
+
+	if searchType == "time" {
+		// Cari dari topic yang paling baru dibuat
+		context.SetStrategy(&LatestTopicSearchStrategy{})
+		topicList = context.PerformSearch("SELECT * FROM topic ORDER BY createDate DESC")
 	} else {
-		var response model.ErrorResponse
-		response.Status = 400
-		response.Message = "Error"
-		json.NewEncoder(w).Encode(response)
+		// Cari dari dengan jumlah thread terbanyak
+		// TODO : Ganti query agar bisa cari berdasarkan jumlah thread terbanyak
+		context.SetStrategy(&PopularitySearchStrategy{})
+		topicList = context.PerformSearch("SELECT * FROM topic ORDER BY createDate ASC")
 	}
 
-	w.Header().Set("Content-Type", "application/json")
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
+	if len(topicList) >= 1 {
+		sendSuccessResponse(w, "Successfully retrieved topic", topicList)
+	} else {
+		sendErrorResponse(w, "Failed to get data from the database")
+	}
 }
 
 // Insert sebuah topic baru
@@ -63,26 +51,31 @@ func InsertTopic(w http.ResponseWriter, r *http.Request) {
 		sendErrorResponse(w, "Failed")
 		return
 	}
-	topicTitle, _ := strconv.Atoi(r.Form.Get("topicTitle"))
-	topicDesc, _ := strconv.Atoi(r.Form.Get("topicDesc"))
 
-	_, errQuery := db.Exec("INSERT INTO transactions(topicTitle, topicDesc) values (?,?)",
-		topicTitle,
-		topicDesc,
+	topicFactory := model.NewTopicModelFactory()
+
+	// Create a new topic instance
+	newTopic := topicFactory.CreateTopic(
+		0,
+		r.Form.Get("topicTitle"),
+		r.Form.Get("topicDesc"),
+		time.Now(),
+		false,
+		nil,
 	)
 
+	_, errQuery := db.Exec("INSERT INTO transactions(topicTitle, topicDesc) values (?,?)",
+		newTopic.TopicTitle,
+		newTopic.TopicDesc,
+	)
+
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
 	if errQuery == nil {
-		var response model.GenericResponse
-		response.Status = 200
-		response.Message = "Success"
-		json.NewEncoder(w).Encode(response)
+		sendSuccessResponse(w, "Successfully inserted new topic", nil)
 	} else {
-		var response model.ErrorResponse
-		response.Status = 400
-		response.Message = "Failed to insert new topic"
-		json.NewEncoder(w).Encode(response)
+		sendErrorResponse(w, "Failed to insert topic to database")
 	}
-	w.Header().Set("Content-Type", "application/json")
 }
 
 // Update judul/title sebuah topic
@@ -111,19 +104,13 @@ func UpdateTopicTitle(w http.ResponseWriter, r *http.Request) {
 		topicNo,
 	)
 
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
 	if errQuery == nil {
-		var response model.GenericResponse
-		response.Status = 200
-		response.Message = "Success"
-		json.NewEncoder(w).Encode(response)
+		sendSuccessResponse(w, "Successfully updated topic title", nil)
 	} else {
-		var response model.ErrorResponse
-		response.Status = 400
-		response.Message = "Failed to update topic title"
-		json.NewEncoder(w).Encode(response)
+		sendErrorResponse(w, "Failed to update topic title")
 	}
-
-	w.Header().Set("Content-Type", "application/json")
 }
 
 // Update description sebuah topic
@@ -152,19 +139,13 @@ func UpdateTopicDescription(w http.ResponseWriter, r *http.Request) {
 		topicNo,
 	)
 
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
 	if errQuery == nil {
-		var response model.GenericResponse
-		response.Status = 200
-		response.Message = "Success"
-		json.NewEncoder(w).Encode(response)
+		sendSuccessResponse(w, "Successfully updated topic description", nil)
 	} else {
-		var response model.ErrorResponse
-		response.Status = 400
-		response.Message = "Failed to update topic description"
-		json.NewEncoder(w).Encode(response)
+		sendErrorResponse(w, "Failed to update topic description")
 	}
-
-	w.Header().Set("Content-Type", "application/json")
 }
 
 // Update status topic menjadi 0(unbanned) atau 1(banned)
@@ -194,19 +175,13 @@ func UpdateTopicStatus(w http.ResponseWriter, r *http.Request) {
 		topicNo,
 	)
 
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
 	if errQuery == nil {
-		var response model.GenericResponse
-		response.Status = 200
-		response.Message = "Success"
-		json.NewEncoder(w).Encode(response)
+		sendSuccessResponse(w, "Successfully updated topic ban status", nil)
 	} else {
-		var response model.ErrorResponse
-		response.Status = 400
-		response.Message = "Failed to update topic ban status"
-		json.NewEncoder(w).Encode(response)
+		sendErrorResponse(w, "Failed to update topic ban status")
 	}
-
-	w.Header().Set("Content-Type", "application/json")
 }
 
 // Delete sebuah topic
@@ -225,16 +200,11 @@ func DeleteTopic(w http.ResponseWriter, r *http.Request) {
 		topicNo,
 	)
 
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
 	if errQuery == nil {
-		var response model.GenericResponse
-		response.Status = 200
-		response.Message = "Success"
-		json.NewEncoder(w).Encode(response)
+		sendSuccessResponse(w, "Successfully deleted topic", nil)
 	} else {
-		var response model.ErrorResponse
-		response.Status = 400
-		response.Message = "Failed to delete topic"
-		json.NewEncoder(w).Encode(response)
+		sendErrorResponse(w, "Failed to delete topic")
 	}
-	w.Header().Set("Content-Type", "application/json")
 }

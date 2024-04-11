@@ -2,10 +2,10 @@ package controller
 
 import (
 	"RPLL/api/model"
-	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 // Get semua post berdasarkan threadNo
@@ -38,21 +38,13 @@ func GetAllPostByThreadNo(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	w.Header().Set("Content-Type", "application/json")
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
 	if len(postList) >= 1 {
-		var response model.GenericResponse
-		response.Status = 200
-		response.Message = "Success"
-		response.Data = postList
-		json.NewEncoder(w).Encode(response)
+		sendSuccessResponse(w, "Successfully retrieved post", postList)
 	} else {
-		var response model.ErrorResponse
-		response.Status = 400
-		response.Message = "Failed to get data from the database"
-		json.NewEncoder(w).Encode(response)
+		sendErrorResponse(w, "Failed to retrieve post")
 	}
-
-	json.NewEncoder(w).Encode(postList)
 }
 
 // Insert sebuah post baru
@@ -69,23 +61,36 @@ func InsertPost(w http.ResponseWriter, r *http.Request) {
 	threadNo, _ := strconv.Atoi(r.Form.Get("threadNo"))
 	userId, _ := strconv.Atoi(r.Form.Get("userId"))
 	replyTo, _ := strconv.Atoi(r.Form.Get("replyTo"))
-	postText := r.Form.Get("postText")
-	postImage := r.Form.Get("postImage")
 
-	// Query ke SQL
-	_, errQuery := db.Exec("INSERT INTO post(threadNo,userId,replyTo,postText,postImage)values(?,?,?,?,?)",
+	postFactory := model.NewPostModelFactory()
+
+	// Create a new post instance
+	newPost := postFactory.CreatePost(
+		0,
 		threadNo,
 		userId,
 		replyTo,
-		postText,
-		postImage,
+		r.Form.Get("postText"),
+		r.Form.Get("postImage"),
+		time.Now(),
+		false,
 	)
 
+	// Query ke SQL
+	_, errQuery := db.Exec("INSERT INTO post(threadNo,userId,replyTo,postText,postImage)values(?,?,?,?,?)",
+		newPost.ThreadNo,
+		newPost.UserId,
+		newPost.ReplyTo,
+		newPost.PostText,
+		newPost.PostImage,
+	)
+
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
 	if errQuery == nil {
-		sendSuccessResponse(w, "Success", nil)
+		sendSuccessResponse(w, "Successfully inserted new post", nil)
 	} else {
-		log.Println(errQuery)
-		sendErrorResponse(w, "Failed to insert post")
+		sendErrorResponse(w, "Failed to insert post to database")
 	}
 }
 
@@ -114,17 +119,11 @@ func UpdatePostBanStatus(w http.ResponseWriter, r *http.Request) {
 		postNo,
 	)
 
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
 	if errQuery == nil {
-		var response model.GenericResponse
-		response.Status = 200
-		response.Message = "Success"
-		json.NewEncoder(w).Encode(response)
+		sendSuccessResponse(w, "Successfully updated post ban status", nil)
 	} else {
-		var response model.ErrorResponse
-		response.Status = 400
-		response.Message = "Failed to update post ban status"
-		json.NewEncoder(w).Encode(response)
+		sendErrorResponse(w, "Failed to update post ban status")
 	}
-
-	w.Header().Set("Content-Type", "application/json")
 }

@@ -2,10 +2,10 @@ package controller
 
 import (
 	"RPLL/api/model"
-	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -26,7 +26,7 @@ func GetAllThreads(w http.ResponseWriter, r *http.Request) {
 	var thread model.Thread
 	var threadList []model.Thread
 	for rows.Next() {
-		if err := rows.Scan(&thread.ThreadNo, &thread.ThreadTitle, &thread.ThreadDesc,
+		if err := rows.Scan(&thread.ThreadNo, &thread.TopicNo, &thread.ThreadTitle, &thread.ThreadDesc,
 			&thread.CreateDate, &thread.BanStatus); err != nil {
 			log.Println(err)
 			return
@@ -35,21 +35,13 @@ func GetAllThreads(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	w.Header().Set("Content-Type", "application/json")
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
 	if len(threadList) >= 1 {
-		var response model.GenericResponse
-		response.Status = 200
-		response.Message = "Success"
-		response.Data = threadList
-		json.NewEncoder(w).Encode(response)
+		sendSuccessResponse(w, "Successfully retrieved thread", threadList)
 	} else {
-		var response model.ErrorResponse
-		response.Status = 400
-		response.Message = "Failed to get data from the database"
-		json.NewEncoder(w).Encode(response)
+		sendErrorResponse(w, "Failed to retrieve thread")
 	}
-
-	json.NewEncoder(w).Encode(threadList)
 }
 
 // Insert sebuah thread baru
@@ -62,29 +54,34 @@ func InsertThread(w http.ResponseWriter, r *http.Request) {
 		sendErrorResponse(w, "Failed to insert a new thread")
 		return
 	}
-	threadTitle := r.Form.Get("title")
 	topicNo, _ := strconv.Atoi(r.Form.Get("topik_No"))
-	threadDesc := r.Form.Get("deskripsi")
 
-	_, errQuery := db.Exec("INSERT INTO thread(threadTitle, topicNo, threadDesc) values (?,?,?)",
-		threadTitle,
+	threadFactory := model.NewThreadModelFactory()
+
+	// Create a new thread instance
+	newThread := threadFactory.CreateThread(
+		1,
 		topicNo,
-		threadDesc,
+		r.Form.Get("title"),
+		r.Form.Get("deskripsi"),
+		time.Now(),
+		false,
+		nil,
 	)
 
-	if errQuery == nil {
-		var response model.GenericResponse
-		response.Status = 200
-		response.Message = "Success"
-		json.NewEncoder(w).Encode(response)
-	} else {
-		var response model.ErrorResponse
-		response.Status = 400
-		response.Message = "Failed to insert new topic"
-		json.NewEncoder(w).Encode(response)
-	}
+	_, errQuery := db.Exec("INSERT INTO thread(threadTitle, topicNo, threadDesc) values (?,?,?)",
+		newThread.ThreadTitle,
+		newThread.TopicNo,
+		newThread.ThreadDesc,
+	)
 
-	w.Header().Set("Content-Type", "application/json")
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
+	if errQuery == nil {
+		sendSuccessResponse(w, "Successfully inserted new thread", nil)
+	} else {
+		sendErrorResponse(w, "Failed to insert thread to database")
+	}
 }
 
 // Update judul/title sebuah thread
@@ -112,19 +109,13 @@ func UpdateThreadTitle(w http.ResponseWriter, r *http.Request) {
 		threadId,
 	)
 
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
 	if errQuery == nil {
-		var response model.GenericResponse
-		response.Status = 200
-		response.Message = "Success"
-		json.NewEncoder(w).Encode(response)
+		sendSuccessResponse(w, "Successfully updated thread title", nil)
 	} else {
-		var response model.ErrorResponse
-		response.Status = 400
-		response.Message = "Failed to update thread title"
-		json.NewEncoder(w).Encode(response)
+		sendErrorResponse(w, "Failed to update thread title")
 	}
-
-	w.Header().Set("Content-Type", "application/json")
 }
 
 // Update description sebuah thread
@@ -152,19 +143,13 @@ func UpdateThreadDesc(w http.ResponseWriter, r *http.Request) {
 		threadId,
 	)
 
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
 	if errQuery == nil {
-		var response model.GenericResponse
-		response.Status = 200
-		response.Message = "Success"
-		json.NewEncoder(w).Encode(response)
+		sendSuccessResponse(w, "Successfully updated thread description", nil)
 	} else {
-		var response model.ErrorResponse
-		response.Status = 400
-		response.Message = "Failed to update thread description"
-		json.NewEncoder(w).Encode(response)
+		sendErrorResponse(w, "Failed to update thread description")
 	}
-
-	w.Header().Set("Content-Type", "application/json")
 }
 
 // Update status thread menjadi 0(unbanned) atau 1(banned)
@@ -193,19 +178,13 @@ func UpdateThreadBanStatus(w http.ResponseWriter, r *http.Request) {
 		threadId,
 	)
 
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
 	if errQuery == nil {
-		var response model.GenericResponse
-		response.Status = 200
-		response.Message = "Success"
-		json.NewEncoder(w).Encode(response)
+		sendSuccessResponse(w, "Successfully updated thread ban status", nil)
 	} else {
-		var response model.ErrorResponse
-		response.Status = 400
-		response.Message = "Failed to update thread ban status"
-		json.NewEncoder(w).Encode(response)
+		sendErrorResponse(w, "Failed to update thread ban status")
 	}
-
-	w.Header().Set("Content-Type", "application/json")
 }
 
 // Delete sebuah thread
@@ -224,17 +203,11 @@ func DeleteThread(w http.ResponseWriter, r *http.Request) {
 		threadId,
 	)
 
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
 	if errQuery == nil {
-		var response model.GenericResponse
-		response.Status = 200
-		response.Message = "Success"
-		json.NewEncoder(w).Encode(response)
+		sendSuccessResponse(w, "Successfully deleted thread", nil)
 	} else {
-		var response model.ErrorResponse
-		response.Status = 400
-		response.Message = "Failed to delete thread"
-		json.NewEncoder(w).Encode(response)
+		sendErrorResponse(w, "Failed to delete thread")
 	}
-
-	w.Header().Set("Content-Type", "application/json")
 }

@@ -18,12 +18,6 @@ func main() {
 	//0 = User biasa
 	//1 = Admin
 
-	/*
-		TODO
-		- Handler untuk user
-		- Handler untuk report post
-	*/
-
 	// Handler untuk user
 	router.HandleFunc("/register", controller.RegisterUser).Methods("POST")
 	router.HandleFunc("/login", controller.Login).Methods("POST")
@@ -55,14 +49,12 @@ func main() {
 	router.HandleFunc("/post", controller.UpdatePostBanStatus).Methods("PUT")
 
 	corsHandler := cors.New(cors.Options{
-		AllowedOrigins:   []string{"localhost:8181"},
+		AllowedOrigins:   []string{"http://localhost:5173", "http://localhost:8181"},
 		AllowedMethods:   []string{"POST", "GET", "PUT", "DELETE"},
 		AllowCredentials: true,
 	})
 
 	handler := corsHandler.Handler(router)
-
-	http.Handle("/", router)
 
 	fmt.Println("Connected to port 8181")
 	log.Println("Connected to port 8181")
