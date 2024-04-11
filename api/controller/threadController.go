@@ -26,7 +26,7 @@ func GetAllThreads(w http.ResponseWriter, r *http.Request) {
 	var thread model.Thread
 	var threadList []model.Thread
 	for rows.Next() {
-		if err := rows.Scan(&thread.ThreadNo, &thread.TopicNo, &thread.ThreadTitle, &thread.ThreadPicture,
+		if err := rows.Scan(&thread.ThreadNo, &thread.TopicNo, &thread.ThreadTitle,
 			&thread.ThreadDesc, &thread.CreateDate, &thread.BanStatus); err != nil {
 			log.Println(err)
 			return
@@ -63,7 +63,6 @@ func InsertThread(w http.ResponseWriter, r *http.Request) {
 		1,
 		topicNo,
 		r.Form.Get("title"),
-		"",
 		r.Form.Get("deskripsi"),
 		time.Now(),
 		false,
