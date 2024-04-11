@@ -10,16 +10,15 @@ import { onMounted } from 'vue';
                 <Header />
             </nav>
             <h1>Daftar Topik</h1>
-            <button type="button" @click="getTopic">Get Topic</button>     
             <div class="container d-flex justify-content-center" onload="getTopic()">
                 <ul class="list-group mt-5 text-white">
-                    <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToThread(item.topicNo)" v-for="item in temp">
+                    <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToPost" v-for="item in temp">
                         <div class="d-flex flex-row">
-                            <img src="../assets/userUploadedFiles/userProfile/default.png" width="100" />
+                            <!-- <img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /> -->
                             <div class="ml-2 topicDesc">
-                                <h6 class="mb-0">{{ item.topicTitle }}</h6>
+                                <h6 class="mb-0">{{ item.threadTitle }}</h6>
                                 <div class="about">
-                                    <span>{{ item.topicDesc }}</span><br>
+                                    <span>{{ item.threadDesc }}</span><br>
                                     <span>{{ item.createDate }}</span>
                                 </div>
                             </div>
@@ -32,8 +31,12 @@ import { onMounted } from 'vue';
 
 <script setup>
 const temp = ref([]);
-  async function getTopic() {
-    const response = await fetch('http://localhost:8181/topic', {
+  async function getThread() {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    var thread = urlParams.get('threadNo')
+    var query = 'http://localhost:8181/thread/' + thread;
+    const response = await fetch(query, {
         method: "GET",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded"
@@ -45,18 +48,16 @@ const temp = ref([]);
         for (const key in data.data) {
             temp.value.push(data.data[key]);
         }
-        console.log(temp.value);
       } else {
         console.error("Failed!", data.message);
       }
     }
   }
 
-  onMounted(getTopic);
+  onMounted(getThread);
 
-  function goToThread(threadNo) {
-    var url = 'thread.html?threadNo='+threadNo;
-    window.open(url,'_self');
+  function goToPost() {
+    window.open('homepage.html?postNo=1','_self');
   }
 </script>
 
