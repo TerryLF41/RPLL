@@ -21,7 +21,7 @@ func (rs *LatestTopicSearchStrategy) Search(query string) []model.Topic {
 	var topicList []model.Topic
 	for rows.Next() {
 		if err := rows.Scan(
-			&topic.TopicNo, &topic.TopicTitle, &topic.TopicDesc, &topic.CreateDate, &topic.BanStatus); err != nil {
+			&topic.TopicNo, &topic.TopicTitle, &topic.TopicDesc, &topic.TopicPicture, &topic.CreateDate, &topic.BanStatus); err != nil {
 			log.Println(err)
 			return nil
 		} else {
