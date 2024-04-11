@@ -1,5 +1,7 @@
 <script>
 import Header from '../components/header.vue'
+import { ref } from 'vue';
+import { onMounted } from 'vue';
 </script>
 
 <template>
@@ -16,10 +18,10 @@ import Header from '../components/header.vue'
                         <div class="d-flex flex-row">
                             <img src="../assets/userUploadedFiles/userProfile/default.png" width="100" />
                             <div class="ml-2 topicDesc">
-                                <h6 class="mb-0">{{ item.topicDesc }}</h6>
+                                <h6 class="mb-0">{{ item.topicTitle }}</h6>
                                 <div class="about">
-                                    <span>22 Files</span>
-                                    <span>Jan 21, 2020</span>
+                                    <span>{{ item.topicDesc }}</span><br>
+                                    <span>{{ item.createDate }}</span>
                                 </div>
                             </div>
                         </div>
@@ -43,7 +45,7 @@ import Header from '../components/header.vue'
 </template>
 
 <script setup>
-var temp = new Array();
+const temp = ref([]);
   async function getTopic() {
     const response = await fetch('http://localhost:8181/topic', {
         method: "GET",
@@ -55,22 +57,22 @@ var temp = new Array();
       const data = await response.json()
       if (data.status == '200'){
         for (const key in data.data) {
-            temp.push(data.data[key]);
+            temp.value.push(data.data[key]);
         }
-        console.log(temp);
+        console.log(temp.value);
       } else {
         console.error("Failed!", data.message);
       }
     }
   }
 
-  window.onload = displayTopic();
+  onMounted(getTopic);
   
-  function displayTopic(){
-    getTopic();
-    console.log(temp);
-    //var textedTopic = JSON.stringify(topicJSON.data);
-  }
+//   function displayTopic(){
+//     getTopic();
+//     console.log(temp);
+//     //var textedTopic = JSON.stringify(topicJSON.data);
+//   }
 
   function goToThread() {
     window.open('homepage.html?threadNo=1','_self');
