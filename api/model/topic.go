@@ -6,30 +6,30 @@ import "time"
 type Topic struct {
 	TopicNo      int       `json:"topicNo"`
 	TopicTitle   string    `json:"topicTitle"`
-	TopicPicture string    `json:"topicPicture"`
 	TopicDesc    string    `json:"topicDesc"`
 	CreateDate   time.Time `json:"createDate"`
 	BanStatus    bool      `json:"banstatus"`
+	TopicPicture string    `json:"topicPicture"`
 	ThreadList   []Thread  `json:"threadList,omitempty"`
 }
 
 // TopicModelFactory interface defines methods for topic model
 type TopicModelFactory interface {
-	CreateTopic(topicNo int, topicTitle, topicDesc, topicPicture string, createDate time.Time, banStatus bool, threadList []Thread) *Topic
+	CreateTopic(topicNo int, topicTitle, topicDesc string, createDate time.Time, banStatus bool, topicPicture string, threadList []Thread) *Topic
 }
 
 // ConcreteTopicModelFactory struct implements TopicModelFactory interface
 type ConcreteTopicModelFactory struct{}
 
 // CreateTopic creates a new topic instance
-func (factory *ConcreteTopicModelFactory) CreateTopic(topicNo int, topicTitle string, topicDesc, topicPicture string, createDate time.Time, banStatus bool, threadList []Thread) *Topic {
+func (factory *ConcreteTopicModelFactory) CreateTopic(topicNo int, topicTitle string, topicDesc string, createDate time.Time, banStatus bool, topicPicture string, threadList []Thread) *Topic {
 	return &Topic{
 		TopicNo:      topicNo,
 		TopicTitle:   topicTitle,
-		TopicPicture: topicPicture,
 		TopicDesc:    topicDesc,
 		CreateDate:   createDate,
 		BanStatus:    banStatus,
+		TopicPicture: topicPicture,
 		ThreadList:   threadList,
 	}
 }

@@ -106,10 +106,10 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 		passwordHash,
 		email,
 		"",
-		"",
 		time.Now(),
 		0,
 		false,
+		"",
 		nil,
 	)
 
