@@ -72,11 +72,14 @@ import Header from '../components/header.vue'
 <style scoped>
 .list-group{
 	width: 100% !important;
+    border-radius: 0;
 }
 .list-group-item{
 	margin-top:15px;
 	cursor: pointer;
+    border-style: none;
 	transition: all 0.3s ease-in-out;
+    background-color: #ADA7A7;
 }
 .list-group-item:hover{
 	opacity: 0.8;
