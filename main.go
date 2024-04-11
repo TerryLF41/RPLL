@@ -37,6 +37,7 @@ func main() {
 
 	// Handler untuk thread
 	router.HandleFunc("/thread", controller.GetAllThreads).Methods("GET")
+	router.HandleFunc("/thread/{topicno}", controller.GetTopicThreads).Methods("GET")
 	router.HandleFunc("/thread", controller.InsertThread).Methods("POST")
 	router.HandleFunc("/thread/Title/{threadNo}", controller.UpdateThreadTitle).Methods("PUT")
 	router.HandleFunc("/thread/Desc/{threadNo}", controller.UpdateThreadDesc).Methods("PUT")
