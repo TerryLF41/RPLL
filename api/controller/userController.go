@@ -56,8 +56,17 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			sendErrorResponse(w, "User is banned")
 			return
 		}
-		generateToken(w, user.UserID, user.Username, user.UserType)
-		sendSuccessResponse(w, "Login Success", nil)
+		userData := map[string]interface{}{
+			"username":       user.Username,
+			"email":          user.Email,
+			"profilePicture": user.ProfilePicture,
+			"profileDesc":    user.ProfileDesc,
+			"userType":       user.UserType,
+			"isBanned":       isbanned,
+		}
+
+		token := generateToken(w, user.UserID, user.Username, user.UserType)
+		sendSuccessLoginResponse(w, "Login Success", userData, token)
 	}
 }
 

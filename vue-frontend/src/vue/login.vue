@@ -41,15 +41,15 @@ async function login() {
     const data = await response.json();
     console.log(data);
     if (data.status == '200') {
-      console.log("Login successful!");
-      alert('Login successful!');
-
       // Set persistent cookies if remember me is checked
       if (rememberMe) {
         setCookie('email', email, 7); // Set email cookie for 7 days
         setCookie('password', password, 7); // Set password cookie for 7 days
       }
 
+      console.log("Login successful!");
+      alert('Login successful!');
+      
       window.open('/homepage.html', '_self');
     } else {
       console.error("Login failed:", data.message);

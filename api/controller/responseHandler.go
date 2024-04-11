@@ -41,3 +41,22 @@ func sendSuccessResponse(w http.ResponseWriter, message string, value interface{
 		log.Println(err)
 	}
 }
+
+func sendSuccessLoginResponse(w http.ResponseWriter, message string, data interface{}, token string) {
+	response := map[string]interface{}{
+		"status":  "200",
+		"message": message,
+		"data":    data,
+		"token":   token, // Include the JWT token in the response
+	}
+
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		sendErrorResponse(w, "Failed to marshal JSON response")
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(jsonResponse)
+}
