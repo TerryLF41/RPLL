@@ -63,6 +63,7 @@ func InsertThread(w http.ResponseWriter, r *http.Request) {
 		1,
 		topicNo,
 		r.Form.Get("title"),
+		"",
 		r.Form.Get("deskripsi"),
 		time.Now(),
 		false,

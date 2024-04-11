@@ -58,6 +58,7 @@ func InsertTopic(w http.ResponseWriter, r *http.Request) {
 	newTopic := topicFactory.CreateTopic(
 		0,
 		r.Form.Get("topicTitle"),
+		"",
 		r.Form.Get("topicDesc"),
 		time.Now(),
 		false,
