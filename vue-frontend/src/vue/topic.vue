@@ -13,7 +13,7 @@ import { onMounted } from 'vue';
             <button type="button" @click="getTopic">Get Topic</button>     
             <div class="container d-flex justify-content-center" onload="getTopic()">
                 <ul class="list-group mt-5 text-white">
-                    <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToThread" v-for="item in temp">
+                    <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToThread(item.topicNo)" v-for="item in temp">
                         <div class="d-flex flex-row">
                             <img src="../assets/userUploadedFiles/userProfile/default.png" width="100" />
                             <div class="ml-2 topicDesc">
@@ -54,8 +54,9 @@ const temp = ref([]);
 
   onMounted(getTopic);
 
-  function goToThread() {
-    window.open('homepage.html?threadNo=1','_self');
+  function goToThread(threadNo) {
+    var url = 'homepage.html?threadNo='+threadNo;
+    window.open(url,'_self');
   }
 </script>
 
