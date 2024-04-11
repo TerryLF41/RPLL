@@ -55,7 +55,7 @@ const temp = ref([]);
   onMounted(getTopic);
 
   function goToThread(threadNo) {
-    var url = 'homepage.html?threadNo='+threadNo;
+    var url = 'thread.html?threadNo='+threadNo;
     window.open(url,'_self');
   }
 </script>

@@ -32,7 +32,9 @@ import { onMounted } from 'vue';
 <script setup>
 const temp = ref([]);
   async function getThread() {
-    const response = await fetch('http://localhost:8181/thread', {
+    var thread = URLSearchParams.get("threadNo");
+    var query = 'http://localhost:8181/thread/' + thread;
+    const response = await fetch(query, {
         method: "GET",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded"
