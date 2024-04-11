@@ -32,7 +32,9 @@ import { onMounted } from 'vue';
 <script setup>
 const temp = ref([]);
   async function getThread() {
-    var thread = URLSearchParams.get("threadNo");
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    var thread = urlParams.get('threadNo')
     var query = 'http://localhost:8181/thread/' + thread;
     const response = await fetch(query, {
         method: "GET",
@@ -46,7 +48,6 @@ const temp = ref([]);
         for (const key in data.data) {
             temp.value.push(data.data[key]);
         }
-        console.log(temp.value);
       } else {
         console.error("Failed!", data.message);
       }
