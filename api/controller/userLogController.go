@@ -22,6 +22,7 @@ func GetUserLogUsingId(w http.ResponseWriter, r *http.Request) {
 
 	// Query ke SQL
 	query := "SELECT * FROM userlog WHERE userId = '" + userId + "'"
+	log.Println(query)
 
 	rows, err := db.Query(query)
 

@@ -41,7 +41,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	// Query berdasarkan pasangan email dan password yang sama dengan input user
 	query := "SELECT userId,userName,email,profileDesc,userType,banstatus FROM user WHERE Email ='" + email + "' && Password='" + passwordHash + "'"
-	log.Println(query)
 	var user model.User
 	err1 := db.QueryRow(query).Scan(&user.UserID, &user.Username, &user.Email, &user.ProfileDesc, &user.UserType, &isbanned)
 	if err1 != nil {

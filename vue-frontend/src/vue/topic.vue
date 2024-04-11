@@ -7,15 +7,17 @@ import Header from '../components/header.vue'
         <nav class="navbar">
             <Header />
         </nav>
-        <h1>Welcome to</h1>
-        <img src='../assets/background/chatters-logo.png'>
+        <h1>Daftar Topik</h1>
         <button type="button" @click="getTopic">Get Topic</button>
+        <div id="topicList">
+
+        </div>
     </main>
 </template>
 
 <script setup>
   async function getTopic() {
-    const response = await fetch('http://localhost:8181/topic?orderBy=time', {
+    const response = await fetch('http://localhost:8181/topic', {
         method: "GET",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded"
@@ -23,18 +25,21 @@ import Header from '../components/header.vue'
     });
     if (response.ok) {
       const data = await response.json()
-      console.log(data)
       if (data.status == '200'){
             console.log(data);
+            displayTopic(data)
       } else {
             console.error("Failed!", data.message);
       }
     }
   }
   
-  function goToRegister() {
-    window.open('register.html','_self');
+  function displayTopic(topicJSON){
+    console.log(topicJSON)
+    var textedTopic = JSON.stringify(topicJSON.data);
+    document.getElementById("topicList").innerHTML += textedTopic;
   }
+
 </script>
 
 <style scoped>
@@ -45,9 +50,13 @@ body {
     background-size: cover;
 }
 main {
-    min-height: 66vh;
-    margin-left: 2.5%;
-    margin-right:5%;
+    min-height: 80vh;
+    width: 66%;
+    margin: auto;
+    padding: 0;
+}
+h1,h2,#desc {
+    text-align: center;
 }
 .list{
     padding: 5px;
@@ -56,12 +65,12 @@ main {
     border: 2px solid grey;
     border-radius: 10px;
 }
-   table tr td a {
-     margin-top: 10px;
-     display: block;
-     width: 100%;
-     height: 100%;
-     text-decoration: none;
+table tr td a {
+    margin-top: 10px;
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
 }
 a{
     color: white;

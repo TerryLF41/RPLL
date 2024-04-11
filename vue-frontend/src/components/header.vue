@@ -4,9 +4,9 @@
         <div class="menu">
             <li><a href="topic.html">Catalog</a></li>
             <li><a href="about.php">About</a></li>
-            <li><a href="function/logout.php">Log Out</a></li>
+            <li><a href="login.html">Log Out</a></li>
             <div class="profile-picture">
-                <a href="editProfile.html"><img class="profile-picture"></a>
+                <a href="editProfile.html"><img class="profile-picture" src="../assets/userUploadedFiles/userProfile/default.png"></a>
             </div>
         </div> 
     </ul>
