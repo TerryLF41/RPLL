@@ -11,12 +11,12 @@ import Header from '../components/header.vue'
             <button type="button" @click="getTopic">Get Topic</button>     
             <div class="container d-flex justify-content-center" onload="getTopic()">
                 <ul class="list-group mt-5 text-white">
-                    {% for item in temp %}
-                    <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToThread">
+                    <!-- {% for item in temp %} -->
+                    <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToThread" v-for="item in temp">
                         <div class="d-flex flex-row">
                             <img src="../assets/userUploadedFiles/userProfile/default.png" width="100" />
                             <div class="ml-2 topicDesc">
-                                <h6 class="mb-0">aaaaaaaaaa</h6>
+                                <h6 class="mb-0">{{ item.topicDesc }}</h6>
                                 <div class="about">
                                     <span>22 Files</span>
                                     <span>Jan 21, 2020</span>
@@ -24,7 +24,7 @@ import Header from '../components/header.vue'
                             </div>
                         </div>
                     </li>
-                    {% endfor %}
+                    <!-- {% endfor %} -->
                     <!-- <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToThread">
                         <div class="d-flex flex-row">
                             <img src="../assets/userUploadedFiles/userProfile/default.png" width="100" />
@@ -43,7 +43,7 @@ import Header from '../components/header.vue'
 </template>
 
 <script setup>
-const temp =[];
+var temp = new Array();
   async function getTopic() {
     const response = await fetch('http://localhost:8181/topic', {
         method: "GET",
@@ -54,27 +54,21 @@ const temp =[];
     if (response.ok) {
       const data = await response.json()
       if (data.status == '200'){
-        console.log(data.data.length)
-        temp.push(data.data)
-        console.log(temp[0])
-        // for (var x of data.data){
-            
-        // }
-
+        for (const key in data.data) {
+            temp.push(data.data[key]);
+        }
+        console.log(temp);
       } else {
-            console.error("Failed!", data.message);
+        console.error("Failed!", data.message);
       }
     }
   }
 
   window.onload = displayTopic();
-
   
   function displayTopic(){
-    const data = getTopic();
-    console.log(data.length);
-
-
+    getTopic();
+    console.log(temp);
     //var textedTopic = JSON.stringify(topicJSON.data);
   }
 
