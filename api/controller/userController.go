@@ -40,9 +40,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	var isbanned bool
 
 	// Query berdasarkan pasangan email dan password yang sama dengan input user
-	query := "SELECT userId,userName,email,profileDesc,userType,banstatus FROM user WHERE Email ='" + email + "' && Password='" + passwordHash + "'"
+	query := "SELECT userId,userName,email,profilePicture,profileDesc,userType,banstatus FROM user WHERE Email ='" + email + "' && Password='" + passwordHash + "'"
 	var user model.User
-	err1 := db.QueryRow(query).Scan(&user.UserID, &user.Username, &user.Email, &user.ProfileDesc, &user.UserType, &isbanned)
+	err1 := db.QueryRow(query).Scan(&user.UserID, &user.Username, &user.Email, &user.ProfilePicture, &user.ProfileDesc, &user.UserType, &isbanned)
 	if err1 != nil {
 		if err1 == sql.ErrNoRows {
 			sendErrorResponse(w, "Wrong login credentials")
@@ -105,6 +105,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 		username,
 		passwordHash,
 		email,
+		"",
 		"",
 		time.Now(),
 		0,
