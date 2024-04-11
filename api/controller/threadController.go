@@ -26,8 +26,8 @@ func GetAllThreads(w http.ResponseWriter, r *http.Request) {
 	var thread model.Thread
 	var threadList []model.Thread
 	for rows.Next() {
-		if err := rows.Scan(&thread.ThreadNo, &thread.TopicNo, &thread.ThreadTitle, &thread.ThreadDesc,
-			&thread.CreateDate, &thread.BanStatus); err != nil {
+		if err := rows.Scan(&thread.ThreadNo, &thread.TopicNo, &thread.ThreadTitle, &thread.ThreadPicture,
+			&thread.ThreadDesc, &thread.CreateDate, &thread.BanStatus); err != nil {
 			log.Println(err)
 			return
 		} else {
