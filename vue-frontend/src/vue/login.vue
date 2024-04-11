@@ -8,15 +8,14 @@
           <label for="password">Password</label><br>
           <input type="password" name="password" id="password" required placeholder="Input Password"><br>
           <input type="checkbox" id="remember" name="remember" value="true">Remember Me<br>
-          <button type="submit">Login</button>
+          <button type="submit" id="login">Login</button>
           <button type="button" @click="goToRegister">Register</button>
         </div>
       </form>
     </main>
   </template>
   
-  <script setup>
-
+<script setup>
   async function login() {
     var email = document.getElementById("email").value;;
     var password = document.getElementById("password").value;
@@ -47,7 +46,7 @@
   function goToRegister() {
     window.open('register.html','_self');
   }
-  </script>
+</script>
   
 
 <style scoped>

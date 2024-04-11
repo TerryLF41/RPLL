@@ -81,7 +81,5 @@ button.show {
 h2 {
     clear: both;
 }
-
-
 </style>
 

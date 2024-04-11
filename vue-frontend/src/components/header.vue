@@ -2,7 +2,7 @@
     <div class='logo'><a href='homepage.html'><img src='../assets/background/chatters-logo.png'></a></div>
     <ul class="nav-links">
         <div class="menu">
-            <li><a href="daftarTopik.php">Catalog</a></li>
+            <li><a href="topic.html">Catalog</a></li>
             <li><a href="about.php">About</a></li>
             <li><a href="function/logout.php">Log Out</a></li>
             <div class="profile-picture">

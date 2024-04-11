@@ -2,6 +2,7 @@ package controller
 
 import (
 	"RPLL/api/model"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -23,11 +24,13 @@ func GetAllTopic(w http.ResponseWriter, r *http.Request) {
 	if searchType == "time" {
 		// Cari dari topic yang paling baru dibuat
 		context.SetStrategy(&LatestTopicSearchStrategy{})
+		log.Println("time")
 		topicList = context.PerformSearch("SELECT * FROM topic ORDER BY createDate DESC")
 	} else {
 		// Cari dari dengan jumlah thread terbanyak
 		// TODO : Ganti query agar bisa cari berdasarkan jumlah thread terbanyak
 		context.SetStrategy(&PopularitySearchStrategy{})
+		log.Println("popularity")
 		topicList = context.PerformSearch("SELECT * FROM topic ORDER BY createDate ASC")
 	}
 
