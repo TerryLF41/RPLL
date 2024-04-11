@@ -13,7 +13,6 @@ import { onMounted } from 'vue';
             <button type="button" @click="getTopic">Get Topic</button>     
             <div class="container d-flex justify-content-center" onload="getTopic()">
                 <ul class="list-group mt-5 text-white">
-                    <!-- {% for item in temp %} -->
                     <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToThread" v-for="item in temp">
                         <div class="d-flex flex-row">
                             <img src="../assets/userUploadedFiles/userProfile/default.png" width="100" />
@@ -26,19 +25,6 @@ import { onMounted } from 'vue';
                             </div>
                         </div>
                     </li>
-                    <!-- {% endfor %} -->
-                    <!-- <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToThread">
-                        <div class="d-flex flex-row">
-                            <img src="../assets/userUploadedFiles/userProfile/default.png" width="100" />
-                            <div class="ml-2 topicDesc">
-                                <h6 class="mb-0">Macan Worldgroup</h6>
-                                <div class="about">
-                                    <span>62 Files</span>
-                                    <span>Jan 22, 2020</span>
-                                </div>
-                            </div>
-                        </div>
-                    </li> -->
                 </ul>
             </div>
         </main>
@@ -67,12 +53,6 @@ const temp = ref([]);
   }
 
   onMounted(getTopic);
-  
-//   function displayTopic(){
-//     getTopic();
-//     console.log(temp);
-//     //var textedTopic = JSON.stringify(topicJSON.data);
-//   }
 
   function goToThread() {
     window.open('homepage.html?threadNo=1','_self');
