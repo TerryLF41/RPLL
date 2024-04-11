@@ -3,44 +3,47 @@ import Header from '../components/header.vue'
 </script>
 
 <template>
-    <main>
-        <nav class="navbar">
-            <Header />
-        </nav>
-        <h1>Daftar Topik</h1>
-        <button type="button" @click="getTopic">Get Topic</button>     
-        <div class="container d-flex justify-content-center">
-            <ul class="list-group mt-5 text-white">
-                <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToThread">
-                    <div class="d-flex flex-row">
-                        <img src="../assets/userUploadedFiles/userProfile/default.png" width="100" />
-                        <div class="ml-2 topicDesc">
-                            <h6 class="mb-0">Ogivet Maither</h6>
-                            <div class="about">
-                                <span>22 Files</span>
-                                <span>Jan 21, 2020</span>
+        <main>
+            <nav class="navbar">
+                <Header />
+            </nav>
+            <h1>Daftar Topik</h1>
+            <button type="button" @click="getTopic">Get Topic</button>     
+            <div class="container d-flex justify-content-center" onload="getTopic()">
+                <ul class="list-group mt-5 text-white">
+                    {% for item in temp %}
+                    <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToThread">
+                        <div class="d-flex flex-row">
+                            <img src="../assets/userUploadedFiles/userProfile/default.png" width="100" />
+                            <div class="ml-2 topicDesc">
+                                <h6 class="mb-0">aaaaaaaaaa</h6>
+                                <div class="about">
+                                    <span>22 Files</span>
+                                    <span>Jan 21, 2020</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToThread">
-                    <div class="d-flex flex-row">
-                        <img src="../assets/userUploadedFiles/userProfile/default.png" width="100" />
-                        <div class="ml-2 topicDesc">
-                            <h6 class="mb-0">Macan Worldgroup</h6>
-                            <div class="about">
-                                <span>62 Files</span>
-                                <span>Jan 22, 2020</span>
+                    </li>
+                    {% endfor %}
+                    <!-- <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToThread">
+                        <div class="d-flex flex-row">
+                            <img src="../assets/userUploadedFiles/userProfile/default.png" width="100" />
+                            <div class="ml-2 topicDesc">
+                                <h6 class="mb-0">Macan Worldgroup</h6>
+                                <div class="about">
+                                    <span>62 Files</span>
+                                    <span>Jan 22, 2020</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </main>
+                    </li> -->
+                </ul>
+            </div>
+        </main>
 </template>
 
 <script setup>
+const temp =[];
   async function getTopic() {
     const response = await fetch('http://localhost:8181/topic', {
         method: "GET",
@@ -51,16 +54,27 @@ import Header from '../components/header.vue'
     if (response.ok) {
       const data = await response.json()
       if (data.status == '200'){
-            console.log(data);
-            displayTopic(data)
+        console.log(data.data.length)
+        temp.push(data.data)
+        console.log(temp[0])
+        // for (var x of data.data){
+            
+        // }
+
       } else {
             console.error("Failed!", data.message);
       }
     }
   }
+
+  window.onload = displayTopic();
+
   
-  function displayTopic(topicJSON){
-    console.log(topicJSON)
+  function displayTopic(){
+    const data = getTopic();
+    console.log(data.length);
+
+
     //var textedTopic = JSON.stringify(topicJSON.data);
   }
 
