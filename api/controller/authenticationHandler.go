@@ -2,6 +2,7 @@ package controller
 
 import (
 	"RPLL/api/model"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -14,7 +15,7 @@ var _ = godotenv.Load()
 var jwtKey = []byte(os.Getenv("JWT_TOKEN"))
 var tokenName = os.Getenv("TOKEN_NAME")
 
-func generateToken(w http.ResponseWriter, id int, name string, usertype int) {
+func generateToken(w http.ResponseWriter, id int, name string, usertype int) string {
 	tokenExpiryTime := time.Now().Add(30 * time.Minute)
 
 	claims := &model.Claim{
@@ -28,15 +29,22 @@ func generateToken(w http.ResponseWriter, id int, name string, usertype int) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	jwtToken, err := token.SignedString(jwtKey)
 	if err != nil {
-		return
+		// Handle error if token signing fails
+		// For example, log the error
+		log.Println("Error signing JWT token:", err)
+		return "" // Return empty string in case of error
 	}
+
+	// Set JWT token as a cookie in the response
 	http.SetCookie(w, &http.Cookie{
 		Name:     tokenName,
 		Value:    jwtToken,
 		Expires:  tokenExpiryTime,
-		Secure:   false,
-		HttpOnly: true,
+		Secure:   false, // Set to true if serving over HTTPS
+		HttpOnly: true,  // Ensures the cookie is not accessible via JavaScript
 	})
+
+	return jwtToken // Return the JWT token string
 }
 
 func resetUserToken(w http.ResponseWriter) {

@@ -5,29 +5,42 @@ import { onMounted } from 'vue';
 </script>
 
 <template>
-        <main>
-            <nav class="navbar">
-                <Header />
-            </nav>
-            <h1>Daftar Topik</h1>
-            <button type="button" @click="getTopic">Get Topic</button>     
-            <div class="container d-flex justify-content-center" onload="getTopic()">
-                <ul class="list-group mt-5 text-white">
-                    <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToThread(item.topicNo)" v-for="item in temp">
-                        <div class="d-flex flex-row">
-                            <img src="../assets/userUploadedFiles/userProfile/default.png" width="100" />
-                            <div class="ml-2 topicDesc">
-                                <h6 class="mb-0">{{ item.topicTitle }}</h6>
-                                <div class="about">
-                                    <span>{{ item.topicDesc }}</span><br>
-                                    <span>{{ item.createDate }}</span>
-                                </div>
+    <main>
+        <nav class="navbar">
+            <Header />
+        </nav>
+        <h1>Daftar Topik</h1>  
+        <button type="button" @click="showModal">Add New Topic</button> 
+        <div class="container d-flex justify-content-center" onload="getTopic()">
+            <ul class="list-group mt-5 text-white">
+                <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToThread(item.topicNo)" v-for="item in temp">
+                    <div class="d-flex flex-row">
+                        <img v-bind:src="item.topicPicture" width="100" />
+                        <div class="ml-2 topicDesc">
+                            <h6 class="mb-0">{{ item.topicTitle }}</h6>
+                            <div class="about">
+                                <span>{{ item.topicDesc }}</span><br>
+                                <span>{{ item.createDate }}</span>
                             </div>
                         </div>
-                    </li>
-                </ul>
-            </div>
-        </main>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </main>
+    <div class="modal-topic" id="modal">
+        <form class="form" method="POST">
+            <h2 class="title">Add New Topic</h2>
+            <label><b>Nama Topik</b></label><br>
+            <input type="text" name="topicName" id="topicName" placeholder="Input nama topik" required><br>
+            <label><b>Deskripsi</b></label><br>
+            <textarea name="topicDesc" id="topicDesc" placeholder="Input deskripsi topik" required></textarea><br>
+            <label><b>Foto Topik</b></label><br>
+            <input type="file" id="topicPicture" name="topicPicture" accept=".jpg, .jpeg, .png">
+            <button type="submit" id="submit" @click="postTopic">Submit</button>
+            <button type="reset" id="cancel" @click="closeModal">Cancel</button>
+        </form>
+    </div>
 </template>
 
 <script setup>
@@ -45,9 +58,8 @@ const temp = ref([]);
         for (const key in data.data) {
             temp.value.push(data.data[key]);
         }
-        console.log(temp.value);
       } else {
-        console.error("Failed!", data.message);
+            console.error("Failed!", data.message);
       }
     }
   }
@@ -55,9 +67,71 @@ const temp = ref([]);
   onMounted(getTopic);
 
   function goToThread(threadNo) {
-    var url = 'thread.html?threadNo='+threadNo;
+    var url = 'thread.html?topicNo='+threadNo;
     window.open(url,'_self');
   }
+
+  // Post topic
+  async function postTopic() {
+    // Ambil data dari form
+    var topicName = document.getElementById("topicName").value;
+    var topicDesc = document.getElementById("topicDesc").value;
+
+    // Handle gambar yang diupload
+    var fileInput = document.getElementById('topicPicture');
+
+    // Buat path url untuk image yang akan diupload ke database
+    var urlTopicPicture = "../src/assets/userUploadedFiles/topicPicture/"
+
+    // Cek apakah input file kosong, kalau kosong, kasih path ke foto default
+    if(fileInput.files.length == 0){
+        urlTopicPicture += "default.png"
+    } else {
+        // Ambil nama file yang diupload
+        var selectedFile = fileInput.files[0].name;
+        urlTopicPicture += selectedFile
+    }
+    const response = fetch('http://localhost:8181/topic', {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },    
+        body: new URLSearchParams({
+            'topicTitle': topicName,
+            'topicDesc': topicDesc,
+            'topicPicture': urlTopicPicture
+        })
+    })
+    if (response.ok) {
+        const data = response.json()
+      if (data.status == '200'){
+        alert("Topic berhasil ditambahkan!")
+      } else {
+        console.error("Failed!", data.message);
+        alert("Gagal mengajukan request topic!")
+      }
+    }
+  }
+
+    // Kode untuk modal
+    function showModal(){
+        var modal = document.getElementById("modal");
+        modal.style.display = "block";
+    }
+    
+    // Close modal
+    function closeModal() {
+        var modal = document.getElementById("modal");
+        modal.style.display = "none"
+    }
+
+    // Close modal kalau klik diluar modal
+    window.onclick = function(event) {
+        var modal = document.getElementById("modal");
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
 </script>
 
 <style scoped>
@@ -105,32 +179,13 @@ h1,h2,#desc {
     border: 2px solid grey;
     border-radius: 10px;
 }
-table tr td a {
-    margin-top: 10px;
-    display: block;
-    width: 100%;
-    height: 100%;
-    text-decoration: none;
-}
 a{
     color: white;
     text-decoration: none;
 }
-td,th{
-    border-bottom:1px inset grey;
-    height:30px;
-}
-tr:hover{
-    background-color:#5c757e;
-    color: Black;
-}
 h1{
     color: white;
     padding-left: 5%;
-}
-.topik{
-    float:right;
-    padding-right: 5%;
 }
 .add {
     text-align: center;
@@ -139,22 +194,23 @@ h1{
 ::placeholder {
     color: #cccccc;
 }
-.modal {
+.modal-topic {
     position: fixed;
     z-index: 999;
     border: 2px solid black;
     padding: 2.5%;
     width: 35%;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    display: none; 
     background-color: #454545;
-    font-family: Roboto;
+    color: white;
+    display: none;
+    font-family: Arial, Helvetica, sans-serif;
     transform: translate(-50%, -50%);
     overflow: auto;
     top: 50%;
     left: 50%; 
 }
-.modal input, textarea {
+.modal-topic input, textarea {
     background-color: #696969;
     color: white;
     width: 100%;
@@ -163,9 +219,8 @@ h1{
     display: inline-block;
     border: 1px solid #3f3f3f;
     box-sizing: border-box;
-    font-family: Roboto;
 }
-.modal button {
+.modal-topic button {
     border: 2px solid black;
     background-color: #303030;
     color: white;
