@@ -1,26 +1,37 @@
 <script setup>
+import { setCookie, getCookie, deleteCookie } from '../utils'; // Import cookie functions
+
 // Retrieve and parse user data from session storage
 const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
 console.log(userDataParsed.profilePicture);
-// userDataParsed.profilePicture = "/src/assets/background/chatters-logo.png";
-// console.log(userDataParsed.profilePicture);
-// const pp = userDataParsed.profilePicture; 
-// console.log(pp);
+
+// Logout function
+function logout() {
+  // Remove user data from session storage
+  sessionStorage.removeItem('userData');
+  
+  // Remove token cookie
+  setCookie('token', '', -1);
+
+  // Redirect to login page
+  window.open('login.html', '_self');
+}
 </script>
 
 <template>
-    <div class='logo'><a href='homepage.html'><img src='../assets/background/chatters-logo.png'></a></div>
-    <ul class="nav-links">
-        <div class="menu">
-            <li><a href="topic.html">Catalog</a></li>
-            <li><a href="about.php">About</a></li>
-            <li><a href="login.html">Log Out</a></li>
-            <div class="profile-picture">
-                <a href="editProfile.html"><img class="profile-picture" :src="userDataParsed.profilePicture"></a>
-            </div>
-        </div> 
-    </ul>
+  <div class='logo'><a href='homepage.html'><img src='../assets/background/chatters-logo.png'></a></div>
+  <ul class="nav-links">
+    <div class="menu">
+      <li><a href="topic.html">Catalog</a></li>
+      <li><a href="about.php">About</a></li>
+      <li><a @click="logout">Log Out</a></li> <!-- Add event handler for logout -->
+      <div class="profile-picture">
+        <a href="editProfile.html"><img class="profile-picture" :src="userDataParsed.profilePicture"></a>
+      </div>
+    </div> 
+  </ul>
 </template>
+
 
 <style scoped>
 body {
