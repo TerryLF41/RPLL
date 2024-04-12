@@ -41,7 +41,6 @@ import { onMounted } from 'vue';
             <button type="reset" id="cancel" @click="closeModal">Cancel</button>
         </form>
     </div>
-    <button @click="testImg">Test image</button>
 </template>
 
 <script setup>
@@ -68,28 +67,11 @@ const temp = ref([]);
   onMounted(getTopic);
 
   function goToThread(threadNo) {
-    var url = 'thread.html?threadNo='+threadNo;
+    var url = 'thread.html?topicNo='+threadNo;
     window.open(url,'_self');
   }
 
-  function testImg(){
-    // Handle gambar yang diupload
-    var fileInput = document.getElementById('topicPicture');
-
-    // Buat path url untuk image yang akan diupload ke database
-    var urlTopicPicture = "../src/assets/userUploadedFiles/userProfile/"
-
-    // Cek apakah input file kosong, kalau kosong, kasih path ke foto default
-    if(fileInput.files.length == 0){
-        urlTopicPicture += "default.png"
-    } else {
-        // Ambil nama file yang diupload
-        var selectedFile = fileInput.files[0].name;
-        urlTopicPicture += selectedFile
-    }
-    console.log(urlTopicPicture)
-  }
-
+  // Post topic
   async function postTopic() {
     // Ambil data dari form
     var topicName = document.getElementById("topicName").value;
@@ -123,17 +105,6 @@ const temp = ref([]);
     if (response.ok) {
         const data = response.json()
       if (data.status == '200'){
-            const response = fetch('http://localhost:8181/topicPicture', {
-            method: 'POST',
-            headers: {
-                "Content-Type": ""
-            },    
-            body: new URLSearchParams({
-                'topicTitle': topicName,
-                'topicDesc': topicDesc,
-                'topicPicture': urlTopicPicture
-            })
-        })
         alert("Topic berhasil ditambahkan!")
       } else {
         console.error("Failed!", data.message);

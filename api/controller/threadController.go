@@ -105,8 +105,8 @@ func InsertThread(w http.ResponseWriter, r *http.Request) {
 	newThread := threadFactory.CreateThread(
 		1,
 		topicNo,
-		r.Form.Get("title"),
-		r.Form.Get("deskripsi"),
+		r.Form.Get("threadTitle"),
+		r.Form.Get("threadDesc"),
 		time.Now(),
 		false,
 		nil,

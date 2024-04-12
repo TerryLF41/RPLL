@@ -5,37 +5,51 @@ import { onMounted } from 'vue';
 </script>
 
 <template>
-        <main>
-            <nav class="navbar">
-                <Header />
-            </nav>
-            <h1>Daftar Topik</h1>
-            <div class="container d-flex justify-content-center" onload="getTopic()">
-                <ul class="list-group mt-5 text-white">
-                    <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToPost" v-for="item in temp">
-                        <div class="d-flex flex-row">
-                            <!-- <img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /> -->
-                            <div class="ml-2 topicDesc">
-                                <h6 class="mb-0">{{ item.threadTitle }}</h6>
-                                <div class="about">
-                                    <span>{{ item.threadDesc }}</span><br>
-                                    <span>{{ item.createDate }}</span>
-                                </div>
+    <main>
+        <nav class="navbar">
+            <Header />
+        </nav>
+        <h1>Daftar Topik</h1>
+        <button type="button" @click="showModal">Add New Thread</button> 
+        <div class="container d-flex justify-content-center" onload="getTopic()">
+            <ul class="list-group mt-5 text-white">
+                <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToPost" v-for="item in temp">
+                    <div class="d-flex flex-row">
+                        <!-- <img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /> -->
+                        <div class="ml-2 threadDesc">
+                            <h6 class="mb-0">{{ item.threadTitle }}</h6>
+                            <div class="about">
+                                <span>{{ item.threadDesc }}</span><br>
+                                <span>{{ item.createDate }}</span>
                             </div>
                         </div>
-                    </li>
-                </ul>
-            </div>
-        </main>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </main>
+    <div class="modal-thread" id="modal">
+        <form class="form" method="POST">
+            <h2 class="title">Add New Thread</h2>
+            <label><b>Nama Topik</b></label><br>
+            <input type="text" name="threadName" id="threadName" placeholder="Input nama thread" required><br>
+            <label><b>Deskripsi</b></label><br>
+            <textarea name="threadDesc" id="threadDesc" placeholder="Input deskripsi thread" required></textarea><br>
+            <button type="submit" id="submit" @click="postThread">Submit</button>
+            <button type="reset" id="cancel" @click="closeModal">Cancel</button>
+        </form>
+    </div>
 </template>
 
 <script setup>
 const temp = ref([]);
+
   async function getThread() {
+    // Ambil nomor topic sekarang dari URL param
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    var thread = urlParams.get('threadNo')
-    var query = 'http://localhost:8181/thread/' + thread;
+    var topicNo = urlParams.get('topicNo')
+    var query = 'http://localhost:8181/thread/' + topicNo;
     const response = await fetch(query, {
         method: "GET",
         headers: {
@@ -59,6 +73,58 @@ const temp = ref([]);
   function goToPost() {
     window.open('homepage.html?postNo=1','_self');
   }
+
+  // Post thread
+  async function postThread() {
+    // Ambil nomor topic sekarang dari URL param
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    var topicNo = urlParams.get('topicNo')
+    // Ambil data dari form
+    var threadName = document.getElementById("threadName").value;
+    var threadDesc = document.getElementById("threadDesc").value;
+
+    const response = fetch('http://localhost:8181/thread', {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },    
+        body: new URLSearchParams({
+            'topicNo': topicNo,
+            'threadTitle': threadName,
+            'threadDesc': threadDesc
+        })
+    })
+    if (response.ok) {
+        const data = response.json()
+      if (data.status == '200'){
+        alert("Thread berhasil ditambahkan!")
+      } else {
+        console.error("Failed!", data.message);
+        alert("Thread mengajukan request topic!")
+      }
+    }
+  }
+
+  // Kode untuk modal
+  function showModal(){
+        var modal = document.getElementById("modal");
+        modal.style.display = "block";
+    }
+    
+    // Close modal
+    function closeModal() {
+        var modal = document.getElementById("modal");
+        modal.style.display = "none"
+    }
+
+    // Close modal kalau klik diluar modal
+    window.onclick = function(event) {
+        var modal = document.getElementById("modal");
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
 </script>
 
 <style scoped>
@@ -80,7 +146,7 @@ const temp = ref([]);
 	font-size: 12px;
 	margin-right: 10px;
 }
-.topicDesc{
+.threadDesc{
     margin-left: 10px;
 }
 
@@ -140,22 +206,23 @@ h1{
 ::placeholder {
     color: #cccccc;
 }
-.modal {
+.modal-thread {
     position: fixed;
     z-index: 999;
     border: 2px solid black;
     padding: 2.5%;
     width: 35%;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    display: none; 
     background-color: #454545;
-    font-family: Roboto;
+    color: white;
+    display: none;
+    font-family: Arial, Helvetica, sans-serif;
     transform: translate(-50%, -50%);
     overflow: auto;
     top: 50%;
     left: 50%; 
 }
-.modal input, textarea {
+.modal-thread input, textarea {
     background-color: #696969;
     color: white;
     width: 100%;
@@ -164,9 +231,8 @@ h1{
     display: inline-block;
     border: 1px solid #3f3f3f;
     box-sizing: border-box;
-    font-family: Roboto;
 }
-.modal button {
+.modal-thread button {
     border: 2px solid black;
     background-color: #303030;
     color: white;
