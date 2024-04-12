@@ -44,6 +44,50 @@ func GetAllThreads(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func GetTopicThreads(w http.ResponseWriter, r *http.Request) {
+	db := connect()
+	defer db.Close()
+	err := r.ParseForm()
+	if err != nil {
+		sendErrorResponse(w, "Failed")
+		return
+	}
+	vars := mux.Vars(r)
+
+	topicId := vars["topicno"]
+
+	sqlStatement := `
+		Select * 
+		From thread
+		where topicNo = ` + topicId
+
+	rows, err := db.Query(sqlStatement)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	var thread model.Thread
+	var threadList []model.Thread
+	for rows.Next() {
+		if err := rows.Scan(&thread.ThreadNo, &thread.TopicNo, &thread.ThreadTitle,
+			&thread.ThreadDesc, &thread.CreateDate, &thread.BanStatus); err != nil {
+			log.Println(err)
+			return
+		} else {
+			threadList = append(threadList, thread)
+		}
+	}
+
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
+	if len(threadList) >= 1 {
+		sendSuccessResponse(w, "Successfully retrieved thread", threadList)
+	} else {
+		sendErrorResponse(w, "Failed to retrieve thread")
+	}
+}
+
 // Insert sebuah thread baru
 func InsertThread(w http.ResponseWriter, r *http.Request) {
 	db := connect()
@@ -54,22 +98,22 @@ func InsertThread(w http.ResponseWriter, r *http.Request) {
 		sendErrorResponse(w, "Failed to insert a new thread")
 		return
 	}
-	topicNo, _ := strconv.Atoi(r.Form.Get("topik_No"))
-
+	topicNo, _ := strconv.Atoi(r.Form.Get("topicNo"))
 	threadFactory := model.NewThreadModelFactory()
 
 	// Create a new thread instance
 	newThread := threadFactory.CreateThread(
 		1,
 		topicNo,
-		r.Form.Get("title"),
-		r.Form.Get("deskripsi"),
+		r.Form.Get("threadTitle"),
+		r.Form.Get("threadDesc"),
 		time.Now(),
 		false,
 		nil,
 	)
 
-	_, errQuery := db.Exec("INSERT INTO thread(threadTitle, topicNo, threadDesc) values (?,?,?)",
+	sqlStatement := "INSERT INTO thread(threadTitle, topicNo, threadDesc) values (?,?,?)"
+	_, errQuery := db.Exec(sqlStatement,
 		newThread.ThreadTitle,
 		newThread.TopicNo,
 		newThread.ThreadDesc,

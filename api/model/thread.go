@@ -15,7 +15,7 @@ type Thread struct {
 
 // ThreadModelFactory interface defines methods for thread model
 type ThreadModelFactory interface {
-	CreateThread(threadNo int, topicNo int, threadTitle, threadDesc string, createDate time.Time, banStatus bool, postList []Post) *Thread
+	CreateThread(threadNo int, topicNo int, threadTitle string, threadDesc string, createDate time.Time, banStatus bool, postList []Post) *Thread
 }
 
 // ConcreteThreadModelFactory struct implements ThreadModelFactory interface

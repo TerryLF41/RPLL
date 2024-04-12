@@ -9,17 +9,17 @@ import { onMounted } from 'vue';
         <nav class="navbar">
             <Header />
         </nav>
-        <h1>Daftar Topik</h1>  
-        <button type="button" @click="showModal">Add New Topic</button> 
+        <h1>Daftar Topik</h1>
+        <button type="button" @click="showModal">Add New Thread</button> 
         <div class="container d-flex justify-content-center" onload="getTopic()">
             <ul class="list-group mt-5 text-white">
-                <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToThread(item.topicNo)" v-for="item in temp">
+                <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToPost" v-for="item in temp">
                     <div class="d-flex flex-row">
-                        <img v-bind:src="item.topicPicture" width="100" />
-                        <div class="ml-2 topicDesc">
-                            <h6 class="mb-0">{{ item.topicTitle }}</h6>
+                        <!-- <img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /> -->
+                        <div class="ml-2 threadDesc">
+                            <h6 class="mb-0">{{ item.threadTitle }}</h6>
                             <div class="about">
-                                <span>{{ item.topicDesc }}</span><br>
+                                <span>{{ item.threadDesc }}</span><br>
                                 <span>{{ item.createDate }}</span>
                             </div>
                         </div>
@@ -28,16 +28,14 @@ import { onMounted } from 'vue';
             </ul>
         </div>
     </main>
-    <div class="modal-topic" id="modal">
+    <div class="modal-thread" id="modal">
         <form class="form" method="POST">
-            <h2 class="title">Add New Topic</h2>
+            <h2 class="title">Add New Thread</h2>
             <label><b>Nama Topik</b></label><br>
-            <input type="text" name="topicName" id="topicName" placeholder="Input nama topik" required><br>
+            <input type="text" name="threadName" id="threadName" placeholder="Input nama thread" required><br>
             <label><b>Deskripsi</b></label><br>
-            <textarea name="topicDesc" id="topicDesc" placeholder="Input deskripsi topik" required></textarea><br>
-            <label><b>Foto Topik</b></label><br>
-            <input type="file" id="topicPicture" name="topicPicture" accept=".jpg, .jpeg, .png">
-            <button type="submit" id="submit" @click="postTopic">Submit</button>
+            <textarea name="threadDesc" id="threadDesc" placeholder="Input deskripsi thread" required></textarea><br>
+            <button type="submit" id="submit" @click="postThread">Submit</button>
             <button type="reset" id="cancel" @click="closeModal">Cancel</button>
         </form>
     </div>
@@ -45,8 +43,14 @@ import { onMounted } from 'vue';
 
 <script setup>
 const temp = ref([]);
-  async function getTopic() {
-    const response = await fetch('http://localhost:8181/topic', {
+
+  async function getThread() {
+    // Ambil nomor topic sekarang dari URL param
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    var topicNo = urlParams.get('topicNo')
+    var query = 'http://localhost:8181/thread/' + topicNo;
+    const response = await fetch(query, {
         method: "GET",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded"
@@ -59,62 +63,51 @@ const temp = ref([]);
             temp.value.push(data.data[key]);
         }
       } else {
-            console.error("Failed!", data.message);
+        console.error("Failed!", data.message);
       }
     }
   }
 
-  onMounted(getTopic);
+  onMounted(getThread);
 
-  function goToThread(threadNo) {
-    var url = 'thread.html?topicNo='+threadNo;
-    window.open(url,'_self');
+  function goToPost() {
+    window.open('homepage.html?postNo=1','_self');
   }
 
-  // Post topic
-  async function postTopic() {
+  // Post thread
+  async function postThread() {
+    // Ambil nomor topic sekarang dari URL param
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    var topicNo = urlParams.get('topicNo')
     // Ambil data dari form
-    var topicName = document.getElementById("topicName").value;
-    var topicDesc = document.getElementById("topicDesc").value;
+    var threadName = document.getElementById("threadName").value;
+    var threadDesc = document.getElementById("threadDesc").value;
 
-    // Handle gambar yang diupload
-    var fileInput = document.getElementById('topicPicture');
-
-    // Buat path url untuk image yang akan diupload ke database
-    var urlTopicPicture = "../src/assets/userUploadedFiles/topicPicture/"
-
-    // Cek apakah input file kosong, kalau kosong, kasih path ke foto default
-    if(fileInput.files.length == 0){
-        urlTopicPicture += "default.png"
-    } else {
-        // Ambil nama file yang diupload
-        var selectedFile = fileInput.files[0].name;
-        urlTopicPicture += selectedFile
-    }
-    const response = fetch('http://localhost:8181/topic', {
+    const response = fetch('http://localhost:8181/thread', {
         method: 'POST',
         headers: {
             "Content-Type": "application/x-www-form-urlencoded"
         },    
         body: new URLSearchParams({
-            'topicTitle': topicName,
-            'topicDesc': topicDesc,
-            'topicPicture': urlTopicPicture
+            'topicNo': topicNo,
+            'threadTitle': threadName,
+            'threadDesc': threadDesc
         })
     })
     if (response.ok) {
         const data = response.json()
       if (data.status == '200'){
-        alert("Topic berhasil ditambahkan!")
+        alert("Thread berhasil ditambahkan!")
       } else {
         console.error("Failed!", data.message);
-        alert("Gagal mengajukan request topic!")
+        alert("Thread mengajukan request topic!")
       }
     }
   }
 
-    // Kode untuk modal
-    function showModal(){
+  // Kode untuk modal
+  function showModal(){
         var modal = document.getElementById("modal");
         modal.style.display = "block";
     }
@@ -153,7 +146,7 @@ const temp = ref([]);
 	font-size: 12px;
 	margin-right: 10px;
 }
-.topicDesc{
+.threadDesc{
     margin-left: 10px;
 }
 
@@ -179,13 +172,32 @@ h1,h2,#desc {
     border: 2px solid grey;
     border-radius: 10px;
 }
+table tr td a {
+    margin-top: 10px;
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+}
 a{
     color: white;
     text-decoration: none;
 }
+td,th{
+    border-bottom:1px inset grey;
+    height:30px;
+}
+tr:hover{
+    background-color:#5c757e;
+    color: Black;
+}
 h1{
     color: white;
     padding-left: 5%;
+}
+.topik{
+    float:right;
+    padding-right: 5%;
 }
 .add {
     text-align: center;
@@ -194,7 +206,7 @@ h1{
 ::placeholder {
     color: #cccccc;
 }
-.modal-topic {
+.modal-thread {
     position: fixed;
     z-index: 999;
     border: 2px solid black;
@@ -210,7 +222,7 @@ h1{
     top: 50%;
     left: 50%; 
 }
-.modal-topic input, textarea {
+.modal-thread input, textarea {
     background-color: #696969;
     color: white;
     width: 100%;
@@ -220,7 +232,7 @@ h1{
     border: 1px solid #3f3f3f;
     box-sizing: border-box;
 }
-.modal-topic button {
+.modal-thread button {
     border: 2px solid black;
     background-color: #303030;
     color: white;
