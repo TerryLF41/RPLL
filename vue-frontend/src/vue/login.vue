@@ -6,7 +6,8 @@
         <label for="email">Email</label><br>
         <input type="text" name="email" id="email" required placeholder="Input Email" :value="rememberedEmail"><br>
         <label for="password">Password</label><br>
-        <input type="password" name="password" id="password" required placeholder="Input Password" :value="rememberedPassword"><br>
+        <input type="password" name="password" id="password" required placeholder="Input Password"
+          :value="rememberedPassword"><br>
         <input type="checkbox" id="remember" name="remember" value="true">Remember Me<br>
         <button type="submit" id="login">Login</button>
         <button type="button" @click="goToRegister">Register</button>
@@ -58,6 +59,12 @@ async function login() {
       console.log("Login successful!");
       alert('Login successful!');
 
+      // Replace the current history state with the homepage URL
+      // Replace the current history state with the homepage URL
+      history.replaceState(null, '', '/homepage.html');
+      // Add a new history entry pointing to the homepage URL
+      history.pushState(null, '', '/homepage.html');
+
       window.open('/homepage.html', '_self');
     } else {
       console.error("Login failed:", data.message);
@@ -65,6 +72,17 @@ async function login() {
     }
   }
 }
+
+// Listen for the popstate event to handle navigation
+window.addEventListener('popstate', function(event) {
+  // Get the URL of the current page
+  const currentPage = window.location.pathname;
+  // Check if the current page is the login page
+  if (currentPage === '/login.html') {
+    // Redirect the user to the homepage
+    window.location.replace('/homepage.html');
+  }
+});
 
 function goToRegister() {
   window.open('register.html', '_self');

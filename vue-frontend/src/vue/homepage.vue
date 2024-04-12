@@ -38,7 +38,7 @@ main {
     text-align: center;
     background-color: #A9A9A9;
 }
-a, h2{
+a, h2, p{
     color: white;
     text-decoration: none;
 }

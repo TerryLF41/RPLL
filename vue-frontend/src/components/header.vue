@@ -41,6 +41,11 @@ body {
 * {
     font-family: Roboto;
 }
+
+.menu li a {
+    color: #fff; /* Menetapkan warna teks menjadi putih */
+}
+
 a {
     text-decoration: none;
 }
