@@ -1,3 +1,13 @@
+<script setup>
+// Retrieve and parse user data from session storage
+const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
+console.log(userDataParsed.profilePicture);
+// userDataParsed.profilePicture = "/src/assets/background/chatters-logo.png";
+// console.log(userDataParsed.profilePicture);
+// const pp = userDataParsed.profilePicture; 
+// console.log(pp);
+</script>
+
 <template>
     <div class='logo'><a href='homepage.html'><img src='../assets/background/chatters-logo.png'></a></div>
     <ul class="nav-links">
@@ -6,7 +16,7 @@
             <li><a href="about.php">About</a></li>
             <li><a href="login.html">Log Out</a></li>
             <div class="profile-picture">
-                <a href="editProfile.html"><img class="profile-picture" src="../assets/userUploadedFiles/userProfile/default.png"></a>
+                <a href="editProfile.html"><img class="profile-picture" :src="userDataParsed.profilePicture"></a>
             </div>
         </div> 
     </ul>

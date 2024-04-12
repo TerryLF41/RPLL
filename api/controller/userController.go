@@ -62,7 +62,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			"profilePicture": user.ProfilePicture,
 			"profileDesc":    user.ProfileDesc,
 			"userType":       user.UserType,
-			"isBanned":       isbanned,
 		}
 
 		token := generateToken(w, user.UserID, user.Username, user.UserType)

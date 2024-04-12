@@ -42,14 +42,22 @@ async function login() {
     console.log(data);
     if (data.status == '200') {
       // Set persistent cookies if remember me is checked
+      setCookie('token', data.token, 7);
       if (rememberMe) {
         setCookie('email', email, 7); // Set email cookie for 7 days
         setCookie('password', password, 7); // Set password cookie for 7 days
       }
 
+      // Access user data from the response and do something with it
+      const userData = data.data; // Assuming the user data is returned under 'data' key
+      console.log(userData); // Log the user data
+
+      // Store user data in session storage
+      sessionStorage.setItem('userData', JSON.stringify(userData));
+
       console.log("Login successful!");
       alert('Login successful!');
-      
+
       window.open('/homepage.html', '_self');
     } else {
       console.error("Login failed:", data.message);
@@ -62,6 +70,7 @@ function goToRegister() {
   window.open('register.html', '_self');
 }
 </script>
+
 
 
 <style scoped>
