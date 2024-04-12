@@ -2,7 +2,10 @@ package controller
 
 import (
 	"RPLL/api/model"
+	_ "image"
+	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -51,8 +54,9 @@ func InsertTopic(w http.ResponseWriter, r *http.Request) {
 		sendErrorResponse(w, "Failed")
 		return
 	}
-
 	topicFactory := model.NewTopicModelFactory()
+
+	log.Println(r.Form.Get("topicPicturePath"))
 
 	// Create a new topic instance
 	newTopic := topicFactory.CreateTopic(
@@ -61,13 +65,14 @@ func InsertTopic(w http.ResponseWriter, r *http.Request) {
 		r.Form.Get("topicDesc"),
 		time.Now(),
 		false,
-		"",
+		r.Form.Get("topicPicture"),
 		nil,
 	)
 
-	_, errQuery := db.Exec("INSERT INTO transactions(topicTitle, topicDesc) values (?,?)",
+	_, errQuery := db.Exec("INSERT INTO topic(topicTitle, topicDesc, topicPicture) values (?,?,?)",
 		newTopic.TopicTitle,
 		newTopic.TopicDesc,
+		newTopic.TopicPicture,
 	)
 
 	// Kirim response ke client
@@ -75,8 +80,26 @@ func InsertTopic(w http.ResponseWriter, r *http.Request) {
 	if errQuery == nil {
 		sendSuccessResponse(w, "Successfully inserted new topic", nil)
 	} else {
+		log.Println(errQuery)
 		sendErrorResponse(w, "Failed to insert topic to database")
 	}
+}
+
+func SaveTopicPicture(w http.ResponseWriter, r *http.Request) {
+	file, handler, err := r.FormFile("file")
+	//fileName := r.FormValue("file_name")
+	//filepath := "../vue-frontend/src/assets/userUploadedFiles/topicPicture/" + fileName
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	f, err := os.OpenFile(handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		panic(err)
+	}
+	log.Println("Succ here")
+	defer f.Close()
 }
 
 // Update judul/title sebuah topic
