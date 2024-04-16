@@ -38,9 +38,9 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	// Kirim response ke client
 	// Response dibuat dengan factory di responseHandler
 	if len(userList) >= 1 {
-		sendSuccessResponse(w, "Successfully retrieved thread", userList)
+		sendSuccessResponse(w, "Successfully retrieved userlist", userList)
 	} else {
-		sendErrorResponse(w, "Failed to retrieve thread")
+		sendErrorResponse(w, "Failed to retrieve userlist")
 	}
 }
 
