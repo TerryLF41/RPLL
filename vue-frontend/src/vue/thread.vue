@@ -11,20 +11,22 @@ import { onMounted } from 'vue';
         </nav>
         <h1>Daftar Topik</h1>
         <button type="button" @click="showModal">Add New Thread</button> 
-        <div class="container d-flex justify-content-center" onload="getTopic()">
+        <div class="container d-flex justify-content-center" onload="getThread()">
             <ul class="list-group mt-5 text-white">
-                <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToPost" v-for="item in temp">
-                    <div class="d-flex flex-row">
-                        <!-- <img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /> -->
-                        <div class="ml-2 threadDesc">
-                            <h6 class="mb-0">{{ item.threadTitle }}</h6>
-                            <div class="about">
-                                <span>{{ item.threadDesc }}</span><br>
-                                <span>{{ item.createDate }}</span>
+                <div class="wrapper-li d-flex=" v-for="item in temp">
+                    <li class="list-group-item d-flex justify-content-between align-content-center" v-if="item.banStatus==false" @click="goToPost" >
+                        <div class="d-flex flex-row">
+                            <div class="ml-2 threadDesc">
+                                <h6 class="mb-0">{{ item.threadTitle }}</h6>
+                                <div class="about">
+                                    <span>{{ item.threadDesc }}</span><br>
+                                    <span>{{ item.createDate }}</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </li>
+                    </li>
+                    <button id="banButton" v-if="userType==1 && item.banStatus==false" @click="banThread(item.threadNo)">Ban Thread</button>
+                </div>
             </ul>
         </div>
     </main>
@@ -42,7 +44,13 @@ import { onMounted } from 'vue';
 </template>
 
 <script setup>
-const temp = ref([]);
+    const temp = ref([]);
+
+    // Retrieve and parse user data from session storage
+    const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
+    const profilePicture = userDataParsed.profilePicture;
+    // Ambil usertype dari session
+    var userType = userDataParsed.userType;
 
   async function getThread() {
     // Ambil nomor topic sekarang dari URL param
@@ -57,15 +65,15 @@ const temp = ref([]);
         }
     });
     if (response.ok) {
-      const data = await response.json()
-      if (data.status == '200'){
-        for (const key in data.data) {
-            temp.value.push(data.data[key]);
+        const data = await response.json()
+        if (data.status == '200'){
+            for (const key in data.data) {
+                temp.value.push(data.data[key]);
+            }
+        } else {
+            console.error("Failed!", data.message);
         }
-      } else {
-        console.error("Failed!", data.message);
       }
-    }
   }
 
   onMounted(getThread);
@@ -84,7 +92,7 @@ const temp = ref([]);
     var threadName = document.getElementById("threadName").value;
     var threadDesc = document.getElementById("threadDesc").value;
 
-    const response = fetch('http://localhost:8181/thread', {
+    const response = await fetch('http://localhost:8181/thread', {
         method: 'POST',
         headers: {
             "Content-Type": "application/x-www-form-urlencoded"
@@ -96,15 +104,49 @@ const temp = ref([]);
         })
     })
     if (response.ok) {
-        const data = response.json()
-      if (data.status == '200'){
-        alert("Thread berhasil ditambahkan!")
-      } else {
-        console.error("Failed!", data.message);
-        alert("Thread mengajukan request topic!")
-      }
+        const data = await response.json()
+        if (data.status == '200'){
+            alert("Thread berhasil ditambahkan!")
+        } else {
+            console.error("Failed!", data.message);
+            alert("Gagal mengajukan request topic!")
+        }
     }
   }
+
+  // Kode ban thread
+  // Admin only
+  async function banThread(threadNo){
+    // Tampilkan prompt konfirmasi ban topic atau tidak
+    if (confirm('Apakah Anda yakin ingin memban thread?')) {
+        // Jika ya, ban topic
+        var url = "http://localhost:8181/thread/ban/" + threadNo;
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },    
+            body: new URLSearchParams({
+                'banStatus': 1,
+            })    
+        })
+        if (response.ok) {
+            const data = await response.json()
+            if (data.status == '200'){
+                alert("Thread berhasil diban!")
+                // Ambil nomor topic sekarang dari URL param
+                const queryString = window.location.search;
+                const urlParams = new URLSearchParams(queryString);
+                var topicNo = urlParams.get('topicNo')
+                var url = '/thread.html?topicNo=' + topicNo;
+                window.open(url,'_self');
+            } else {
+                console.error("Failed!", data.message);
+                alert("Gagal memban thread!")
+            }
+        }
+    }
+    }
 
   // Kode untuk modal
   function showModal(){
@@ -251,5 +293,9 @@ button:hover {
 h2.title {
     text-align: center;
     margin-top: 0;
+}
+#banButton {
+    background-color: #ff0000;
+    font-size: small;
 }
 </style>
