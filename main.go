@@ -19,6 +19,7 @@ func main() {
 	//1 = Admin
 
 	// Handler untuk user
+	router.HandleFunc("/user", controller.GetAllUsers).Methods("GET")
 	router.HandleFunc("/register", controller.RegisterUser).Methods("POST")
 	router.HandleFunc("/login", controller.Login).Methods("POST")
 	router.HandleFunc("/logout", controller.Logout).Methods("POST")
