@@ -55,16 +55,14 @@ async function login() {
 
       // Store user data in session storage
       sessionStorage.setItem('userData', JSON.stringify(userData));
-
-      console.log("Login successful!");
-      alert('Login successful!');
-
-      // Replace the current history state with the homepage URL
       // Replace the current history state with the homepage URL
       history.replaceState(null, '', '/homepage.html');
       // Add a new history entry pointing to the homepage URL
       history.pushState(null, '', '/homepage.html');
 
+      console.log("Login successful!");
+      alert('Login successful!');
+      
       window.open('/homepage.html', '_self');
     } else {
       console.error("Login failed:", data.message);
@@ -74,7 +72,7 @@ async function login() {
 }
 
 // Listen for the popstate event to handle navigation
-window.addEventListener('popstate', function(event) {
+window.addEventListener('popstate', function (event) {
   // Get the URL of the current page
   const currentPage = window.location.pathname;
   // Check if the current page is the login page

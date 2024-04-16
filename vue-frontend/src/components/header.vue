@@ -3,8 +3,9 @@ import { setCookie, getCookie, deleteCookie } from '../utils'; // Import cookie 
 
 // Retrieve and parse user data from session storage
 const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
-console.log(userDataParsed.profilePicture);
-
+// console.log(userDataParsed.profilePicture);
+const profilePicture = userDataParsed.profilePicture;
+// console.log(profilePicture);
 // Logout function
 function logout() {
   // Remove user data from session storage
@@ -26,7 +27,7 @@ function logout() {
       <li><a href="about.php">About</a></li>
       <li><a @click="logout">Log Out</a></li> <!-- Add event handler for logout -->
       <div class="profile-picture">
-        <a href="editProfile.html"><img class="profile-picture" :src="userDataParsed.profilePicture"></a>
+        <a href="editProfile.html"><img class="profile-picture" :src="profilePicture"></a>
       </div>
     </div> 
   </ul>
@@ -38,9 +39,7 @@ body {
     margin: 0;
     padding: 0;
 }
-* {
-    font-family: Roboto;
-}
+
 
 .menu li a {
     color: #fff; /* Menetapkan warna teks menjadi putih */
@@ -65,7 +64,9 @@ nav {
     padding: 15px;
     background-color: #1c1c1c;
     color: #fff;
+    font-family: Roboto;
 }
+
 .nav-links a {
     color: #fff;
 }
