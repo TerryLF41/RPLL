@@ -10,7 +10,6 @@ import { onMounted } from 'vue';
             <Header />
         </nav>
         <h1>Daftar User</h1>
-        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
 
 <div class="container">
     <div class="row">
@@ -18,7 +17,6 @@ import { onMounted } from 'vue';
             <div class="overflow-hidden card table-nowrap table-card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">User List</h5>
-                    <a href="#!" class="btn btn-light btn-sm">View All</a>
                 </div>
                 <div class="table-responsive">
                     <table class="table mb-0">
@@ -42,7 +40,9 @@ import { onMounted } from 'vue';
                                 </td>
                                 <td>{{ item.email }}</td>
                                 <td>{{ item.joinDate }}</td>
-                                <td>{{ item.banStatus }} </td>
+                                <td @click="banUser(item.banstatus, item.userId)" v-bind:class="userStatusClass" style="background-color: grey !important; text-align: center; color: red">  
+                                    {{ item.banstatus ? 'Unban User' : 'Ban user' }}
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -79,11 +79,76 @@ const temp = ref([]);
     }
   }
 
+  async function banUser(status,id){
+    if (status) {
+        const unbanresponse = fetch('http://localhost:8181/user/unban/' + id, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            })
+            .then(unbanresponse => {
+            if (unbanresponse.ok) {
+                return unbanresponse.json(); // Only proceed if the fetch is successful
+            } else {
+                console.error("Failed to fetch unban response:", unbanresponse.status);
+                throw new Error("Failed to unban user (fetch issue)"); // Or handle the error differently
+            }
+            })
+            .then(data => {
+                console.log(data.status)
+            if (data.status == '200') {
+                alert("user is unbanned!");
+                window.location.reload();
+            } else {
+                console.error("Failed to unban user:", data.message);
+                alert("Failed to unban the user!");
+            }
+            })
+            .catch(error => {
+            console.error("Error unbanning user:", error);
+            alert("An error occurred while unbanning the user."); // Handle errors more gracefully
+            });
+    } else {
+        const banresponse = fetch('http://localhost:8181/user/ban/' + id, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            })
+            .then(banresponse => {
+            if (banresponse.ok) {
+                return banresponse.json(); // Only proceed if the fetch is successful
+            } else {
+                console.error("Failed to fetch ban response:", banresponse.status);
+                throw new Error("Failed to ban user (fetch issue)"); // Or handle the error differently
+            }
+            })
+            .then(data => {
+                console.log(data.status)
+            if (data.status == '200') {
+                alert("user is banned!");
+                window.location.reload();
+            } else {
+                console.error("Failed to ban user:", data.message);
+                alert("Failed to ban the user!");
+            }
+            })
+            .catch(error => {
+            console.error("Error banning user:", error);
+            alert("An error occurred while banning the user."); // Handle errors more gracefully
+            });
+    }
+  }
+
   onMounted(getUsers);
 
 </script>
 
 <style scoped>
+.userStatusClass{
+    
+}
 .card {
     box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
 }
@@ -93,29 +158,14 @@ const temp = ref([]);
     font-size: .818125rem;
 }
 .list-group{
-	width: 100% !important;
+	width: 100%;
     border-radius: 0;
 }
-.list-group-item{
-	margin-top:15px;
-	cursor: pointer;
-    border-style: none;
-	transition: all 0.3s ease-in-out;
+.card-header{
     background-color: #ADA7A7;
 }
-.list-group-item:hover{
-	opacity: 0.8;
-}
-.about span{
-	font-size: 12px;
-	margin-right: 10px;
-}
-.userDesc{
-    margin-left: 10px;
-}
-
 body {
-    color: white;
+    color: rgb(31, 25, 25);
     background-image:url("../upload/media/bg-topic.jpg");
     background-repeat: no-repeat;
     background-size: cover;
@@ -126,7 +176,7 @@ main {
     margin: auto;
     padding: 0;
 }
-h1,h2,#desc {
+h1 {
     text-align: center;
 }
 .list{
@@ -136,13 +186,6 @@ h1,h2,#desc {
     border: 2px solid grey;
     border-radius: 10px;
 }
-table tr td a {
-    margin-top: 10px;
-    display: block;
-    width: 100%;
-    height: 100%;
-    text-decoration: none;
-}
 a{
     color: white;
     text-decoration: none;
@@ -151,33 +194,11 @@ td,th{
     border-bottom:1px inset grey;
     height:30px;
 }
-tr:hover{
-    background-color:#5c757e;
-    color: Black;
-}
 h1{
     color: white;
     padding-left: 5%;
 }
-.topik{
-    float:right;
-    padding-right: 5%;
-}
-.add {
-    text-align: center;
-    cursor: pointer;
-}
 ::placeholder {
     color: #cccccc;
-}
-button:hover {
-    opacity: 75%;
-}
-#cancel {
-    background-color: #7a0800;
-}
-h2.title {
-    text-align: center;
-    margin-top: 0;
 }
 </style>
