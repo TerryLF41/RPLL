@@ -19,12 +19,9 @@ func main() {
 	//1 = Admin
 
 	// Handler untuk user
-<<<<<<< HEAD
 	router.HandleFunc("/user", controller.GetAllUsers).Methods("GET")
 	router.HandleFunc("/user/ban/{userId}", controller.BanUser).Methods("post")
 	router.HandleFunc("/user/unban/{userId}", controller.UnbanUser).Methods("post")
-=======
->>>>>>> 180f3a888e90124f4c6ecfc281b65a36cdbda5db
 	router.HandleFunc("/register", controller.RegisterUser).Methods("POST")
 	router.HandleFunc("/login", controller.Login).Methods("POST")
 	router.HandleFunc("/logout", controller.Logout).Methods("POST")
