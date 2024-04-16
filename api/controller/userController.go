@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/gorilla/mux"
 )
 
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
@@ -215,6 +217,62 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		sendErrorResponse(w, "Password does not match!")
+	}
+}
+
+func BanUser(w http.ResponseWriter, r *http.Request) {
+	db := connect()
+	defer db.Close()
+
+	err := r.ParseForm()
+	if err != nil {
+		sendErrorResponse(w, "Failed")
+		return
+	}
+	vars := mux.Vars(r)
+	userId := vars["userId"]
+
+	sqlStatement := `
+		UPDATE user 
+		SET banStatus = 1
+		WHERE userId = ?`
+
+	_, errQuery := db.Exec(sqlStatement,
+		userId,
+	)
+
+	if errQuery == nil {
+		sendSuccessResponse(w, "Successfully Banned the user", nil)
+	} else {
+		sendErrorResponse(w, "Failed to Ban the user")
+	}
+}
+
+func UnbanUser(w http.ResponseWriter, r *http.Request) {
+	db := connect()
+	defer db.Close()
+
+	err := r.ParseForm()
+	if err != nil {
+		sendErrorResponse(w, "Failed")
+		return
+	}
+	vars := mux.Vars(r)
+	userId := vars["userId"]
+
+	sqlStatement := `
+		UPDATE user 
+		SET banStatus = 0
+		WHERE userId = ?`
+
+	_, errQuery := db.Exec(sqlStatement,
+		userId,
+	)
+
+	if errQuery == nil {
+		sendSuccessResponse(w, "Successfully Unbanned the user", nil)
+	} else {
+		sendErrorResponse(w, "Failed to Unban the user")
 	}
 }
 
