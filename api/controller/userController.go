@@ -11,6 +11,39 @@ import (
 	"time"
 )
 
+func GetAllUsers(w http.ResponseWriter, r *http.Request) {
+	db := connect()
+	defer db.Close()
+
+	query := "SELECT * FROM user"
+
+	rows, err := db.Query(query)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	var user model.User
+	var userList []model.User
+	for rows.Next() {
+		if err := rows.Scan(&user.UserID, &user.Username, &user.Password, &user.Email, &user.ProfileDesc, &user.JoinDate,
+			&user.UserType, &user.BanStatus, &user.ProfilePicture); err != nil {
+			log.Println(err)
+			return
+		} else {
+			userList = append(userList, user)
+		}
+	}
+
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
+	if len(userList) >= 1 {
+		sendSuccessResponse(w, "Successfully retrieved thread", userList)
+	} else {
+		sendErrorResponse(w, "Failed to retrieve thread")
+	}
+}
+
 // Login untuk user
 func Login(w http.ResponseWriter, r *http.Request) {
 	db := connect()
