@@ -1,5 +1,14 @@
 <script setup>
 import Header from '../components/header.vue'
+
+// Retrieve user data from session storage
+const userData = JSON.parse(sessionStorage.getItem('userData'));
+
+// If user data is not present, redirect to the login page
+if (!userData) {
+  alert('You haven\'t logged in yet.');
+  window.location.href = 'login.html'; // Redirect to the login page
+}
 </script>
 <template>
     <main>
@@ -29,7 +38,7 @@ main {
     text-align: center;
     background-color: #A9A9A9;
 }
-a, h2{
+a, h2, p{
     color: white;
     text-decoration: none;
 }

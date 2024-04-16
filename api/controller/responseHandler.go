@@ -52,11 +52,19 @@ func sendSuccessLoginResponse(w http.ResponseWriter, message string, data interf
 
 	jsonResponse, err := json.Marshal(response)
 	if err != nil {
-		sendErrorResponse(w, "Failed to marshal JSON response")
+		// If JSON marshaling fails, send an error response
+		sendErrorResponse(w, "Failed to marshal JSON response: "+err.Error())
 		return
 	}
 
+	// Set the HTTP headers
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write(jsonResponse)
+
+	// Write the JSON response to the response writer
+	if _, err := w.Write(jsonResponse); err != nil {
+		// If writing the response fails, log the error
+		log.Println("Error writing JSON response:", err)
+	}
+	//w.Write(jsonResponse)
 }

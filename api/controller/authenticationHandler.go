@@ -35,14 +35,14 @@ func generateToken(w http.ResponseWriter, id int, name string, usertype int) str
 		return "" // Return empty string in case of error
 	}
 
-	// Set JWT token as a cookie in the response
-	http.SetCookie(w, &http.Cookie{
-		Name:     tokenName,
-		Value:    jwtToken,
-		Expires:  tokenExpiryTime,
-		Secure:   false, // Set to true if serving over HTTPS
-		HttpOnly: true,  // Ensures the cookie is not accessible via JavaScript
-	})
+	// // Set JWT token as a cookie in the response
+	// http.SetCookie(w, &http.Cookie{
+	// 	Name:     tokenName,
+	// 	Value:    jwtToken,
+	// 	Expires:  tokenExpiryTime,
+	// 	Secure:   false, // Set to true if serving over HTTPS
+	// 	HttpOnly: true,  // Ensures the cookie is not accessible via JavaScript
+	// })
 
 	return jwtToken // Return the JWT token string
 }
