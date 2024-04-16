@@ -189,6 +189,8 @@ func UpdateTopicStatus(w http.ResponseWriter, r *http.Request) {
 
 	banStatus, _ := strconv.Atoi(r.Form.Get("banStatus"))
 
+	log.Println(banStatus)
+
 	sqlStatement := `
 		UPDATE topic 
 		SET banStatus =  ?

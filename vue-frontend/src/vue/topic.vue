@@ -13,18 +13,21 @@ import { onMounted } from 'vue';
         <button type="button" @click="showModal">Add New Topic</button> 
         <div class="container d-flex justify-content-center" onload="getTopic()">
             <ul class="list-group mt-5 text-white">
-                <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToThread(item.topicNo)" v-for="item in temp">
-                    <div class="d-flex flex-row">
-                        <img v-bind:src="item.topicPicture" width="100" />
-                        <div class="ml-2 topicDesc">
-                            <h6 class="mb-0">{{ item.topicTitle }}</h6>
-                            <div class="about">
-                                <span>{{ item.topicDesc }}</span><br>
-                                <span>{{ item.createDate }}</span>
+                <div class="wrapper-li d-flex=" v-for="item in temp">
+                    <li class="list-group-item d-flex justify-content-between align-content-center" v-if="item.banstatus==false" @click="goToThread(item.topicNo)">
+                        <div class="d-flex flex-row">
+                            <img v-bind:src="item.topicPicture" width="100" />
+                            <div class="ml-2 topicDesc">
+                                <h6 class="mb-0">{{ item.topicTitle }}</h6>
+                                <div class="about">
+                                    <span>{{ item.topicDesc }}</span><br>
+                                    <span>{{ item.createDate }}</span><br>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </li>
+                    </li>
+                    <button id="banButton" v-if="userType==1 && item.banstatus==false" @click="banTopic(item.topicNo)">Ban Topic</button>
+                </div>
             </ul>
         </div>
     </main>
@@ -44,75 +47,110 @@ import { onMounted } from 'vue';
 </template>
 
 <script setup>
-const temp = ref([]);
-  async function getTopic() {
-    const response = await fetch('http://localhost:8181/topic', {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
+    const temp = ref([]);
+    // Retrieve and parse user data from session storage
+    const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
+    const profilePicture = userDataParsed.profilePicture;
+    // Ambil usertype dari session
+    var userType = userDataParsed.userType;
+
+    async function getTopic() {
+        const response = await fetch('http://localhost:8181/topic', {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        });
+        if (response.ok) {
+            const data = await response.json()
+            if (data.status == '200'){
+                for (const key in data.data) {
+                    temp.value.push(data.data[key]);
+                }
+                console.log(data.data)
+            } else {
+                console.error("Failed!", data.message);
+            }
         }
-    });
-    if (response.ok) {
-      const data = await response.json()
-      if (data.status == '200'){
-        for (const key in data.data) {
-            temp.value.push(data.data[key]);
-        }
-      } else {
-            console.error("Failed!", data.message);
-      }
     }
-  }
 
-  onMounted(getTopic);
+    onMounted(getTopic);
 
-  function goToThread(threadNo) {
-    var url = 'thread.html?topicNo='+threadNo;
-    window.open(url,'_self');
-  }
+    function goToThread(threadNo) {
+        var url = 'thread.html?topicNo='+threadNo;
+        window.open(url,'_self');
+    }
 
   // Post topic
-  async function postTopic() {
-    // Ambil data dari form
-    var topicName = document.getElementById("topicName").value;
-    var topicDesc = document.getElementById("topicDesc").value;
+    async function postTopic() {
+        // Ambil data dari form
+        var topicName = document.getElementById("topicName").value;
+        var topicDesc = document.getElementById("topicDesc").value;
 
-    // Handle gambar yang diupload
-    var fileInput = document.getElementById('topicPicture');
+        // Handle gambar yang diupload
+        var fileInput = document.getElementById('topicPicture');
 
-    // Buat path url untuk image yang akan diupload ke database
-    var urlTopicPicture = "../src/assets/userUploadedFiles/topicPicture/"
+        // Buat path url untuk image yang akan diupload ke database
+        var urlTopicPicture = "../src/assets/userUploadedFiles/topicPicture/"
 
-    // Cek apakah input file kosong, kalau kosong, kasih path ke foto default
-    if(fileInput.files.length == 0){
-        urlTopicPicture += "default.png"
-    } else {
-        // Ambil nama file yang diupload
-        var selectedFile = fileInput.files[0].name;
-        urlTopicPicture += selectedFile
-    }
-    const response = fetch('http://localhost:8181/topic', {
-        method: 'POST',
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },    
-        body: new URLSearchParams({
-            'topicTitle': topicName,
-            'topicDesc': topicDesc,
-            'topicPicture': urlTopicPicture
+        // Cek apakah input file kosong, kalau kosong, kasih path ke foto default
+        if(fileInput.files.length == 0){
+            urlTopicPicture += "default.png"
+        } else {
+            // Ambil nama file yang diupload
+            var selectedFile = fileInput.files[0].name;
+            urlTopicPicture += selectedFile
+        }
+        const response = await fetch('http://localhost:8181/topic', {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },    
+            body: new URLSearchParams({
+                'topicTitle': topicName,
+                'topicDesc': topicDesc,
+                'topicPicture': urlTopicPicture
+            })
         })
-    })
-    if (response.ok) {
-        const data = response.json()
-      if (data.status == '200'){
-        alert("Topic berhasil ditambahkan!")
-      } else {
-        console.error("Failed!", data.message);
-        alert("Gagal mengajukan request topic!")
-      }
+        if (response.ok) {
+            const data = await response.json()
+            if (data.status == '200'){
+                alert("Topic berhasil ditambahkan!")
+            } else {
+                console.error("Failed!", data.message);
+                alert("Gagal mengajukan request topic!")
+            }
+        }
     }
-  }
 
+    // Kode ban topic
+    // Admin only
+    async function banTopic(topicNo){
+        // Tampilkan prompt konfirmasi ban topic atau tidak
+        if (confirm('Apakah Anda yakin ingin memban topic?')) {
+            // Jika ya, ban topic
+            var url = "http://localhost:8181/topic/ban/" + topicNo;
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },    
+                body: new URLSearchParams({
+                    'banStatus': 1,
+                })    
+            })
+            if (response.ok) {
+                const data = await response.json()
+                if (data.status == '200'){
+                    alert("Topic berhasil diban!")
+                    window.open('/topic.html','_self');
+                } else {
+                    console.error("Failed!", data.message);
+                    alert("Gagal memban topic!")
+                }
+            }
+        }
+    }
     // Kode untuk modal
     function showModal(){
         var modal = document.getElementById("modal");
@@ -239,5 +277,13 @@ button:hover {
 h2.title {
     text-align: center;
     margin-top: 0;
+}
+#banButton {
+    background-color: #ff0000;
+    font-size: small;
+}
+#approveButton {
+    background-color: #0e9fde;
+    font-size: small;
 }
 </style>
