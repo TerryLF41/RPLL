@@ -208,9 +208,9 @@ func UpdateThreadBanStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	vars := mux.Vars(r)
-	threadId := vars["threadNo"]
+	threadNo := vars["threadNo"]
 
-	ban, _ := strconv.Atoi(r.Form.Get("ban"))
+	banStatus, _ := strconv.Atoi(r.Form.Get("banStatus"))
 
 	sqlStatement := `
 		UPDATE thread 
@@ -218,8 +218,8 @@ func UpdateThreadBanStatus(w http.ResponseWriter, r *http.Request) {
 		WHERE threadNo = ?`
 
 	_, errQuery := db.Exec(sqlStatement,
-		ban,
-		threadId,
+		banStatus,
+		threadNo,
 	)
 
 	// Kirim response ke client

@@ -19,7 +19,6 @@ func main() {
 	//1 = Admin
 
 	// Handler untuk user
-	router.HandleFunc("/user", controller.GetAllUsers).Methods("GET")
 	router.HandleFunc("/register", controller.RegisterUser).Methods("POST")
 	router.HandleFunc("/login", controller.Login).Methods("POST")
 	router.HandleFunc("/logout", controller.Logout).Methods("POST")
@@ -31,9 +30,9 @@ func main() {
 	// Handler untuk topic
 	router.HandleFunc("/topic", controller.GetAllTopic).Methods("GET")
 	router.HandleFunc("/topic", controller.InsertTopic).Methods("POST")
-	router.HandleFunc("/topic/Title/{topicNo}", controller.UpdateTopicDescription).Methods("PUT")
-	router.HandleFunc("/topic/Desc/{topicNo}", controller.UpdateTopicDescription).Methods("PUT")
-	router.HandleFunc("/topic/Status/{topicNo}", controller.UpdateTopicStatus).Methods("PUT")
+	router.HandleFunc("/topic/title/{topicNo}", controller.UpdateTopicDescription).Methods("PUT")
+	router.HandleFunc("/topic/desc/{topicNo}", controller.UpdateTopicDescription).Methods("PUT")
+	router.HandleFunc("/topic/ban/{topicNo}", controller.UpdateTopicStatus).Methods("PUT")
 	router.HandleFunc("/topic/{topicNo}", controller.GetUserLogUsingId).Methods("DELETE")
 
 	// Handler untuk thread
@@ -42,7 +41,7 @@ func main() {
 	router.HandleFunc("/thread", controller.InsertThread).Methods("POST")
 	router.HandleFunc("/thread/Title/{threadNo}", controller.UpdateThreadTitle).Methods("PUT")
 	router.HandleFunc("/thread/Desc/{threadNo}", controller.UpdateThreadDesc).Methods("PUT")
-	router.HandleFunc("/thread/Status/{threadNo}", controller.UpdateThreadBanStatus).Methods("PUT")
+	router.HandleFunc("/thread/ban/{threadNo}", controller.UpdateThreadBanStatus).Methods("PUT")
 	router.HandleFunc("/thread/{threadNo}", controller.DeleteThread).Methods("DELETE")
 
 	// Handler untuk post
