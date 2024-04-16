@@ -10,7 +10,7 @@ type User struct {
 	ProfileDesc    string       `json:"profileDesc"`
 	JoinDate       time.Time    `json:"joinDate"`
 	UserType       int          `json:"usertype,omitempty"`
-	BanStatus      bool         `json:"banstatus,omitempty"`
+	BanStatus      bool         `json:"banstatus"`
 	ProfilePicture string       `json:"profilePicture"`
 	ListReportPost []ReportPost `json:"ListReportPost,omitempty"`
 }
