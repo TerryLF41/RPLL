@@ -7,7 +7,7 @@ type Post struct {
 	PostNo    int       `json:"postNo"`
 	ThreadNo  int       `json:"threadNo"`
 	UserId    int       `json:"userId"`
-	ReplyTo   int       `json:"replyTo,omitempty"`
+	ReplyTo   *int      `json:"replyTo,omitempty"`
 	PostText  string    `json:"postText"`
 	PostImage string    `json:"postImage"`
 	PostDate  time.Time `json:"postDate"`
@@ -16,14 +16,14 @@ type Post struct {
 
 // PostModelFactory interface defines methods for post model
 type PostModelFactory interface {
-	CreatePost(postNo, threadNo, userId, replyTo int, postText, postImage string, postDate time.Time, banStatus bool) *Post
+	CreatePost(postNo, threadNo, userId int, replyTo *int, postText, postImage string, postDate time.Time, banStatus bool) *Post
 }
 
 // ConcretePostModelFactory struct implements PostModelFactory interface
 type ConcretePostModelFactory struct{}
 
 // CreatePost creates a new post instance
-func (factory *ConcretePostModelFactory) CreatePost(postNo, threadNo, userId, replyTo int, postText, postImage string, postDate time.Time, banStatus bool) *Post {
+func (factory *ConcretePostModelFactory) CreatePost(postNo, threadNo, userId int, replyTo *int, postText, postImage string, postDate time.Time, banStatus bool) *Post {
 	return &Post{
 		PostNo:    postNo,
 		ThreadNo:  threadNo,

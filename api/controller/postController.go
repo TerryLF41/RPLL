@@ -6,15 +6,22 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/gorilla/mux"
 )
 
 // Get semua post berdasarkan threadNo
 func GetAllPostByThreadNo(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
+	err := r.ParseForm()
+	if err != nil {
+		sendErrorResponse(w, "Failed")
+		return
+	}
+	vars := mux.Vars(r)
 
-	// Ambil thread number dari url query
-	threadNo := r.URL.Query().Get("threadNo")
+	threadNo := vars["threadNo"]
 
 	// Query ke SQL
 	query := "SELECT * FROM post WHERE threadNo = '" + threadNo + "'"
@@ -60,7 +67,16 @@ func InsertPost(w http.ResponseWriter, r *http.Request) {
 	}
 	threadNo, _ := strconv.Atoi(r.Form.Get("threadNo"))
 	userId, _ := strconv.Atoi(r.Form.Get("userId"))
-	replyTo, _ := strconv.Atoi(r.Form.Get("replyTo"))
+
+	var replyTo *int
+
+	// Convert the string to an int
+	if val, err := strconv.Atoi(r.Form.Get("replyTo")); err == nil {
+		replyTo = &val
+	} else {
+		log.Println("Error converting replyTo:", err)
+		replyTo = nil
+	}
 
 	postFactory := model.NewPostModelFactory()
 

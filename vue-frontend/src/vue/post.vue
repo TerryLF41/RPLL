@@ -9,26 +9,52 @@ import { onMounted } from 'vue';
         <nav class="navbar">
             <Header />
         </nav>
-        <h1>Daftar Topik</h1>
+        <h1>Daftar Post</h1>
         <button type="button" @click="showModal">Add New Thread</button> 
-        <div class="container d-flex justify-content-center" onload="getTopic()">
-            <ul class="list-group mt-5 text-white">
-                <li class="list-group-item d-flex justify-content-between align-content-center" @click="goToPost(item.threadNo)" v-for="item in temp">
-                    <div class="d-flex flex-row">
-                        <!-- <img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /> -->
-                        <div class="ml-2 threadDesc">
-                            <h6 class="mb-0">{{ item.threadTitle }}</h6>
+        <div class="container d-flex justify-content-center">
+            <ul class="list-group mt-5 text-white" >
+                <li class="list-group-item d-flex justify-content-between align-content-center" v-for="post in postList">
+                    <div class="post d-flex flex-row">
+                        <div class="profileUser">
+                            <span>nama user</span><br>
+                            <span><img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /></span>
+                        </div>
+                        <div class="ml-2 PostDesc">
+                            <h6 class="mb-0"> {{ post.postDate }}</h6>
                             <div class="about">
-                                <span>{{ item.threadDesc }}</span><br>
-                                <span>{{ item.createDate }}</span>
+                                <span>{{ post.postText }}</span>
                             </div>
                         </div>
+                        <div class="ml-2 PostImage">
+                            <h6 class="mb-0">No. {{ post.postNo }}</h6>
+                            <span><img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /></span>
+                        </div>
                     </div>
+                    <ul class="list-group mt-5 text-white" >
+                        <li class="list-group-item d-flex justify-content-between align-content-center" v-for="post in postList">
+                            <div class="d-flex flex-row">
+                                <div class="profileUser">
+                                    <span>nama user</span><br>
+                                    <span><img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /></span>
+                                </div>
+                                <div class="ml-2 PostDesc">
+                                    <h6 class="mb-0"> {{ post.postDate }}</h6>
+                                    <div class="about">
+                                        <span>{{ post.postText }}</span>
+                                    </div>
+                                </div>
+                                <div class="ml-2 PostImage">
+                                    <h6 class="mb-0">No. {{ post.postNo }}</h6>
+                                    <span><img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /></span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </div>
     </main>
-    <div class="modal-thread" id="modal">
+    <!-- <div class="modal-thread" id="modal">
         <form class="form" method="POST">
             <h2 class="title">Add New Thread</h2>
             <label><b>Nama Topik</b></label><br>
@@ -38,18 +64,18 @@ import { onMounted } from 'vue';
             <button type="submit" id="submit" @click="postThread">Submit</button>
             <button type="reset" id="cancel" @click="closeModal">Cancel</button>
         </form>
-    </div>
+    </div> -->
 </template>
 
 <script setup>
-const temp = ref([]);
+const postList = ref([]);
 
-  async function getThread() {
-    // Ambil nomor topic sekarang dari URL param
+  async function getPost() {
+    // Ambil nomor threadNo sekarang dari URL param
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    var topicNo = urlParams.get('topicNo')
-    var query = 'http://localhost:8181/thread/' + topicNo;
+    var threadNo = urlParams.get('threadNo')
+    var query = 'http://localhost:8181/post/' + threadNo;
     const response = await fetch(query, {
         method: "GET",
         headers: {
@@ -60,20 +86,16 @@ const temp = ref([]);
       const data = await response.json()
       if (data.status == '200'){
         for (const key in data.data) {
-            temp.value.push(data.data[key]);
+            postList.value.push(data.data[key]);
         }
+        console.log(postList);
       } else {
         console.error("Failed!", data.message);
       }
     }
   }
-
-  onMounted(getThread);
-
-  function goToPost(threadNo) {
-    var url = 'post.html?threadNo='+threadNo;
-    window.open(url,'_self');
-  }
+  
+  onMounted(getPost);
 
   // Post thread
   async function postThread() {
@@ -147,8 +169,15 @@ const temp = ref([]);
 	font-size: 12px;
 	margin-right: 10px;
 }
-.threadDesc{
+.PostDesc{
     margin-left: 10px;
+}
+.PostImage{
+    margin-left: 10px;
+}
+.list-group .list-group-item .list-group-item {
+    background-color: #959090; /* Adjust color if needed */
+    margin-top: 5px; /* Add margin to create indentation */
 }
 
 body {
