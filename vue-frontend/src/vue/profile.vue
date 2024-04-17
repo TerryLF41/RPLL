@@ -85,37 +85,36 @@ const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
         var description = document.getElementById("description").value;
 
         // Handle gambar yang diupload
-        var propifePicture = document.getElementById('avatar');
-
-        // Buat path url untuk image yang akan diupload ke database
+        var profilePicture = document.getElementById('avatar');
         var urlProfilePicture = "../src/assets/userUploadedFiles/topicPicture/"
 
         // Cek apakah input file kosong, kalau kosong, kasih path ke foto default
-        if(fileInput.files.length == 0){
-            urlProfilePicture += userDataParsed.profileProfile
+        if(profilePicture.files.length == 0){
+           var urlProfilePicture = userDataParsed.profileProfile
         } else {
             // Ambil nama file yang diupload
-            var selectedFile = fileInput.files[0].name;
+            var userProfilePicture = profilePicture.files[0].name;
             urlProfilePicture += selectedFile
         }
-        const response = await fetch('http://localhost:8181/user/', {
-            method: 'SET',
+        const response = await fetch('http://localhost:8181/profile/'+urlProfilePicture.userId, {
+            method: 'PUT',
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
             },    
             body: new URLSearchParams({
-                'topicTitle': topicName,
-                'topicDesc': topicDesc,
-                'topicPicture': urlTopicPicture
+                'username': userName,
+                'email': email,
+                'description': description,
+                'profilePicture': urlProfilePicture
             })
         })
         if (response.ok) {
             const data = await response.json()
             if (data.status == '200'){
-                alert("Topic berhasil ditambahkan!")
+                alert("Profile berhasil diganti!")
             } else {
                 console.error("Failed!", data.message);
-                alert("Gagal mengajukan request topic!")
+                alert("Gagal mengganti profil!")
             }
         }
     }

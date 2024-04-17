@@ -98,12 +98,21 @@ import { onMounted } from 'vue';
         }
 
         async function banUser(status,id){
-        if (status) {
-            const unbanresponse = await fetch('http://localhost:8181/user/unban/' + id, {
+            if (status == 1){
+                status = 0
+                console.log(status)
+            } else {
+                status = 1
+                console.log(status)
+            }
+            const unbanresponse = await fetch('http://localhost:8181/user/ban/' + id, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
+                body: new URLSearchParams({
+                'banStatus': status,
+            })
                 })
                 .then(unbanresponse => {
                 if (unbanresponse.ok) {
@@ -118,49 +127,17 @@ import { onMounted } from 'vue';
                 if (data.status == '200') {
                     // Log change user ban status activity as "Change user ban status"
                     logUserActivity("Change user ban status",userDataParsed.userId);
-                    alert("User is unbanned!");
+                    alert("User is Banned/unbanned!");
                     window.location.reload();
                 } else {
                     console.error("Failed to unban user:", data.message);
-                    alert("Failed to unban the user!");
+                    alert("Failed to Ban/unban the user!");
                 }
                 })
                 .catch(error => {
-                    console.error("Error unbanning user:", error);
+                    console.error("Error banning/unbanning user:", error);
                     alert("An error occurred while unbanning the user."); // Handle errors more gracefully
                 });
-        } else {
-            const banresponse = await fetch('http://localhost:8181/user/ban/' + id, {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                })
-                .then(banresponse => {
-                if (banresponse.ok) {
-                    return banresponse.json(); // Only proceed if the fetch is successful
-                } else {
-                    console.error("Failed to fetch ban response:", banresponse.status);
-                    throw new Error("Failed to ban user (fetch issue)"); // Or handle the error differently
-                }
-                })
-                .then(data => {
-                    console.log(data.status)
-                if (data.status == '200') {
-                    // Log change user ban status activity as "Change user ban status"
-                    logUserActivity("Change user ban status",userDataParsed.userId);
-                    alert("User is banned!");
-                    window.location.reload();
-                } else {
-                    console.error("Failed to ban user:", data.message);
-                    alert("Failed to ban the user!");
-                }
-                })
-                .catch(error => {
-                console.error("Error banning user:", error);
-                    alert("An error occurred while banning the user."); // Handle errors more gracefully
-                });
-        }
     }
 
     onMounted(getUsers);

@@ -20,11 +20,12 @@ func main() {
 
 	// Handler untuk user
 	router.HandleFunc("/user", controller.GetAllUsers).Methods("GET")
-	router.HandleFunc("/user/ban/{userId}", controller.BanUser).Methods("post")
-	router.HandleFunc("/user/unban/{userId}", controller.UnbanUser).Methods("post")
+	router.HandleFunc("/user/ban/{userId}", controller.BanUser).Methods("POST")
 	router.HandleFunc("/register", controller.RegisterUser).Methods("POST")
 	router.HandleFunc("/login", controller.Login).Methods("POST")
 	router.HandleFunc("/logout", controller.Logout).Methods("POST")
+	router.HandleFunc("/password/{userId}", controller.ChangePassword).Methods("PUT")
+	router.HandleFunc("/profile/{userId}", controller.ChangeProfile).Methods("PUT")
 
 	// Handler untuk userLog
 	router.HandleFunc("/userLog/{userId}", controller.GetUserLogUsingId).Methods("GET")
