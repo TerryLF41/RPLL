@@ -231,21 +231,20 @@ func ChangeProfile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userId := vars["userId"]
 
-	//Read From Request Body
 	err := r.ParseForm()
 	if err != nil {
 		sendErrorResponse(w, "Failed")
 		return
 	}
-	//Ambil password lama dan baru dari form
+
 	userName := r.Form.Get("username")
 	email := r.Form.Get("email")
 	description := r.Form.Get("description")
-	profilePicture := r.Form.Get("profilePict")
+	profilePicture := r.Form.Get("profilePicture")
 
 	sqlStatement := `
 		UPDATE user 
-		SET username = ?, email = ?, profileDesc = ?, profilePciture =?
+		SET username = ?, email = ?, profileDesc = ?, profilePicture =?
 
 		WHERE userId = ?`
 

@@ -2,6 +2,8 @@
 import Header from '../components/header.vue'
 import { ref } from 'vue';
 import { onMounted } from 'vue';
+import { setCookie, getCookie, deleteCookie } from '../utils'; // Import cookie functions
+import { logUserActivity } from '../activityLogger'; // Import user activity logger
 const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
 </script>
 
@@ -36,7 +38,7 @@ const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
         </div>
         <div class="col-md-4">
             <div class="p-3 py-5">
-                <div class="d-flex justify-content-between align-items-center experience"><span>Change Password</span><span class="border px-3 p-1 add-experience"><i class="fa fa-plus"></i>&nbsp;change!</span></div><br>
+                <div class="d-flex justify-content-between align-items-center experience" @click="changePassword"><span>Change Password</span><span class="border px-3 p-1 add-experience"><i class="fa fa-plus"></i>&nbsp;change!</span></div><br>
                 <div class="col-md-12"><label class="labels">old password</label><input type="password" id="oldPass" class="form-control" placeholder="old pass" value=""></div> <br>
                 <div class="col-md-12"><label class="labels">new password</label><input type="password" id="newPass" class="form-control" placeholder="new pass" value=""></div>
             </div>
@@ -56,23 +58,6 @@ const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
     // Ambil usertype dari session
 
     async function getProfile() {
-        // const response = await fetch('http://localhost:8181/topic', {
-        //     method: "GET",
-        //     headers: {
-        //         "Content-Type": "application/x-www-form-urlencoded"
-        //     }
-        // });
-        // if (response.ok) {
-        //     const data = await response.json()
-        //     if (data.status == '200'){
-        //         for (const key in data.data) {
-        //             temp.value.push(data.data[key]);
-        //         }
-        //         console.log(data.data)
-        //     } else {
-        //         console.error("Failed!", data.message);
-        //     }
-        // }
         console.log(userDataParsed)
     }
 
@@ -86,17 +71,17 @@ const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
 
         // Handle gambar yang diupload
         var profilePicture = document.getElementById('avatar');
-        var urlProfilePicture = "../src/assets/userUploadedFiles/topicPicture/"
+        var urlProfilePicture = "/src/assets/userUploadedFiles/userProfile/"
 
         // Cek apakah input file kosong, kalau kosong, kasih path ke foto default
         if(profilePicture.files.length == 0){
-           var urlProfilePicture = userDataParsed.profileProfile
+           var urlProfilePicture = userDataParsed.profilePicture
         } else {
             // Ambil nama file yang diupload
             var userProfilePicture = profilePicture.files[0].name;
             urlProfilePicture += selectedFile
         }
-        const response = await fetch('http://localhost:8181/profile/'+urlProfilePicture.userId, {
+        const response = await fetch('http://localhost:8181/profile/'+ userDataParsed.userId, {
             method: 'PUT',
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
@@ -112,13 +97,43 @@ const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
             const data = await response.json()
             if (data.status == '200'){
                 alert("Profile berhasil diganti!")
+                userDataParsed.username = userName
+                userDataParsed.email = email
+                userDataParsed.profileDesc = description
+                userDataParsed.profilePicture = urlProfilePicture
+                sessionStorage.setItem('userData', JSON.stringify(userDataParsed));
+                console.log(userDataParsed)
+                window.location.reload();
+                
             } else {
                 console.error("Failed!", data.message);
                 alert("Gagal mengganti profil!")
             }
         }
     }
-
+    async function changePassword(){
+        var oldPass = document.getElementById("oldPass").value;
+        var newPass = document.getElementById("newPass").value;
+        const response = await fetch('http://localhost:8181/password/'+ userDataParsed.userId, {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },    
+            body: new URLSearchParams({
+                'old_password': oldPass,
+                'new_password': newPass,
+            })
+        })
+        if (response.ok) {
+            const data = await response.json()
+            if (data.status == '200'){
+                alert("Password berhasil diganti!")
+            } else {
+                console.error("Failed!", data.message);
+                alert("Gagal mengganti password!")
+            }
+        }
+    }
 </script>
 
 <style scoped>
