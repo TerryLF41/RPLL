@@ -52,20 +52,19 @@ import { computed } from 'vue';
                         </li>
                     </ul>
                     <div class="reply" style="position: absolute; bottom: 0; margin-bottom: 15px">
-                        <form class="formReply" method="POST" id="formReply">
-                            <input name="textReply" id="textReply" type="textbox" placeholder="your comment here">
-                            <input name="postNo" id="postNo" type="hidden" :value="post.postNo">
-                            <input name="replyImage" id="replyImage" type="file" accept="image/png, image/gif, image/jpeg"><br><br>
-                            <button type="submit" id="reply" @click="replyPost" form="formReply">Comment</button>
+                        <form class="formReply" method="POST">
+                            <input :name="'textReply' + post.postNo" :id="'textReply' + post.postNo" type="textbox" placeholder="your comment here">
+                            <input :name="'textReply' + post.postNo" :id="'replyImage' + post.postNo" type="file" accept="image/png, image/gif, image/jpeg"><br><br>
+                            <button type="submit" id="reply" @click="replyPost(post.postNo)">Comment</button>
                         </form>
                     </div>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-content-center">
                     <div class="d-flex flex-row">
-                        <form class="formPost" method="POST" id="formPost">
+                        <form class="formPost" method="POST">
                             <input name="textComment" id="textComment" type="textbox" placeholder="your comment here">
                             <input name="textImage" id="textImage" type="file" accept="image/png, image/gif, image/jpeg"><br><br>
-                            <button type="submit" id="post" @click="newPost" form="formPost">Comment</button>
+                            <button type="submit" id="post" @click="newPost">Comment</button>
                         </form>
                     </div>
                 </li>
@@ -186,7 +185,7 @@ import { computed } from 'vue';
     var postText = document.getElementById("textComment").value;
     // var textImage = document.getElementById("textImage").value;
     var postImage = "../assets/userUploadedFiles/userProfile/default.png"
-    
+
     // Ambil user Id dari sesion
     const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
     const userId = userDataParsed.userId;
@@ -214,18 +213,17 @@ import { computed } from 'vue';
       }
     }
   }
-  async function replyPost() {
+  async function replyPost(postNo) {
     // Ambil threadNo dari URL param
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     var threadNo = urlParams.get('threadNo')
 
     // Ambil data dari form
-    var textReply = document.getElementById("textReply").value;
-    var postNo = document.getElementById("postNo").value;
-
-    // var textImage = document.getElementById("textImage").value;
+    var textReply = document.getElementById("textReply"+postNo).value;
+    // var textImage = document.getElementById("textImage"+postNo).value;
     var replyImage = "../assets/userUploadedFiles/userProfile/default.png"
+    alert(textReply)
     // Ambil user Id dari sesion
     const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
     const userId = userDataParsed.userId;
