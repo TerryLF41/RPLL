@@ -315,3 +315,30 @@ func getUserPassword(id int) string {
 	}
 	return password
 }
+
+// Handler untuk mendapatkan username berdasarkan userId
+func GetUsernameByUserId(w http.ResponseWriter, r *http.Request) {
+	db := connect()
+	defer db.Close()
+
+	// Mendapatkan userId dari URL
+	vars := mux.Vars(r)
+	userId := vars["userId"]
+
+	// Membuat query SQL
+	query := "SELECT username FROM user WHERE userId = ?"
+
+	// Eksekusi query
+	row := db.QueryRow(query, userId)
+
+	var username string
+	err := row.Scan(&username)
+	if err != nil {
+		log.Println(err)
+		sendErrorResponse(w, "Failed to retrieve username")
+		return
+	}
+
+	// Kirim response ke client
+	sendSuccessResponse(w, "Successfully retrieved username", username)
+}

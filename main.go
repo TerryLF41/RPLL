@@ -53,6 +53,11 @@ func main() {
 	router.HandleFunc("/post", controller.InsertPost).Methods("POST")
 	router.HandleFunc("/post", controller.UpdatePostBanStatus).Methods("PUT")
 
+	// Handler untuk reportpost
+	router.HandleFunc("/reportpost", controller.GetAllReportPost).Methods("GET")
+	router.HandleFunc("/reportpostu", controller.GetAllReportPostU).Methods("GET")
+	router.HandleFunc("/reportpost/resolve/{postNo}", controller.SolveReport).Methods("PUT")
+
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173", "http://localhost:8181"},
 		AllowedMethods:   []string{"POST", "GET", "PUT", "DELETE"},

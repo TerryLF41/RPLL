@@ -145,44 +145,54 @@ import { onMounted } from 'vue';
 </script>
 
 <style scoped>
+.userStatusClass {}
+
 .card {
     box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
 }
+
 .avatar.sm {
     width: 2.25rem;
     height: 2.25rem;
     font-size: .818125rem;
 }
-.list-group{
-	width: 100%;
+
+.list-group {
+    width: 100%;
     border-radius: 0;
 }
-.card-header{
+
+.card-header {
     background-color: #ADA7A7;
 }
+
 body {
     color: rgb(31, 25, 25);
-    background-image:url("../upload/media/bg-topic.jpg");
+    background-image: url("../upload/media/bg-topic.jpg");
     background-repeat: no-repeat;
     background-size: cover;
 }
+
 main {
     min-height: 80vh;
     width: 66%;
     margin: auto;
     padding: 0;
 }
+
 h1 {
     text-align: center;
 }
-.list{
+
+.list {
     padding: 5px;
     width: 90%;
-    margin:auto;
+    margin: auto;
     border: 2px solid grey;
     border-radius: 10px;
 }
-a{
+
+a {
     color: white;
     text-decoration: none;
 }
@@ -191,10 +201,12 @@ td,th{
     height:30px;
     cursor: pointer;
 }
-h1{
+
+h1 {
     color: white;
     padding-left: 5%;
 }
+
 ::placeholder {
     color: #cccccc;
 }
