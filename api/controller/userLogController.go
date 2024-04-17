@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/gorilla/mux"
 )
 
 // File ini memuat function-function yang berkaitan dengan userLog
@@ -17,12 +19,12 @@ func GetUserLogUsingId(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
 
-	// Ambil user id dari url query
-	userId := r.URL.Query().Get("userId")
+	// Ambil user id dari mux vars
+	vars := mux.Vars(r)
+	userId := vars["userId"]
 
 	// Query ke SQL
-	query := "SELECT * FROM userlog WHERE userId = '" + userId + "'"
-	log.Println(query)
+	query := "SELECT * FROM userlog WHERE userId = '" + userId + "' ORDER BY logTime DESC"
 
 	rows, err := db.Query(query)
 
@@ -83,6 +85,7 @@ func InsertUserLog(w http.ResponseWriter, r *http.Request) {
 
 	if errQuery == nil {
 		sendSuccessResponse(w, "Successfully inserted new userlog", nil)
+		log.Println("Succ")
 	} else {
 		log.Println(errQuery)
 		sendErrorResponse(w, "Failed to insert userLog to database")
