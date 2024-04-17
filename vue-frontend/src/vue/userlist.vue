@@ -25,6 +25,7 @@ import { onMounted } from 'vue';
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Created Date</th>
+                                <th class>View Activity</th>
                                 <th class="text-end">Ban Status</th>
                             </tr>
                         </thead>
@@ -40,6 +41,7 @@ import { onMounted } from 'vue';
                                 </td>
                                 <td>{{ item.email }}</td>
                                 <td>{{ item.joinDate }}</td>
+                                <td @click="viewUserActivity(item.userId)">View Activity</td>
                                 <td @click="banUser(item.banstatus, item.userId)" v-bind:class="userStatusClass" style="background-color: grey !important; text-align: center; color: red">  
                                     {{ item.banstatus ? 'Unban User' : 'Ban user' }}
                                 </td>
@@ -55,93 +57,113 @@ import { onMounted } from 'vue';
 </template>
 
 <script setup>
-const temp = ref([]);
+    import { logUserActivity } from '../activityLogger'; // Import user activity logger
+    const temp = ref([]);
+    // Retrieve and parse user data from session storage
+    const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
 
-  async function getUsers() {
-    // Ambil nomor topic sekarang dari URL param
-    var query = 'http://localhost:8181/user';
-    const response = await fetch(query, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
-    });
-    if (response.ok) {
-      const data = await response.json()
-      if (data.status == '200'){
-        for (const key in data.data) {
-            temp.value.push(data.data[key]);
-            console.log(data.data[key])
-        }
-      } else {
-        console.error("Failed!", data.message);
-      }
-    }
-  }
-
-  async function banUser(status,id){
-    if (status) {
-        const unbanresponse = fetch('http://localhost:8181/user/unban/' + id, {
-            method: 'POST',
+    async function getUsers() {
+        // Ambil nomor topic sekarang dari URL param
+        var query = 'http://localhost:8181/user';
+        const response = await fetch(query, {
+            method: "GET",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
-            },
-            })
-            .then(unbanresponse => {
-            if (unbanresponse.ok) {
-                return unbanresponse.json(); // Only proceed if the fetch is successful
-            } else {
-                console.error("Failed to fetch unban response:", unbanresponse.status);
-                throw new Error("Failed to unban user (fetch issue)"); // Or handle the error differently
             }
-            })
-            .then(data => {
-                console.log(data.status)
-            if (data.status == '200') {
-                alert("user is unbanned!");
-                window.location.reload();
+        });
+        if (response.ok) {
+            const data = await response.json()
+            if (data.status == '200'){
+                for (const key in data.data) {
+                    temp.value.push(data.data[key]);
+                    console.log(data.data[key])
+                }
             } else {
-                console.error("Failed to unban user:", data.message);
-                alert("Failed to unban the user!");
+                console.error("Failed!", data.message);
             }
-            })
-            .catch(error => {
-            console.error("Error unbanning user:", error);
-            alert("An error occurred while unbanning the user."); // Handle errors more gracefully
-            });
-    } else {
-        const banresponse = fetch('http://localhost:8181/user/ban/' + id, {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            })
-            .then(banresponse => {
-            if (banresponse.ok) {
-                return banresponse.json(); // Only proceed if the fetch is successful
-            } else {
-                console.error("Failed to fetch ban response:", banresponse.status);
-                throw new Error("Failed to ban user (fetch issue)"); // Or handle the error differently
-            }
-            })
-            .then(data => {
-                console.log(data.status)
-            if (data.status == '200') {
-                alert("user is banned!");
-                window.location.reload();
-            } else {
-                console.error("Failed to ban user:", data.message);
-                alert("Failed to ban the user!");
-            }
-            })
-            .catch(error => {
-            console.error("Error banning user:", error);
-            alert("An error occurred while banning the user."); // Handle errors more gracefully
-            });
+        }
     }
-  }
 
-  onMounted(getUsers);
+    async function viewUserActivity(userId,username){
+        // Buat link ke halaman useractivity
+        var url = '/useractivity.html?userId=' + userId
+
+        // Buka window baru yang menampilkan log activity user
+        newwindow=window.open(url,'User Activity','height=450,width=800');
+        if (window.focus) {
+            newwindow.focus()
+        }
+        return false; 
+
+        }
+
+        async function banUser(status,id){
+        if (status) {
+            const unbanresponse = await fetch('http://localhost:8181/user/unban/' + id, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                })
+                .then(unbanresponse => {
+                if (unbanresponse.ok) {
+                    return unbanresponse.json(); // Only proceed if the fetch is successful
+                } else {
+                    console.error("Failed to fetch unban response:", unbanresponse.status);
+                    throw new Error("Failed to unban user (fetch issue)"); // Or handle the error differently
+                }
+                })
+                .then(data => {
+                    console.log(data.status)
+                if (data.status == '200') {
+                    // Log change user ban status activity as "Change user ban status"
+                    logUserActivity("Change user ban status",userDataParsed.userId);
+                    alert("User is unbanned!");
+                    window.location.reload();
+                } else {
+                    console.error("Failed to unban user:", data.message);
+                    alert("Failed to unban the user!");
+                }
+                })
+                .catch(error => {
+                    console.error("Error unbanning user:", error);
+                    alert("An error occurred while unbanning the user."); // Handle errors more gracefully
+                });
+        } else {
+            const banresponse = await fetch('http://localhost:8181/user/ban/' + id, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                })
+                .then(banresponse => {
+                if (banresponse.ok) {
+                    return banresponse.json(); // Only proceed if the fetch is successful
+                } else {
+                    console.error("Failed to fetch ban response:", banresponse.status);
+                    throw new Error("Failed to ban user (fetch issue)"); // Or handle the error differently
+                }
+                })
+                .then(data => {
+                    console.log(data.status)
+                if (data.status == '200') {
+                    // Log change user ban status activity as "Change user ban status"
+                    logUserActivity("Change user ban status",userDataParsed.userId);
+                    alert("User is banned!");
+                    window.location.reload();
+                } else {
+                    console.error("Failed to ban user:", data.message);
+                    alert("Failed to ban the user!");
+                }
+                })
+                .catch(error => {
+                console.error("Error banning user:", error);
+                    alert("An error occurred while banning the user."); // Handle errors more gracefully
+                });
+        }
+    }
+
+    onMounted(getUsers);
 
 </script>
 
@@ -190,6 +212,7 @@ a{
 td,th{
     border-bottom:1px inset grey;
     height:30px;
+    cursor: pointer;
 }
 h1{
     color: white;

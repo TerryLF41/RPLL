@@ -25,7 +25,19 @@ import { onMounted } from 'vue';
                             </div>
                         </div>
                     </li>
+                    <li class="list-group-item d-flex justify-content-between align-content-center" v-if="userType==1 && item.banStatus==true" @click="goToPost" >
+                        <div class="d-flex flex-row">
+                            <div class="ml-2 threadDesc">
+                                <h6 class="mb-0">{{ item.threadTitle }}</h6>
+                                <div class="about">
+                                    <span>{{ item.threadDesc }}</span><br>
+                                    <span>{{ item.createDate }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
                     <button id="banButton" v-if="userType==1 && item.banStatus==false" @click="banThread(item.threadNo)">Ban Thread</button>
+                    <button id="unbanButton" v-if="userType==1 && item.banStatus==true" @click="unbanThread(item.threadNo)">Unban Thread</button>
                 </div>
             </ul>
         </div>
@@ -119,39 +131,74 @@ import { onMounted } from 'vue';
 
   // Kode ban thread
   // Admin only
-  async function banThread(threadNo){
-    // Tampilkan prompt konfirmasi ban topic atau tidak
-    if (confirm('Apakah Anda yakin ingin memban thread?')) {
-        // Jika ya, ban topic
-        var url = "http://localhost:8181/thread/ban/" + threadNo;
-        const response = await fetch(url, {
-            method: 'PUT',
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },    
-            body: new URLSearchParams({
-                'banStatus': 1,
-            })    
-        })
-        if (response.ok) {
-            const data = await response.json()
-            if (data.status == '200'){
-                // Log ban thread activity as "Ban thread"
-                logUserActivity("Ban thread",userDataParsed.userId);
+    async function banThread(threadNo){
+        // Tampilkan prompt konfirmasi ban topic atau tidak
+        if (confirm('Apakah Anda yakin ingin memban thread?')) {
+            // Jika ya, ban topic
+            var url = "http://localhost:8181/thread/ban/" + threadNo;
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },    
+                body: new URLSearchParams({
+                    'banStatus': 1,
+                })    
+            })
+            if (response.ok) {
+                const data = await response.json()
+                if (data.status == '200'){
+                    // Log ban thread activity as "Ban thread"
+                    logUserActivity("Ban thread",userDataParsed.userId);
 
-                alert("Thread berhasil diban!")
-                // Ambil nomor topic sekarang dari URL param
-                const queryString = window.location.search;
-                const urlParams = new URLSearchParams(queryString);
-                var topicNo = urlParams.get('topicNo')
-                var url = '/thread.html?topicNo=' + topicNo;
-                window.open(url,'_self');
-            } else {
-                console.error("Failed!", data.message);
-                alert("Gagal memban thread!")
+                    alert("Thread berhasil diban!")
+                    // Ambil nomor topic sekarang dari URL param
+                    const queryString = window.location.search;
+                    const urlParams = new URLSearchParams(queryString);
+                    var topicNo = urlParams.get('topicNo')
+                    var url = '/thread.html?topicNo=' + topicNo;
+                    window.open(url,'_self');
+                } else {
+                    console.error("Failed!", data.message);
+                    alert("Gagal memban thread!")
+                }
             }
         }
     }
+
+    async function unbanThread(threadNo){
+        // Tampilkan prompt konfirmasi ban topic atau tidak
+        if (confirm('Apakah Anda yakin ingin memunban thread?')) {
+            // Jika ya, ban topic
+            var url = "http://localhost:8181/thread/ban/" + threadNo;
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },    
+                body: new URLSearchParams({
+                    'banStatus': 0,
+                })    
+            })
+            if (response.ok) {
+                const data = await response.json()
+                if (data.status == '200'){
+                    // Log ban thread activity as "Ban thread"
+                    logUserActivity("Unban thread",userDataParsed.userId);
+
+                    alert("Thread berhasil diunban!")
+                    // Ambil nomor topic sekarang dari URL param
+                    const queryString = window.location.search;
+                    const urlParams = new URLSearchParams(queryString);
+                    var topicNo = urlParams.get('topicNo')
+                    var url = '/thread.html?topicNo=' + topicNo;
+                    window.open(url,'_self');
+                } else {
+                    console.error("Failed!", data.message);
+                    alert("Gagal memban thread!")
+                }
+            }
+        }
     }
 
   // Kode untuk modal
@@ -302,6 +349,10 @@ h2.title {
 }
 #banButton {
     background-color: #ff0000;
+    font-size: small;
+}
+#unbanButton {
+    background-color: #0e9fde;
     font-size: small;
 }
 </style>
