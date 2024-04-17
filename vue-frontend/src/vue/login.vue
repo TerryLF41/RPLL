@@ -18,6 +18,7 @@
 
 <script setup>
 import { setCookie, getCookie, deleteCookie } from '../utils'; // Import cookie functions
+import { logUserActivity } from '../activityLogger'; // Import user activity logger
 
 const rememberedEmail = getCookie('email') || ''; // Retrieve remembered email from cookie
 const rememberedPassword = getCookie('password') || ''; // Retrieve remembered password from cookie
@@ -40,7 +41,6 @@ async function login() {
 
   if (response.ok) {
     const data = await response.json();
-    console.log(data);
     if (data.status == '200') {
       // Set persistent cookies if remember me is checked
       setCookie('token', data.token, 7);
@@ -59,6 +59,9 @@ async function login() {
       history.replaceState(null, '', '/homepage.html');
       // Add a new history entry pointing to the homepage URL
       history.pushState(null, '', '/homepage.html');
+
+      // Log user login activity as "Login"
+      logUserActivity("Login",userData.userId);
 
       console.log("Login successful!");
       alert('Login successful!');

@@ -44,6 +44,7 @@ import { onMounted } from 'vue';
 </template>
 
 <script setup>
+    import { logUserActivity } from '../activityLogger'; // Import user activity logger
     const temp = ref([]);
 
     // Retrieve and parse user data from session storage
@@ -106,6 +107,8 @@ import { onMounted } from 'vue';
     if (response.ok) {
         const data = await response.json()
         if (data.status == '200'){
+            // Log create thread activity as "Create thread"
+            logUserActivity("Create thread",userDataParsed.userId);
             alert("Thread berhasil ditambahkan!")
         } else {
             console.error("Failed!", data.message);
@@ -133,6 +136,9 @@ import { onMounted } from 'vue';
         if (response.ok) {
             const data = await response.json()
             if (data.status == '200'){
+                // Log ban thread activity as "Ban thread"
+                logUserActivity("Ban thread",userDataParsed.userId);
+
                 alert("Thread berhasil diban!")
                 // Ambil nomor topic sekarang dari URL param
                 const queryString = window.location.search;

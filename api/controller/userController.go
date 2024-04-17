@@ -92,6 +92,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		userData := map[string]interface{}{
+			"userId":         user.UserID,
 			"username":       user.Username,
 			"email":          user.Email,
 			"profilePicture": user.ProfilePicture,

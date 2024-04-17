@@ -1,5 +1,6 @@
 <script setup>
 import { setCookie, getCookie, deleteCookie } from '../utils'; // Import cookie functions
+import { logUserActivity } from '../activityLogger'; // Import user activity logger
 
 // Retrieve and parse user data from session storage
 const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
@@ -14,6 +15,12 @@ function logout() {
   // Remove token cookie
   setCookie('token', '', -1);
 
+  // Log logout activity as "Ban thread"
+  logUserActivity("Ban thread",userDataParsed.userId);
+
+  //Alert user
+  alert("Goodbye")
+
   // Redirect to login page
   window.open('login.html', '_self');
 }
@@ -27,7 +34,7 @@ function logout() {
       <li><a href="about.php">About</a></li>
       <li><a @click="logout">Log Out</a></li> <!-- Add event handler for logout -->
       <div class="profile-picture">
-        <a href="editProfile.html"><img class="profile-picture" :src="profilePicture"></a>
+        <a href="profile.html"><img class="profile-picture" :src="profilePicture"></a>
       </div>
     </div> 
   </ul>
@@ -39,7 +46,6 @@ body {
     margin: 0;
     padding: 0;
 }
-
 
 .menu li a {
     color: #fff; /* Menetapkan warna teks menjadi putih */
