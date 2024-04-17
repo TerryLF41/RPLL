@@ -2,6 +2,7 @@
 import Header from '../components/header.vue'
 import { ref } from 'vue';
 import { onMounted } from 'vue';
+const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
 </script>
 
 <template>
@@ -10,7 +11,40 @@ import { onMounted } from 'vue';
             <Header />
         </nav>
         <h1>User Profile</h1>  
-        
+        <div class="container rounded bg-black mt-5 mb-5" >
+    <div class="row">
+        <div class="col-md-3 border-right">
+            <div class="d-flex flex-column align-items-center text-center p-3 py-5"><img class="rounded-circle mt-5" width="150px" v-bind:src=userDataParsed.profilePicture><span class="font-weight-bold">{{ userDataParsed.username }}
+            </span><span class="text-white-50">{{userDataParsed.email}}
+            <input class="masukan" type="file" id="avatar" name="avatar" accept="image/png, image/jpeg">
+            </span><span> </span></div>
+        </div>
+        <div class="col-md-5 border-right">
+            <div class="p-3 py-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-right">Profile Settings</h4>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-12"><label class="labels">Name</label><input type="text" id="userName" class="form-control" v-bind:value=userDataParsed.username></div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-12"><label class="labels">Email</label><input type="text" id="email" class="form-control" v-bind:value=userDataParsed.email></div>
+                    <div class="col-md-12"><label class="labels">Profile Desc</label><textarea id="description" class="form-control height:fit-content; form-control-sm" v-bind:value=userDataParsed.profileDesc></textarea></div>
+                </div>
+                <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="button" @click="changeProfile">Save Profile</button></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3 py-5">
+                <div class="d-flex justify-content-between align-items-center experience"><span>Change Password</span><span class="border px-3 p-1 add-experience"><i class="fa fa-plus"></i>&nbsp;change!</span></div><br>
+                <div class="col-md-12"><label class="labels">old password</label><input type="password" id="oldPass" class="form-control" placeholder="old pass" value=""></div> <br>
+                <div class="col-md-12"><label class="labels">new password</label><input type="password" id="newPass" class="form-control" placeholder="new pass" value=""></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
     </main>
     
 </template>
@@ -18,126 +52,73 @@ import { onMounted } from 'vue';
 <script setup>
     const temp = ref([]);
     // Retrieve and parse user data from session storage
-    const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
+    
     // Ambil usertype dari session
-    var userType = userDataParsed.userType;
 
-    async function getTopic() {
-        const response = await fetch('http://localhost:8181/topic', {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            }
-        });
-        if (response.ok) {
-            const data = await response.json()
-            if (data.status == '200'){
-                for (const key in data.data) {
-                    temp.value.push(data.data[key]);
-                }
-                console.log(data.data)
-            } else {
-                console.error("Failed!", data.message);
-            }
-        }
+    async function getProfile() {
+        // const response = await fetch('http://localhost:8181/topic', {
+        //     method: "GET",
+        //     headers: {
+        //         "Content-Type": "application/x-www-form-urlencoded"
+        //     }
+        // });
+        // if (response.ok) {
+        //     const data = await response.json()
+        //     if (data.status == '200'){
+        //         for (const key in data.data) {
+        //             temp.value.push(data.data[key]);
+        //         }
+        //         console.log(data.data)
+        //     } else {
+        //         console.error("Failed!", data.message);
+        //     }
+        // }
+        console.log(userDataParsed)
     }
 
-    onMounted(getTopic);
+    onMounted(getProfile);
 
-    function goToThread(threadNo) {
-        var url = 'thread.html?topicNo='+threadNo;
-        window.open(url,'_self');
-    }
-
-  // Post topic
-    async function postTopic() {
+    async function changeProfile() {
         // Ambil data dari form
-        var topicName = document.getElementById("topicName").value;
-        var topicDesc = document.getElementById("topicDesc").value;
+        var userName = document.getElementById("userName").value;
+        var email = document.getElementById("email").value;
+        var description = document.getElementById("description").value;
 
         // Handle gambar yang diupload
-        var fileInput = document.getElementById('topicPicture');
-
-        // Buat path url untuk image yang akan diupload ke database
-        var urlTopicPicture = "../src/assets/userUploadedFiles/topicPicture/"
+        var profilePicture = document.getElementById('avatar');
+        var urlProfilePicture = "../src/assets/userUploadedFiles/topicPicture/"
 
         // Cek apakah input file kosong, kalau kosong, kasih path ke foto default
-        if(fileInput.files.length == 0){
-            urlTopicPicture += "default.png"
+        if(profilePicture.files.length == 0){
+           var urlProfilePicture = userDataParsed.profileProfile
         } else {
             // Ambil nama file yang diupload
-            var selectedFile = fileInput.files[0].name;
-            urlTopicPicture += selectedFile
+            var userProfilePicture = profilePicture.files[0].name;
+            urlProfilePicture += selectedFile
         }
-        const response = await fetch('http://localhost:8181/topic', {
-            method: 'POST',
+        const response = await fetch('http://localhost:8181/profile/'+urlProfilePicture.userId, {
+            method: 'PUT',
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
             },    
             body: new URLSearchParams({
-                'topicTitle': topicName,
-                'topicDesc': topicDesc,
-                'topicPicture': urlTopicPicture
+                'username': userName,
+                'email': email,
+                'description': description,
+                'profilePicture': urlProfilePicture
             })
         })
         if (response.ok) {
             const data = await response.json()
             if (data.status == '200'){
-                alert("Topic berhasil ditambahkan!")
+                alert("Profile berhasil diganti!")
             } else {
                 console.error("Failed!", data.message);
-                alert("Gagal mengajukan request topic!")
+                alert("Gagal mengganti profil!")
             }
         }
     }
 
-    // Kode ban topic
-    // Admin only
-    async function banTopic(topicNo){
-        // Tampilkan prompt konfirmasi ban topic atau tidak
-        if (confirm('Apakah Anda yakin ingin memban topic?')) {
-            // Jika ya, ban topic
-            var url = "http://localhost:8181/topic/ban/" + topicNo;
-            const response = await fetch(url, {
-                method: 'PUT',
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },    
-                body: new URLSearchParams({
-                    'banStatus': 1,
-                })    
-            })
-            if (response.ok) {
-                const data = await response.json()
-                if (data.status == '200'){
-                    alert("Topic berhasil diban!")
-                    window.open('/topic.html','_self');
-                } else {
-                    console.error("Failed!", data.message);
-                    alert("Gagal memban topic!")
-                }
-            }
-        }
-    }
-    // Kode untuk modal
-    function showModal(){
-        var modal = document.getElementById("modal");
-        modal.style.display = "block";
-    }
-    
-    // Close modal
-    function closeModal() {
-        var modal = document.getElementById("modal");
-        modal.style.display = "none"
-    }
-
-    // Close modal kalau klik diluar modal
-    window.onclick = function(event) {
-        var modal = document.getElementById("modal");
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
 </script>
 
 <style scoped>
@@ -145,6 +126,66 @@ h1{
     color: white;
     padding-left: 5%;
     text-align: center;
+}
+body {
+    color: white;
+    background: rgb(99, 39, 120)
+}
+.col-md-12{
+}
+.form-control:focus {
+    box-shadow: none;
+    border-color: #BA68C8
+}
+.masukan{
+    font-size: .8rem;
+    padding-left: 4rem;
+}
+.form-control-sm {
+    height: calc(3.5em + 2.5rem + 2px);
+    
+    padding: .25rem .5rem;
+    font-size: .875rem;
+    line-height: 1.5;
+    border-radius: .2rem;
+}
+
+.profile-button {
+    background: rgb(99, 39, 120);
+    box-shadow: none;
+    border: none
+}
+
+.profile-button:hover {
+    background: #682773
+}
+
+.profile-button:focus {
+    background: #682773;
+    box-shadow: none
+}
+
+.profile-button:active {
+    background: #682773;
+    box-shadow: none
+}
+
+.back:hover {
+    color: #682773;
+    cursor: pointer
+}
+
+.labels {
+    font-size: 11px
+}
+.container {
+    color: white;
+}
+.add-experience:hover {
+    background: #BA68C8;
+    color: #fff;
+    cursor: pointer;
+    border: solid 1px #BA68C8
 }
 
 </style>
