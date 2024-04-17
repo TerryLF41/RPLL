@@ -16,7 +16,7 @@ function logout() {
   setCookie('token', '', -1);
 
   // Log logout activity as "Ban thread"
-  logUserActivity("Ban thread",userDataParsed.userId);
+  logUserActivity("Logout",userDataParsed.userId);
 
   //Alert user
   alert("Goodbye")
