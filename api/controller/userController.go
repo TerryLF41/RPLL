@@ -184,6 +184,12 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
 
+	vars := mux.Vars(r)
+	userId, err1 := strconv.Atoi(vars["userId"])
+	if err1 != nil {
+		http.Error(w, "Unable to convert string to int", http.StatusInternalServerError)
+		return
+	}
 	//Read From Request Body
 	err := r.ParseForm()
 	if err != nil {
@@ -194,11 +200,8 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 	oldpassword := r.Form.Get("old_password")
 	newpassword := r.Form.Get("new_password")
 
-	//User id ambil pakai cookie
-	userid := getUserIdFromCookie(r)
-
 	//Password lama user dari database untuk dibandingkan
-	var password = getUserPassword(userid)
+	var password = getUserPassword(userId)
 
 	//Hash password lama yang diinput untuk verifikasi
 	hash := sha256.Sum256([]byte(oldpassword))
@@ -208,7 +211,7 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 		//hash password baru
 		hash2 := sha256.Sum256([]byte(newpassword))
 		passwordHash2 := hex.EncodeToString(hash2[:])
-		query := "UPDATE user SET password = '" + passwordHash2 + "' WHERE userId = " + strconv.Itoa(userid)
+		query := "UPDATE user SET password = '" + passwordHash2 + "' WHERE userId = " + strconv.Itoa(userId)
 		_, errQuery := db.Exec(query)
 
 		if errQuery != nil {
@@ -218,6 +221,44 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		sendErrorResponse(w, "Password does not match!")
+	}
+}
+
+func ChangeProfile(w http.ResponseWriter, r *http.Request) {
+	db := connect()
+	defer db.Close()
+
+	vars := mux.Vars(r)
+	userId := vars["userId"]
+
+	err := r.ParseForm()
+	if err != nil {
+		sendErrorResponse(w, "Failed")
+		return
+	}
+
+	userName := r.Form.Get("username")
+	email := r.Form.Get("email")
+	description := r.Form.Get("description")
+	profilePicture := r.Form.Get("profilePicture")
+
+	sqlStatement := `
+		UPDATE user 
+		SET username = ?, email = ?, profileDesc = ?, profilePicture =?
+
+		WHERE userId = ?`
+
+	_, errQuery := db.Exec(sqlStatement,
+		userName,
+		email,
+		description,
+		profilePicture,
+		userId,
+	)
+	if errQuery == nil {
+		sendSuccessResponse(w, "Successfully updated user information", nil)
+	} else {
+		sendErrorResponse(w, "Failed to update user information")
 	}
 }
 
@@ -232,48 +273,25 @@ func BanUser(w http.ResponseWriter, r *http.Request) {
 	}
 	vars := mux.Vars(r)
 	userId := vars["userId"]
-
-	sqlStatement := `
-		UPDATE user 
-		SET banStatus = 1
-		WHERE userId = ?`
-
-	_, errQuery := db.Exec(sqlStatement,
-		userId,
-	)
-
-	if errQuery == nil {
-		sendSuccessResponse(w, "Successfully Banned the user", nil)
-	} else {
-		sendErrorResponse(w, "Failed to Ban the user")
-	}
-}
-
-func UnbanUser(w http.ResponseWriter, r *http.Request) {
-	db := connect()
-	defer db.Close()
-
-	err := r.ParseForm()
+	banStatus, err := strconv.Atoi(r.Form.Get("banStatus"))
 	if err != nil {
-		sendErrorResponse(w, "Failed")
+		http.Error(w, "Unable to convert string to int", http.StatusInternalServerError)
 		return
 	}
-	vars := mux.Vars(r)
-	userId := vars["userId"]
-
-	sqlStatement := `
+	var sqlStatement = `
 		UPDATE user 
-		SET banStatus = 0
+		SET banStatus = ?
 		WHERE userId = ?`
 
 	_, errQuery := db.Exec(sqlStatement,
+		banStatus,
 		userId,
 	)
 
 	if errQuery == nil {
-		sendSuccessResponse(w, "Successfully Unbanned the user", nil)
+		sendSuccessResponse(w, "Successfully Banned/Unbanned the user", nil)
 	} else {
-		sendErrorResponse(w, "Failed to Unban the user")
+		sendErrorResponse(w, "Failed to Ban/Unban the user")
 	}
 }
 
@@ -296,4 +314,31 @@ func getUserPassword(id int) string {
 		}
 	}
 	return password
+}
+
+// Handler untuk mendapatkan username berdasarkan userId
+func GetUsernameByUserId(w http.ResponseWriter, r *http.Request) {
+	db := connect()
+	defer db.Close()
+
+	// Mendapatkan userId dari URL
+	vars := mux.Vars(r)
+	userId := vars["userId"]
+
+	// Membuat query SQL
+	query := "SELECT username FROM user WHERE userId = ?"
+
+	// Eksekusi query
+	row := db.QueryRow(query, userId)
+
+	var username string
+	err := row.Scan(&username)
+	if err != nil {
+		log.Println(err)
+		sendErrorResponse(w, "Failed to retrieve username")
+		return
+	}
+
+	// Kirim response ke client
+	sendSuccessResponse(w, "Successfully retrieved username", username)
 }

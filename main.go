@@ -20,11 +20,12 @@ func main() {
 
 	// Handler untuk user
 	router.HandleFunc("/user", controller.GetAllUsers).Methods("GET")
-	router.HandleFunc("/user/ban/{userId}", controller.BanUser).Methods("post")
-	router.HandleFunc("/user/unban/{userId}", controller.UnbanUser).Methods("post")
+	router.HandleFunc("/user/ban/{userId}", controller.BanUser).Methods("POST")
 	router.HandleFunc("/register", controller.RegisterUser).Methods("POST")
 	router.HandleFunc("/login", controller.Login).Methods("POST")
 	router.HandleFunc("/logout", controller.Logout).Methods("POST")
+	router.HandleFunc("/password/{userId}", controller.ChangePassword).Methods("PUT")
+	router.HandleFunc("/profile/{userId}", controller.ChangeProfile).Methods("PUT")
 
 	// Handler untuk userLog
 	router.HandleFunc("/userLog/{userId}", controller.GetUserLogUsingId).Methods("GET")
@@ -51,6 +52,11 @@ func main() {
 	router.HandleFunc("/post/{threadNo}", controller.GetAllPostByThreadNo).Methods("GET")
 	router.HandleFunc("/post", controller.InsertPost).Methods("POST")
 	router.HandleFunc("/post", controller.UpdatePostBanStatus).Methods("PUT")
+
+	// Handler untuk reportpost
+	router.HandleFunc("/reportpost", controller.GetAllReportPost).Methods("GET")
+	router.HandleFunc("/reportpostu", controller.GetAllReportPostU).Methods("GET")
+	router.HandleFunc("/reportpost/resolve/{postNo}", controller.SolveReport).Methods("PUT")
 
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173", "http://localhost:8181"},
