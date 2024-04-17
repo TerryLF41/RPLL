@@ -23,6 +23,7 @@ import { onMounted } from 'vue';
                                 <thead class="small text-uppercase bg-body text-muted">
                                     <tr>
                                         <th>User ID</th>
+                                        <th>Username</th>
                                         <th>Post No</th>
                                         <th>Report Text</th>
                                         <th>Report Date</th>
@@ -32,15 +33,18 @@ import { onMounted } from 'vue';
                                 </thead>
                                 <tbody>
                                     <tr class="align-middle" v-for="item in reportPostList">
-                                        <td>{{ item.userID }}</td>
+                                        <td>{{ item.userId }}</td>
+                                        <td>{{ item.username }}</td>
                                         <td>{{ item.postNo }}</td>
                                         <td>{{ item.reportText }}</td>
                                         <td>{{ item.reportDate }}</td>
                                         <td>{{ item.reportStatus ? 'Solved' : 'Open' }}</td>
                                         <td class="text-end">
                                             <div v-if="item.reportStatus == 0">
-                                                <button @click="openPost(item.postNo, item.userID)" class="btn btn-sm btn-primary">Open Post</button>
-                                                <button @click="resolveReport(item.postNo)" class="btn btn-sm btn-success">Resolve</button>
+                                                <button @click="openPost(item.postNo, item.userID)"
+                                                    class="btn btn-sm btn-primary">Open Post</button>
+                                                <button @click="resolveReport(item.postNo)"
+                                                    class="btn btn-sm btn-success">Resolve</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -59,7 +63,7 @@ import { onMounted } from 'vue';
 const reportPostList = ref([]);
 
 async function getReportPosts() {
-    const response = await fetch('http://localhost:8181/reportpost', {
+    const response = await fetch('http://localhost:8181/reportpostu', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
@@ -101,6 +105,30 @@ async function resolveReport(postNo) {
         alert('Failed to resolve report');
     }
 }
+
+
+// async function getUsername(userId) {
+//     const response = await fetch(`http://localhost:8181/user/username/${userId}`, {
+//         method: 'GET',
+//         headers: {
+//             'Content-Type': 'application/json'
+//         }
+//     });
+//     if (response.ok) {
+//         const data = await response.json();
+//         if (data.status == '200') {
+//             console.log(data.data);
+//             return data.data;
+            
+//         } else {
+//             console.error('Failed to fetch username:', data.message);
+//             return null;
+//         }
+//     } else {
+//         console.error('Failed to fetch username');
+//         return null;
+//     }
+// }
 
 function openPost(postNo, userId) {
     // Redirect to the post page with postNo and userId

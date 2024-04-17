@@ -20,8 +20,9 @@ func main() {
 
 	// Handler untuk user
 	router.HandleFunc("/user", controller.GetAllUsers).Methods("GET")
-	router.HandleFunc("/user/ban/{userId}", controller.BanUser).Methods("post")
-	router.HandleFunc("/user/unban/{userId}", controller.UnbanUser).Methods("post")
+	router.HandleFunc("/user/username/{userId}", controller.GetUsernameByUserId).Methods("GET")
+	router.HandleFunc("/user/ban/{userId}", controller.BanUser).Methods("POST")
+	router.HandleFunc("/user/unban/{userId}", controller.UnbanUser).Methods("POST")
 	router.HandleFunc("/register", controller.RegisterUser).Methods("POST")
 	router.HandleFunc("/login", controller.Login).Methods("POST")
 	router.HandleFunc("/logout", controller.Logout).Methods("POST")
@@ -54,7 +55,9 @@ func main() {
 
 	// Handler untuk reportpost
 	router.HandleFunc("/reportpost", controller.GetAllReportPost).Methods("GET")
+	router.HandleFunc("/reportpostu", controller.GetAllReportPostU).Methods("GET")
 	router.HandleFunc("/reportpost/resolve/{postNo}", controller.SolveReport).Methods("PUT")
+
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173", "http://localhost:8181"},
 		AllowedMethods:   []string{"POST", "GET", "PUT", "DELETE"},
