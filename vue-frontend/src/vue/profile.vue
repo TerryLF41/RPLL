@@ -146,8 +146,6 @@ body {
     color: white;
     background: rgb(99, 39, 120)
 }
-.col-md-12{
-}
 .form-control:focus {
     box-shadow: none;
     border-color: #BA68C8
