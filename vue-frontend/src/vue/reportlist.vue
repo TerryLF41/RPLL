@@ -89,9 +89,9 @@ async function resolveReport(postNo) {
     });
     if (response.ok) {
         const data = await response.json();
-        if (data.status === '200') {
+        if (data.status == '200') {
             alert('Report resolved successfully!');
-            getReportPosts();
+            window.location.reload();
         } else {
             console.error('Failed to resolve report:', data.message);
             alert('Failed to resolve report');

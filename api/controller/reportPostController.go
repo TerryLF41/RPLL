@@ -47,7 +47,7 @@ func GetAllReportPost(w http.ResponseWriter, r *http.Request) {
 
 // Update status report menjadi 0(unsolved) atau 1(solved)
 // Digunakan oleh admin untuk menban post offensive
-func UpdateReportStatus(w http.ResponseWriter, r *http.Request) {
+func SolveReport(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
 
