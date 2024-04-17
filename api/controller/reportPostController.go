@@ -4,8 +4,10 @@ import (
 	"RPLL/api/model"
 	"log"
 	"net/http"
+
 	// "strconv"
-	// "time"
+
+	"github.com/gorilla/mux"
 )
 
 func GetAllReportPost(w http.ResponseWriter, r *http.Request) {
@@ -40,5 +42,38 @@ func GetAllReportPost(w http.ResponseWriter, r *http.Request) {
 		sendSuccessResponse(w, "Successfully retrieved report", reportPostList)
 	} else {
 		sendErrorResponse(w, "Failed to retrieve report")
+	}
+}
+
+// Update status report menjadi 0(unsolved) atau 1(solved)
+// Digunakan oleh admin untuk menban post offensive
+func UpdateReportStatus(w http.ResponseWriter, r *http.Request) {
+	db := connect()
+	defer db.Close()
+
+	err := r.ParseForm()
+	if err != nil {
+		sendErrorResponse(w, "Failed")
+		return
+	}
+	vars := mux.Vars(r)
+	postNo := vars["postNo"]
+	// report, _ := strconv.Atoi(r.Form.Get("report"))
+
+	sqlStatement := `
+		UPDATE reportpost 
+		SET reportStatus = 1
+		WHERE postNo = ?`
+
+	_, errQuery := db.Exec(sqlStatement,
+		postNo,
+	)
+
+	// Kirim response ke client
+	// Response dibuat dengan factory di responseHandler
+	if errQuery == nil {
+		sendSuccessResponse(w, "Successfully updated report status", nil)
+	} else {
+		sendErrorResponse(w, "Failed to update report status")
 	}
 }
