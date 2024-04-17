@@ -14,7 +14,7 @@ import { onMounted } from 'vue';
         <div class="container d-flex justify-content-center" onload="getThread()">
             <ul class="list-group mt-5 text-white">
                 <div class="wrapper-li d-flex=" v-for="item in temp">
-                    <li class="list-group-item d-flex justify-content-between align-content-center" v-if="item.banStatus==false" @click="goToPost" >
+                    <li class="list-group-item d-flex justify-content-between align-content-center" v-if="item.banStatus==false" @click="goToPost(item.threadNo)" >
                         <div class="d-flex flex-row">
                             <div class="ml-2 threadDesc">
                                 <h6 class="mb-0">{{ item.threadTitle }}</h6>
@@ -91,8 +91,9 @@ import { onMounted } from 'vue';
 
   onMounted(getThread);
 
-  function goToPost() {
-    window.open('homepage.html?postNo=1','_self');
+  function goToPost(threadNo) {
+    var url = 'post.html?threadNo='+threadNo;
+    window.open(url,'_self');
   }
 
   // Post thread
