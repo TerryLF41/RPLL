@@ -4,6 +4,11 @@ import { logUserActivity } from '../activityLogger'; // Import user activity log
 
 // Retrieve and parse user data from session storage
 const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
+// If user data is not present, redirect to the login page
+if (!userDataParsed) {
+  alert('You haven\'t logged in yet.');
+  window.location.href = 'login.html'; // Redirect to the login page
+}
 // console.log(userDataParsed.profilePicture);
 const profilePicture = userDataParsed.profilePicture;
 // console.log(profilePicture);
