@@ -145,7 +145,6 @@ import { onMounted } from 'vue';
 </script>
 
 <style scoped>
-.userStatusClass {}
 
 .card {
     box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
