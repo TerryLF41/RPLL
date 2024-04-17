@@ -27,8 +27,8 @@ func main() {
 	router.HandleFunc("/logout", controller.Logout).Methods("POST")
 
 	// Handler untuk userLog
-	router.HandleFunc("/userLog", controller.Authenticate(controller.GetUserLogUsingId, 1)).Methods("GET")
-	router.HandleFunc("/userLog", controller.Authenticate(controller.InsertUserLog, 1)).Methods("POST")
+	router.HandleFunc("/userLog", controller.GetUserLogUsingId).Methods("GET")
+	router.HandleFunc("/userLog", controller.InsertUserLog).Methods("POST")
 
 	// Handler untuk topic
 	router.HandleFunc("/topic", controller.GetAllTopic).Methods("GET")

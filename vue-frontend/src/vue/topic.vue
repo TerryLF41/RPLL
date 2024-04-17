@@ -47,6 +47,7 @@ import { onMounted } from 'vue';
 </template>
 
 <script setup>
+    import { logUserActivity } from '../activityLogger'; // Import user activity logger
     const temp = ref([]);
     // Retrieve and parse user data from session storage
     const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
@@ -81,7 +82,7 @@ import { onMounted } from 'vue';
         window.open(url,'_self');
     }
 
-  // Post topic
+    // Post topic
     async function postTopic() {
         // Ambil data dari form
         var topicName = document.getElementById("topicName").value;
@@ -115,6 +116,8 @@ import { onMounted } from 'vue';
         if (response.ok) {
             const data = await response.json()
             if (data.status == '200'){
+                // Log create topic activity as "Create topic"
+                logUserActivity("Create topic",userDataParsed.userId);
                 alert("Topic berhasil ditambahkan!")
             } else {
                 console.error("Failed!", data.message);
@@ -142,6 +145,8 @@ import { onMounted } from 'vue';
             if (response.ok) {
                 const data = await response.json()
                 if (data.status == '200'){
+                    // Log ban topic activity as "Ban topic"
+                    logUserActivity("Ban topic",userDataParsed.userId);
                     alert("Topic berhasil diban!")
                     window.open('/topic.html','_self');
                 } else {

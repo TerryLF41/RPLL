@@ -63,6 +63,8 @@ func InsertUserLog(w http.ResponseWriter, r *http.Request) {
 	}
 	userId, _ := strconv.Atoi(r.Form.Get("userId"))
 
+	log.Println("Userid=", userId)
+
 	userLogFactory := model.NewUserLogModelFactory()
 
 	// Create a new user log instance
