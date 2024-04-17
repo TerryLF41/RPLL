@@ -26,7 +26,20 @@ import { onMounted } from 'vue';
                             </div>
                         </div>
                     </li>
+                    <li class="list-group-item d-flex justify-content-between align-content-center" v-if="userType==1 && item.banstatus==true" @click="goToThread(item.topicNo)">
+                        <div class="d-flex flex-row">
+                            <img v-bind:src="item.topicPicture" width="100" />
+                            <div class="ml-2 topicDesc">
+                                <h6 class="mb-0">{{ item.topicTitle }}</h6>
+                                <div class="about">
+                                    <span>{{ item.topicDesc }}</span><br>
+                                    <span>{{ item.createDate }}</span><br>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
                     <button id="banButton" v-if="userType==1 && item.banstatus==false" @click="banTopic(item.topicNo)">Ban Topic</button>
+                    <button id="unbanButton" v-if="userType==1 && item.banstatus==true" @click="unbanTopic(item.topicNo)">Unban Topic</button>
                 </div>
             </ul>
         </div>
@@ -156,6 +169,36 @@ import { onMounted } from 'vue';
             }
         }
     }
+
+    async function unbanTopic(topicNo){
+        // Tampilkan prompt konfirmasi ban topic atau tidak
+        if (confirm('Apakah Anda yakin ingin memunban topic?')) {
+            // Jika ya, unban topic
+            var url = "http://localhost:8181/topic/ban/" + topicNo;
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },    
+                body: new URLSearchParams({
+                    'banStatus': 0,
+                })    
+            })
+            if (response.ok) {
+                const data = await response.json()
+                if (data.status == '200'){
+                    // Log ban topic activity as "Unban topic"
+                    logUserActivity("Unban topic",userDataParsed.userId);
+                    alert("Topic berhasil diunban!")
+                    window.open('/topic.html','_self');
+                } else {
+                    console.error("Failed!", data.message);
+                    alert("Gagal memunban topic!")
+                }
+            }
+        }
+    }
+
     // Kode untuk modal
     function showModal(){
         var modal = document.getElementById("modal");
@@ -287,7 +330,7 @@ h2.title {
     background-color: #ff0000;
     font-size: small;
 }
-#approveButton {
+#unbanButton {
     background-color: #0e9fde;
     font-size: small;
 }
