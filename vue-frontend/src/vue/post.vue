@@ -2,6 +2,7 @@
 import Header from '../components/header.vue'
 import { ref } from 'vue';
 import { onMounted } from 'vue';
+import { computed } from 'vue';
 </script>
 
 <template>
@@ -13,10 +14,10 @@ import { onMounted } from 'vue';
         <button type="button" @click="showModal">Add New Thread</button> 
         <div class="container d-flex justify-content-center">
             <ul class="list-group mt-5 text-white" >
-                <li class="list-group-item d-flex justify-content-between align-content-center" v-for="post in postList">
-                    <div class="post d-flex flex-row">
+                <li class="list-group-item d-flex justify-content-between align-content-center" v-for="(post, index) in userAndPost" :key="index" style="height: calc(30.5em + 2.5rem + 2px);">
+                    <div class="post d-flex flex-row" >
                         <div class="profileUser">
-                            <span>nama user</span><br>
+                            <span>{{ post.user.username }}</span><br>
                             <span><img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /></span>
                         </div>
                         <div class="ml-2 PostDesc">
@@ -30,45 +31,76 @@ import { onMounted } from 'vue';
                             <span><img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /></span>
                         </div>
                     </div>
-                    <ul class="list-group mt-5 text-white" >
-                        <li class="list-group-item d-flex justify-content-between align-content-center" v-for="post in postList">
+                    <ul class="list-group mt-5 text-white" v-for="(reply, index) in userAndReply" :key="index">
+                        <li class="list-group-item d-flex justify-content-between align-content-center" v-if="reply.replyTo === post.postNo">
                             <div class="d-flex flex-row">
                                 <div class="profileUser">
-                                    <span>nama user</span><br>
+                                    <span>{{ reply.user.username }}</span><br>
                                     <span><img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /></span>
                                 </div>
                                 <div class="ml-2 PostDesc">
-                                    <h6 class="mb-0"> {{ post.postDate }}</h6>
+                                    <h6 class="mb-0"> {{ reply.postDate }}</h6>
                                     <div class="about">
-                                        <span>{{ post.postText }}</span>
+                                        <span>{{ reply.postText }}</span>
                                     </div>
                                 </div>
                                 <div class="ml-2 PostImage">
-                                    <h6 class="mb-0">No. {{ post.postNo }}</h6>
+                                    <h6 class="mb-0">No. {{ reply.postNo }}</h6>
                                     <span><img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /></span>
                                 </div>
                             </div>
                         </li>
                     </ul>
+                    <div class="reply" style="position: absolute; bottom: 0; margin-bottom: 15px">
+                        <form class="formReply" method="POST" id="formReply">
+                            <input name="textReply" id="textReply" type="textbox" placeholder="your comment here">
+                            <input name="postNo" id="postNo" type="hidden" :value="post.postNo">
+                            <input name="replyImage" id="replyImage" type="file" accept="image/png, image/gif, image/jpeg"><br><br>
+                            <button type="submit" id="reply" @click="replyPost" form="formReply">Comment</button>
+                        </form>
+                    </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-content-center">
+                    <div class="d-flex flex-row">
+                        <form class="formPost" method="POST" id="formPost">
+                            <input name="textComment" id="textComment" type="textbox" placeholder="your comment here">
+                            <input name="textImage" id="textImage" type="file" accept="image/png, image/gif, image/jpeg"><br><br>
+                            <button type="submit" id="post" @click="newPost" form="formPost">Comment</button>
+                        </form>
+                    </div>
                 </li>
             </ul>
         </div>
     </main>
-    <!-- <div class="modal-thread" id="modal">
-        <form class="form" method="POST">
-            <h2 class="title">Add New Thread</h2>
-            <label><b>Nama Topik</b></label><br>
-            <input type="text" name="threadName" id="threadName" placeholder="Input nama thread" required><br>
-            <label><b>Deskripsi</b></label><br>
-            <textarea name="threadDesc" id="threadDesc" placeholder="Input deskripsi thread" required></textarea><br>
-            <button type="submit" id="submit" @click="postThread">Submit</button>
-            <button type="reset" id="cancel" @click="closeModal">Cancel</button>
-        </form>
-    </div> -->
+    
 </template>
 
 <script setup>
-const postList = ref([]);
+  const postList = ref([]);
+  const replyList = ref([]);
+  const userList = ref([]);
+
+  const userAndPost = computed(() => {
+    return postList.value.map(post => {
+        // Find the corresponding user for this post
+        const user = userList.value.find(user => user.userId === post.userId);
+        return {
+            ...post,
+            user
+        };
+    });
+  });
+
+  const userAndReply = computed(() => {
+    return replyList.value.map(reply => {
+        // Find the corresponding user for this post
+        const user = userList.value.find(user => user.userId === reply.userId);
+        return {
+            ...reply,
+            user
+        };
+    });
+  });
 
   async function getPost() {
     // Ambil nomor threadNo sekarang dari URL param
@@ -86,36 +118,90 @@ const postList = ref([]);
       const data = await response.json()
       if (data.status == '200'){
         for (const key in data.data) {
-            postList.value.push(data.data[key]);
+            if (data.data[key].replyTo == null) {
+                postList.value.push(data.data[key]);
+            }
         }
-        console.log(postList);
       } else {
         console.error("Failed!", data.message);
       }
     }
   }
-  
-  onMounted(getPost);
 
-  // Post thread
-  async function postThread() {
-    // Ambil nomor topic sekarang dari URL param
+  async function getReply() {
+    // Ambil nomor threadNo sekarang dari URL param
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    var topicNo = urlParams.get('topicNo')
-    // Ambil data dari form
-    var threadName = document.getElementById("threadName").value;
-    var threadDesc = document.getElementById("threadDesc").value;
+    var threadNo = urlParams.get('threadNo')
+    var query = 'http://localhost:8181/post/' + threadNo;
+    const response = await fetch(query, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+    });
+    if (response.ok) {
+      const data = await response.json()
+      if (data.status == '200'){
+        for (const key in data.data) {
+            if (data.data[key].replyTo != null) {
+                replyList.value.push(data.data[key]);
+            }
+        }
+      } else {
+        console.error("Failed!", data.message);
+      }
+    }
+  }
+  async function getUsers() {
+        const response = await fetch('http://localhost:8181/user', {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        });
+        if (response.ok) {
+            const data = await response.json()
+            if (data.status == '200'){
+                for (const key in data.data) {
+                    userList.value.push(data.data[key]);
+                }
+            } else {
+                console.error("Failed!", data.message);
+            }
+        }
+    }
+  onMounted(getPost);
+  onMounted(getReply);
+  onMounted(getUsers);
 
-    const response = fetch('http://localhost:8181/thread', {
+  // Post
+  async function newPost() {
+    // Ambil threadNo dari URL param
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    var threadNo = urlParams.get('threadNo')
+
+    // Ambil data dari form
+    var postText = document.getElementById("textComment").value;
+    // var textImage = document.getElementById("textImage").value;
+    var postImage = "../assets/userUploadedFiles/userProfile/default.png"
+    
+    // Ambil user Id dari sesion
+    const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
+    const userId = userDataParsed.userId;
+
+    const response = fetch('http://localhost:8181/post', {
         method: 'POST',
         headers: {
             "Content-Type": "application/x-www-form-urlencoded"
         },    
         body: new URLSearchParams({
-            'topicNo': topicNo,
-            'threadTitle': threadName,
-            'threadDesc': threadDesc
+            'threadNo': threadNo,
+            'postText': postText,
+            'postImage': postImage,
+            'userId': userId,
+            'replyTo': ""
         })
     })
     if (response.ok) {
@@ -128,26 +214,46 @@ const postList = ref([]);
       }
     }
   }
+  async function replyPost() {
+    // Ambil threadNo dari URL param
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    var threadNo = urlParams.get('threadNo')
 
-  // Kode untuk modal
-  function showModal(){
-        var modal = document.getElementById("modal");
-        modal.style.display = "block";
-    }
-    
-    // Close modal
-    function closeModal() {
-        var modal = document.getElementById("modal");
-        modal.style.display = "none"
-    }
+    // Ambil data dari form
+    var textReply = document.getElementById("textReply").value;
+    var postNo = document.getElementById("postNo").value;
 
-    // Close modal kalau klik diluar modal
-    window.onclick = function(event) {
-        var modal = document.getElementById("modal");
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
+    // var textImage = document.getElementById("textImage").value;
+    var replyImage = "../assets/userUploadedFiles/userProfile/default.png"
+    // Ambil user Id dari sesion
+    const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
+    const userId = userDataParsed.userId;
+
+    const response = fetch('http://localhost:8181/post', {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },    
+        body: new URLSearchParams({
+            'threadNo': threadNo,
+            'postText': textReply,
+            'postImage': replyImage,
+            'userId': userId,
+            'replyTo': postNo
+        })
+    })
+    if (response.ok) {
+        const data = response.json()
+      if (data.status == '200'){
+        alert("Thread berhasil ditambahkan!")
+      } else {
+        console.error("Failed!", data.message);
+        alert("Thread mengajukan request topic!")
+      }
     }
+  }
+  
 </script>
 
 <style scoped>
