@@ -63,6 +63,9 @@ import { onMounted } from 'vue';
     import { logUserActivity } from '../activityLogger'; // Import user activity logger
     const reportPostList = ref([]);
 
+    // Retrieve and parse user data from session storage
+    const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
+
     async function getReportPosts() {
         const response = await fetch('http://localhost:8181/reportpostu', {
             method: 'GET',

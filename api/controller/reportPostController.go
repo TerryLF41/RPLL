@@ -4,6 +4,7 @@ import (
 	"RPLL/api/model"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	// "strconv"
@@ -88,6 +89,39 @@ func GetAllReportPostU(w http.ResponseWriter, r *http.Request) {
 		sendSuccessResponse(w, "Successfully retrieved report", reportPostList)
 	} else {
 		sendErrorResponse(w, "Failed to retrieve report")
+	}
+}
+
+// Create post report
+
+func InsertReport(w http.ResponseWriter, r *http.Request) {
+	db := connect()
+	defer db.Close()
+
+	// Ambil data log dari form HTML
+	// logNo tidak diperlukan karena sudah auto increment di database
+	// logTime juga sudah diatur default timestamp
+	err := r.ParseForm()
+	if err != nil {
+		sendErrorResponse(w, "Something went wrong, please try again")
+		return
+	}
+	userId, _ := strconv.Atoi(r.Form.Get("userId"))
+	postNo, _ := strconv.Atoi(r.Form.Get("postNo"))
+	reportText := r.Form.Get("reportText")
+
+	// Query ke SQL
+	_, errQuery := db.Exec("INSERT INTO reportpost(userId,postNo,reportText)values(?,?,?)",
+		userId,
+		postNo,
+		reportText,
+	)
+
+	if errQuery == nil {
+		sendSuccessResponse(w, "Successfully inserted new userlog", nil)
+	} else {
+		log.Println(errQuery)
+		sendErrorResponse(w, "Failed to insert userLog to database")
 	}
 }
 

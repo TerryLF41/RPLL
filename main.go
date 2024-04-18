@@ -56,6 +56,7 @@ func main() {
 	// Handler untuk reportpost
 	router.HandleFunc("/reportpost", controller.GetAllReportPost).Methods("GET")
 	router.HandleFunc("/reportpostu", controller.GetAllReportPostU).Methods("GET")
+	router.HandleFunc("/reportpost", controller.InsertReport).Methods("POST")
 	router.HandleFunc("/reportpost/resolve/{postNo}", controller.SolveReport).Methods("PUT")
 
 	corsHandler := cors.New(cors.Options{
