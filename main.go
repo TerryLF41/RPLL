@@ -51,7 +51,7 @@ func main() {
 	// Handler untuk post
 	router.HandleFunc("/post/{threadNo}", controller.GetAllPostByThreadNo).Methods("GET")
 	router.HandleFunc("/post", controller.InsertPost).Methods("POST")
-	router.HandleFunc("/post", controller.UpdatePostBanStatus).Methods("PUT")
+	router.HandleFunc("/post/ban/{postNo}", controller.UpdatePostBanStatus).Methods("PUT")
 
 	// Handler untuk reportpost
 	router.HandleFunc("/reportpost", controller.GetAllReportPost).Methods("GET")

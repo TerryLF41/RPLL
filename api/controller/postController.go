@@ -133,8 +133,11 @@ func UpdatePostBanStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	postNo, _ := strconv.Atoi(r.Form.Get("postNo"))
-	ban, _ := strconv.Atoi(r.Form.Get("ban"))
+	vars := mux.Vars(r)
+
+	postNo := vars["postNo"]
+
+	banStatus, _ := strconv.Atoi(r.Form.Get("banStatus"))
 
 	sqlStatement := `
 		UPDATE post 
@@ -142,7 +145,7 @@ func UpdatePostBanStatus(w http.ResponseWriter, r *http.Request) {
 		WHERE postNo = ?`
 
 	_, errQuery := db.Exec(sqlStatement,
-		ban,
+		banStatus,
 		postNo,
 	)
 

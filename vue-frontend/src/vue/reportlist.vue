@@ -60,51 +60,54 @@ import { onMounted } from 'vue';
 
 
 <script setup>
-const reportPostList = ref([]);
+    import { logUserActivity } from '../activityLogger'; // Import user activity logger
+    const reportPostList = ref([]);
 
-async function getReportPosts() {
-    const response = await fetch('http://localhost:8181/reportpostu', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-    if (response.ok) {
-        const data = await response.json();
-        if (data.status == '200') {
-            for (const key in data.data) {
-                reportPostList.value.push(data.data[key]);
-                console.log(data.data[key])
+    async function getReportPosts() {
+        const response = await fetch('http://localhost:8181/reportpostu', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (response.ok) {
+            const data = await response.json();
+            if (data.status == '200') {
+                for (const key in data.data) {
+                    reportPostList.value.push(data.data[key]);
+                    console.log(data.data[key])
+                }
+            } else {
+                console.error('Failed!', data.message);
             }
         } else {
-            console.error('Failed!', data.message);
+            console.error('Failed to fetch report posts');
         }
-    } else {
-        console.error('Failed to fetch report posts');
     }
-}
 
-async function resolveReport(postNo) {
-    const response = await fetch(`http://localhost:8181/reportpost/resolve/${postNo}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-    if (response.ok) {
-        const data = await response.json();
-        if (data.status == '200') {
-            alert('Report resolved successfully!');
-            window.location.reload();
+    async function resolveReport(postNo) {
+        const response = await fetch(`http://localhost:8181/reportpost/resolve/${postNo}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (response.ok) {
+            const data = await response.json();
+            if (data.status == '200') {
+                // Log resolve report activity as "Resolve report"
+                logUserActivity("Resolve report",userDataParsed.userId);
+                alert('Report resolved successfully!');
+                window.location.reload();
+            } else {
+                console.error('Failed to resolve report:', data.message);
+                alert('Failed to resolve report');
+            }
         } else {
-            console.error('Failed to resolve report:', data.message);
+            console.error('Failed to resolve report');
             alert('Failed to resolve report');
         }
-    } else {
-        console.error('Failed to resolve report');
-        alert('Failed to resolve report');
     }
-}
 
 
 // async function getUsername(userId) {

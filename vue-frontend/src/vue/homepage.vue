@@ -28,7 +28,6 @@ const userType = userData.userType;
     <div v-if="userType === 1" class="option">
       <a href="userlist.html" class="show">User List</a>
       <a href="reportlist.html" class="show">Report List</a>
-      <a href="userlog.html" class="show">User Log</a>
     </div>
   </main>
 </template>

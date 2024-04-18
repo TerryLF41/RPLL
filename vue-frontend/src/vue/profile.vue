@@ -31,16 +31,16 @@ const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
                 </div>
                 <div class="row mt-3">
                     <div class="col-md-12"><label class="labels">Email</label><input type="text" id="email" class="form-control" v-bind:value=userDataParsed.email></div>
-                    <div class="col-md-12"><label class="labels">Profile Desc</label><textarea id="description" class="form-control height:fit-content; form-control-sm" v-bind:value=userDataParsed.profileDesc></textarea></div>
+                    <div class="col-md-12"><label class="labels">Profile Description</label><textarea id="description" class="form-control height:fit-content; form-control-sm" v-bind:value=userDataParsed.profileDesc></textarea></div>
                 </div>
                 <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="button" @click="changeProfile">Save Profile</button></div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="p-3 py-5">
-                <div class="d-flex justify-content-between align-items-center experience" @click="changePassword"><span>Change Password</span><span class="border px-3 p-1 add-experience"><i class="fa fa-plus"></i>&nbsp;change!</span></div><br>
-                <div class="col-md-12"><label class="labels">old password</label><input type="password" id="oldPass" class="form-control" placeholder="old pass" value=""></div> <br>
-                <div class="col-md-12"><label class="labels">new password</label><input type="password" id="newPass" class="form-control" placeholder="new pass" value=""></div>
+                <div class="d-flex justify-content-between align-items-center experience" @click="changePassword"><span>Change Password</span><span class="border px-3 p-1 add-experience"><i class="fa fa-plus"></i>&nbsp;Change!</span></div><br>
+                <div class="col-md-12"><label class="labels">Old password</label><input type="password" id="oldPass" class="form-control" placeholder="Input old password" value=""></div> <br>
+                <div class="col-md-12"><label class="labels">New password</label><input type="password" id="newPass" class="form-control" placeholder="Input new password" value=""></div>
             </div>
         </div>
     </div>
@@ -79,7 +79,7 @@ const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
         } else {
             // Ambil nama file yang diupload
             var userProfilePicture = profilePicture.files[0].name;
-            urlProfilePicture += selectedFile
+            urlProfilePicture += userProfilePicture
         }
         const response = await fetch('http://localhost:8181/profile/'+ userDataParsed.userId, {
             method: 'PUT',
@@ -96,6 +96,8 @@ const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
         if (response.ok) {
             const data = await response.json()
             if (data.status == '200'){
+                // Log change profile activity as "Change profile"
+                logUserActivity("Change profile",userDataParsed.userId);
                 alert("Profile berhasil diganti!")
                 userDataParsed.username = userName
                 userDataParsed.email = email
@@ -104,7 +106,6 @@ const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
                 sessionStorage.setItem('userData', JSON.stringify(userDataParsed));
                 console.log(userDataParsed)
                 window.location.reload();
-                
             } else {
                 console.error("Failed!", data.message);
                 alert("Gagal mengganti profil!")
@@ -127,6 +128,8 @@ const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
         if (response.ok) {
             const data = await response.json()
             if (data.status == '200'){
+                 // Log change profile activity as "Change password"
+                 logUserActivity("Change password",userDataParsed.userId);
                 alert("Password berhasil diganti!")
             } else {
                 console.error("Failed!", data.message);
@@ -137,6 +140,12 @@ const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
 </script>
 
 <style scoped>
+main {
+    min-height: 80vh;
+    width: 66%;
+    margin: auto;
+    padding: 0;
+}
 h1{
     color: white;
     padding-left: 5%;

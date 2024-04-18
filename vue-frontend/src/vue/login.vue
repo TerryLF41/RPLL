@@ -10,7 +10,7 @@
           :value="rememberedPassword"><br>
         <input type="checkbox" id="remember" name="remember" value="true">Remember Me<br>
         <button type="submit" id="login">Login</button>
-        <button type="button" @click="goToRegister">Register</button>
+        <button type="button" id="register" @click="goToRegister">Register</button>
       </div>
     </form>
   </main>

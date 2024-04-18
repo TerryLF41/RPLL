@@ -61,6 +61,7 @@ a {
 }
 li {
     list-style: none;
+    cursor: pointer;
 }
 nav {
     top: 0;
