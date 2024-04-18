@@ -13,7 +13,7 @@ import { onMounted } from 'vue';
         <button type="button" @click="showModal">Add New Topic</button> 
         <div class="container d-flex justify-content-center" onload="getTopic()">
             <ul class="list-group mt-5 text-white">
-                <div class="wrapper-li d-flex=" v-for="item in temp">
+                <div class="wrapper-li" v-for="item in temp">
                     <li class="list-group-item d-flex justify-content-between align-content-center" v-if="item.banstatus==false" @click="goToThread(item.topicNo)">
                         <div class="d-flex flex-row">
                             <img v-bind:src="item.topicPicture" width="100" />

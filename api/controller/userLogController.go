@@ -85,7 +85,6 @@ func InsertUserLog(w http.ResponseWriter, r *http.Request) {
 
 	if errQuery == nil {
 		sendSuccessResponse(w, "Successfully inserted new userlog", nil)
-		log.Println("Succ")
 	} else {
 		log.Println(errQuery)
 		sendErrorResponse(w, "Failed to insert userLog to database")

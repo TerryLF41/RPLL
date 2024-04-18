@@ -98,7 +98,6 @@ func SaveTopicPicture(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	log.Println("Succ here")
 	defer f.Close()
 }
 

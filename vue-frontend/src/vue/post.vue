@@ -10,55 +10,59 @@ import { computed } from 'vue';
         <nav class="navbar">
             <Header />
         </nav>
-        <h1>Daftar Post</h1>
-        <button type="button" @click="showModal">Add New Thread</button> 
+        <h1>Post</h1>
         <div class="container d-flex justify-content-center">
             <ul class="list-group mt-5 text-white" >
-                <li class="list-group-item d-flex justify-content-between align-content-center" v-for="(post, index) in userAndPost" :key="index" style="height: calc(30.5em + 2.5rem + 2px);">
-                    <div class="post d-flex flex-row" >
-                        <div class="profileUser">
-                            <span>{{ post.user.username }}</span><br>
-                            <span><img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /></span>
-                        </div>
-                        <div class="ml-2 PostDesc">
-                            <h6 class="mb-0"> {{ post.postDate }}</h6>
-                            <div class="about">
-                                <span>{{ post.postText }}</span>
+                <div v-for="(post, index) in userAndPost" :key="index">
+                    <li class="list-group-item d-flex justify-content-between align-content-center" v-if="post.banStatus == 0" style="height: calc(30.5em + 2.5rem + 2px);">
+                        <div class="post d-flex flex-row" >
+                            <div class="profileUser">
+                                <span>{{ post.user.username }}</span><br>
+                                <span><img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /></span>
+                            </div>
+                            <div class="ml-2 PostDesc">
+                                <h6 class="mb-0"> {{ post.postDate }}</h6>
+                                <div class="about">
+                                    <span>{{ post.postText }}</span>
+                                </div>
+                            </div>
+                            <div class="ml-2 PostImage">
+                                <h6 class="mb-0">No. {{ post.postNo }}</h6>
+                                <span><img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /></span>
                             </div>
                         </div>
-                        <div class="ml-2 PostImage">
-                            <h6 class="mb-0">No. {{ post.postNo }}</h6>
-                            <span><img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /></span>
-                        </div>
-                    </div>
-                    <ul class="list-group mt-5 text-white" v-for="(reply, index) in userAndReply" :key="index">
-                        <li class="list-group-item d-flex justify-content-between align-content-center" v-if="reply.replyTo === post.postNo">
-                            <div class="d-flex flex-row">
-                                <div class="profileUser">
-                                    <span>{{ reply.user.username }}</span><br>
-                                    <span><img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /></span>
-                                </div>
-                                <div class="ml-2 PostDesc">
-                                    <h6 class="mb-0"> {{ reply.postDate }}</h6>
-                                    <div class="about">
-                                        <span>{{ reply.postText }}</span>
+                        <ul class="list-group mt-5 text-white">
+                            <div class="wrapper-li d-flex" v-for="(reply, index) in userAndReply" :key="index">
+                                <li class="list-group-item d-flex justify-content-between align-content-center" v-if="reply.replyTo === post.postNo">
+                                    <div class="d-flex flex-row">
+                                        <div class="profileUser">
+                                            <span>{{ reply.user.username }}</span><br>
+                                            <span><img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /></span>
+                                        </div>
+                                        <div class="ml-2 PostDesc">
+                                            <h6 class="mb-0"> {{ reply.postDate }}</h6>
+                                            <div class="about">
+                                                <span>{{ reply.postText }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="ml-2 PostImage">
+                                            <h6 class="mb-0">No. {{ reply.postNo }}</h6>
+                                            <span><img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /></span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="ml-2 PostImage">
-                                    <h6 class="mb-0">No. {{ reply.postNo }}</h6>
-                                    <span><img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /></span>
-                                </div>
+                                </li>
                             </div>
-                        </li>
-                    </ul>
-                    <div class="reply" style="position: absolute; bottom: 0; margin-bottom: 15px">
-                        <form class="formReply" method="POST">
-                            <input :name="'textReply' + post.postNo" :id="'textReply' + post.postNo" type="textbox" placeholder="your comment here">
-                            <input :name="'textReply' + post.postNo" :id="'replyImage' + post.postNo" type="file" accept="image/png, image/gif, image/jpeg"><br><br>
-                            <button type="submit" id="reply" @click="replyPost(post.postNo)">Comment</button>
-                        </form>
-                    </div>
-                </li>
+                        </ul>
+                        <div class="reply" style="position: absolute; bottom: 0; margin-bottom: 15px">
+                            <form class="formReply" method="POST">
+                                <input :name="'textReply' + post.postNo" :id="'textReply' + post.postNo" type="textbox" placeholder="your comment here">
+                                <input :name="'textReply' + post.postNo" :id="'replyImage' + post.postNo" type="file" accept="image/png, image/gif, image/jpeg"><br><br>
+                                <button type="submit" id="reply" @click="replyPost(post.postNo)">Comment</button>
+                            </form>
+                        </div>
+                    </li>
+                    <button id="banButton" v-if="userType==1 && post.banStatus == 0" @click="banPost(post.postNo)">Ban Post</button>
+                </div>
                 <li class="list-group-item d-flex justify-content-between align-content-center">
                     <div class="d-flex flex-row">
                         <form class="formPost" method="POST">
@@ -75,9 +79,15 @@ import { computed } from 'vue';
 </template>
 
 <script setup>
-  const postList = ref([]);
-  const replyList = ref([]);
-  const userList = ref([]);
+    import { logUserActivity } from '../activityLogger'; // Import user activity logger
+    const postList = ref([]);
+    const replyList = ref([]);
+    const userList = ref([]);
+
+    // Retrieve and parse user data from session storage
+    const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
+    // Ambil usertype dari session
+    var userType = userDataParsed.userType;
 
   const userAndPost = computed(() => {
     return postList.value.map(post => {
@@ -186,8 +196,7 @@ import { computed } from 'vue';
     // var textImage = document.getElementById("textImage").value;
     var postImage = "../assets/userUploadedFiles/userProfile/default.png"
 
-    // Ambil user Id dari sesion
-    const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
+    // Ambil user Id dari session
     const userId = userDataParsed.userId;
 
     const response = fetch('http://localhost:8181/post', {
@@ -206,10 +215,10 @@ import { computed } from 'vue';
     if (response.ok) {
         const data = response.json()
       if (data.status == '200'){
-        alert("Thread berhasil ditambahkan!")
+        alert("Post berhasil ditambahkan!")
       } else {
         console.error("Failed!", data.message);
-        alert("Thread mengajukan request topic!")
+        alert("Gagal menambahkan post")
       }
     }
   }
@@ -225,7 +234,6 @@ import { computed } from 'vue';
     var replyImage = "../assets/userUploadedFiles/userProfile/default.png"
     alert(textReply)
     // Ambil user Id dari sesion
-    const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
     const userId = userDataParsed.userId;
 
     const response = fetch('http://localhost:8181/post', {
@@ -244,13 +252,50 @@ import { computed } from 'vue';
     if (response.ok) {
         const data = response.json()
       if (data.status == '200'){
-        alert("Thread berhasil ditambahkan!")
+        alert("Post berhasil ditambahkan!")
       } else {
         console.error("Failed!", data.message);
-        alert("Thread mengajukan request topic!")
+        alert("Gagal menambahkan post")
       }
     }
   }
+
+    async function banPost(postNo){
+        // Tampilkan prompt konfirmasi ban topic atau tidak
+
+        if (confirm('Apakah Anda yakin ingin memban post?')) {
+            // Jika ya, ban topic
+            var url = "http://localhost:8181/post/ban/" + postNo;
+            console.log(url)
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },    
+                body: new URLSearchParams({
+                    'banStatus': 1,
+                })    
+            })
+            if (response.ok) {
+                const data = await response.json()
+                if (data.status == '200'){
+                    // Log ban post activity as "Ban post"
+                    logUserActivity("Ban post",userDataParsed.userId);
+
+                    alert("Post berhasil diban!")
+                    // Ambil nomor topic sekarang dari URL param
+                    const queryString = window.location.search;
+                    const urlParams = new URLSearchParams(queryString);
+                    var topicNo = urlParams.get('threadNo')
+                    var url = '/post.html?threadNo=' + topicNo;
+                    window.open(url,'_self');
+                } else {
+                    console.error("Failed!", data.message);
+                    alert("Gagal memban post!")
+                }
+            }
+        }
+    }
   
 </script>
 
@@ -265,9 +310,6 @@ import { computed } from 'vue';
     border-style: none;
 	transition: all 0.3s ease-in-out;
     background-color: #ADA7A7;
-}
-.list-group-item:hover{
-	opacity: 0.8;
 }
 .about span{
 	font-size: 12px;
@@ -379,8 +421,8 @@ h1{
 button:hover {
     opacity: 75%;
 }
-#cancel {
-    background-color: #7a0800;
+#banButton {
+    background-color: #ff0000;
 }
 h2.title {
     text-align: center;
