@@ -14,8 +14,8 @@ import { computed } from 'vue';
         <div class="container d-flex justify-content-center">
             <ul class="list-group mt-5 text-white" >
                 <div v-for="(post, index) in userAndPost" :key="index">
-                    <li class="list-group-item d-flex justify-content-between align-content-center" v-if="post.banStatus == 0" style="height: calc(30.5em + 2.5rem + 2px);">
-                        <div class="post d-flex flex-row" >
+                    <li class="list-group-item d-flex justify-content-between align-content-center" v-if="post.banStatus == 0" style="height: calc(13.5em + 2.5rem + 2px);">
+                        <div class="post d-flex flex-row">
                             <div class="profileUser">
                                 <span>{{ post.user.username }}</span><br>
                                 <span><img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /></span>
@@ -31,7 +31,19 @@ import { computed } from 'vue';
                                 <span><img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /></span>
                             </div>
                         </div>
-                        <ul class="list-group mt-5 text-white">
+                        
+                        
+                        <div class="reply" style="position: absolute; bottom: 0; margin-bottom: 15px">
+                            <form class="formReply" method="POST">
+                                <input :name="'textReply' + post.postNo" :id="'textReply' + post.postNo" type="textbox" placeholder="your comment here">
+                                <input :name="'textReply' + post.postNo" :id="'replyImage' + post.postNo" type="file" accept="image/png, image/gif, image/jpeg"><br><br>
+                                <button type="submit" id="reply" @click="replyPost(post.postNo)">Comment</button>
+                            </form>
+                        </div>
+                    </li>
+                    <button id="banButton" v-if="userType==1 && post.banStatus == 0" @click="banPost(post.postNo)">Ban Post</button>
+                    <button id="reportButton" v-if="post.banStatus == 0" @click="reportPost(post.postNo)">Report Post</button>
+                    <ul class="list-group mt-5 text-white">
                             <div class="wrapper-li d-flex" v-for="(reply, index) in userAndReply" :key="index">
                                 <li class="list-group-item d-flex justify-content-between align-content-center" v-if="reply.replyTo === post.postNo">
                                     <div class="d-flex flex-row">
@@ -53,16 +65,6 @@ import { computed } from 'vue';
                                 </li>
                             </div>
                         </ul>
-                        <div class="reply" style="position: absolute; bottom: 0; margin-bottom: 15px">
-                            <form class="formReply" method="POST">
-                                <input :name="'textReply' + post.postNo" :id="'textReply' + post.postNo" type="textbox" placeholder="your comment here">
-                                <input :name="'textReply' + post.postNo" :id="'replyImage' + post.postNo" type="file" accept="image/png, image/gif, image/jpeg"><br><br>
-                                <button type="submit" id="reply" @click="replyPost(post.postNo)">Comment</button>
-                            </form>
-                        </div>
-                    </li>
-                    <button id="banButton" v-if="userType==1 && post.banStatus == 0" @click="banPost(post.postNo)">Ban Post</button>
-                    <button id="reportButton" v-if="post.banStatus == 0" @click="reportPost(post.postNo)">Report Post</button>
                 </div>
                 <li class="list-group-item d-flex justify-content-between align-content-center">
                     <div class="d-flex flex-row">
@@ -74,6 +76,17 @@ import { computed } from 'vue';
                     </div>
                 </li>
             </ul>
+        </div>
+        <div class="modal-thread" id="modal">
+            <form class="form" method="POST">
+                <h2 class="title">Add New Thread</h2>
+                <label><b>Nama Topik</b></label><br>
+                <input type="text" name="threadName" id="threadName" placeholder="Input nama thread" required><br>
+                <label><b>Deskripsi</b></label><br>
+                <textarea name="threadDesc" id="threadDesc" placeholder="Input deskripsi thread" required></textarea><br>
+                <button type="submit" id="submit" @click="postThread">Submit</button>
+                <button type="reset" id="cancel" @click="closeModal">Cancel</button>
+            </form>
         </div>
     </main>
     
@@ -233,11 +246,10 @@ import { computed } from 'vue';
     var textReply = document.getElementById("textReply"+postNo).value;
     // var textImage = document.getElementById("textImage"+postNo).value;
     var replyImage = "../assets/userUploadedFiles/userProfile/default.png"
-    alert(textReply)
     // Ambil user Id dari sesion
     const userId = userDataParsed.userId;
 
-    const response = fetch('http://localhost:8181/post', {
+    const response = await fetch('http://localhost:8181/post', {
         method: 'POST',
         headers: {
             "Content-Type": "application/x-www-form-urlencoded"
@@ -251,7 +263,7 @@ import { computed } from 'vue';
         })
     })
     if (response.ok) {
-        const data = response.json()
+        const data = await response.json()
       if (data.status == '200'){
         alert("Post berhasil ditambahkan!")
       } else {
