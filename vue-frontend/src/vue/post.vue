@@ -62,6 +62,7 @@ import { computed } from 'vue';
                         </div>
                     </li>
                     <button id="banButton" v-if="userType==1 && post.banStatus == 0" @click="banPost(post.postNo)">Ban Post</button>
+                    <button id="reportButton" v-if="post.banStatus == 0" @click="reportPost(post.postNo)">Report Post</button>
                 </div>
                 <li class="list-group-item d-flex justify-content-between align-content-center">
                     <div class="d-flex flex-row">
@@ -199,7 +200,7 @@ import { computed } from 'vue';
     // Ambil user Id dari session
     const userId = userDataParsed.userId;
 
-    const response = fetch('http://localhost:8181/post', {
+    const response = await fetch('http://localhost:8181/post', {
         method: 'POST',
         headers: {
             "Content-Type": "application/x-www-form-urlencoded"
@@ -213,7 +214,7 @@ import { computed } from 'vue';
         })
     })
     if (response.ok) {
-        const data = response.json()
+        const data = await response.json()
       if (data.status == '200'){
         alert("Post berhasil ditambahkan!")
       } else {
@@ -260,9 +261,9 @@ import { computed } from 'vue';
     }
   }
 
+    // Ban sebuah post
     async function banPost(postNo){
         // Tampilkan prompt konfirmasi ban topic atau tidak
-
         if (confirm('Apakah Anda yakin ingin memban post?')) {
             // Jika ya, ban topic
             var url = "http://localhost:8181/post/ban/" + postNo;
@@ -292,6 +293,46 @@ import { computed } from 'vue';
                 } else {
                     console.error("Failed!", data.message);
                     alert("Gagal memban post!")
+                }
+            }
+        }
+    }
+
+    // Report sebuah post
+    async function reportPost(postNo){
+        // Tampilkan prompt konfirmasi ban topic atau tidak
+        if (confirm('Apakah Anda ingin melaporkan post ini?')) {
+            // Jika ya, minta alasan report via prompt
+            var reportText = prompt("Reason for reporting:");
+            var url = "http://localhost:8181/reportpost";
+            console.log(reportText)
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },    
+                body: new URLSearchParams({
+                    'userId': userDataParsed.userId,
+                    'postNo': postNo,
+                    'reportText' : reportText
+                })    
+            })
+            if (response.ok) {
+                const data = await response.json()
+                if (data.status == '200'){
+                    // Log report post activity as "Report post"
+                    logUserActivity("Report post",userDataParsed.userId);
+
+                    alert("Post berhasil dilaporkan!")
+                    // Ambil nomor topic sekarang dari URL param
+                    const queryString = window.location.search;
+                    const urlParams = new URLSearchParams(queryString);
+                    var topicNo = urlParams.get('threadNo')
+                    var url = '/post.html?threadNo=' + topicNo;
+                    window.open(url,'_self');
+                } else {
+                    console.error("Failed!", data.message);
+                    alert("Anda sudah pernah melaporkan post ini!")
                 }
             }
         }
@@ -423,6 +464,9 @@ button:hover {
 }
 #banButton {
     background-color: #ff0000;
+}
+#reportButton {
+    background-color: #eda02d;
 }
 h2.title {
     text-align: center;
