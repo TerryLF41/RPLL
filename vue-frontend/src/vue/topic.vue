@@ -45,7 +45,7 @@ import { onMounted } from 'vue';
         </div>
     </main>
     <div class="modal-topic" id="modal">
-        <form class="form" method="POST">
+        <form class="form" method="POST" id="postTopic" onsubmit="event.preventDefault();">
             <h2 class="title">Add New Topic</h2>
             <label><b>Nama Topik</b></label><br>
             <input type="text" name="topicName" id="topicName" placeholder="Input nama topik" required><br>
@@ -81,7 +81,6 @@ import { onMounted } from 'vue';
                 for (const key in data.data) {
                     temp.value.push(data.data[key]);
                 }
-                console.log(data.data)
             } else {
                 console.error("Failed!", data.message);
             }
@@ -107,13 +106,20 @@ import { onMounted } from 'vue';
         // Buat path url untuk image yang akan diupload ke database
         var urlTopicPicture = "../src/assets/userUploadedFiles/topicPicture/"
 
+        // Nama file gambar. Default adalah default.png
+        var filename = "default.png"
+
         // Cek apakah input file kosong, kalau kosong, kasih path ke foto default
         if(fileInput.files.length == 0){
-            urlTopicPicture += "default.png"
+            urlTopicPicture += filename
         } else {
-            // Ambil nama file yang diupload
+            // Ambil ekstensi file dari nama file
             var selectedFile = fileInput.files[0].name;
-            urlTopicPicture += selectedFile
+            var selectedFileExtension = selectedFile.split('.').pop();
+
+            // Buat nama file berdasarkan unix time
+            filename = Date.now() + "." + selectedFileExtension 
+            urlTopicPicture += filename
         }
         const response = await fetch('http://localhost:8181/topic', {
             method: 'POST',
@@ -131,10 +137,48 @@ import { onMounted } from 'vue';
             if (data.status == '200'){
                 // Log create topic activity as "Create topic"
                 logUserActivity("Create topic",userDataParsed.userId);
-                alert("Topic berhasil ditambahkan!")
+                // Jika terdapat file yang diupload, handle gambar dan simpan gambar secara lokal
+                if(fileInput.files.length > 0){
+                    // Panggil fungsi untuk save gambar di Go
+                    saveTopicImage(filename)
+                }
+                else {
+                    alert("Topic berhasil ditambahkan!")
+                    // Reload page
+                    location.reload();
+                }
             } else {
                 console.error("Failed!", data.message);
                 alert("Gagal mengajukan request topic!")
+            }
+        }
+    }
+
+    async function saveTopicImage(filename){
+        // Siapkan form data yang akan menampung data gambar dan masukkan data form
+        var formData = document.querySelector("#postTopic")
+        var pictureFormData  = new FormData(formData);
+
+        // Input data gambar kedalam formdata
+        pictureFormData.append("filename", filename);
+
+        const responsePicture = await fetch('http://localhost:8181/topic/picture', {
+            method: 'POST',
+            // Header akan diset otomatis oleh browser sebagai multipart/form-data
+            // Body yang memuat data gambar
+            body: pictureFormData
+        })
+        if (responsePicture.ok) {
+            const data = await responsePicture.json()
+            if (data.status == '200'){
+                // Log create thread activity as "Uploaded topic picture"
+                logUserActivity("Upload topic picture",userDataParsed.userId);
+                alert("Topic berhasil ditambahkan!")
+                location.reload();
+            } else {
+                console.error("Failed!", data.message);
+                alert("Gagal mengajukan request topic!")
+                location.reload();
             }
         }
     }

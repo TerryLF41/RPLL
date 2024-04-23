@@ -34,6 +34,7 @@ func main() {
 	// Handler untuk topic
 	router.HandleFunc("/topic", controller.GetAllTopic).Methods("GET")
 	router.HandleFunc("/topic", controller.InsertTopic).Methods("POST")
+	router.HandleFunc("/topic/picture", controller.SaveTopicPicture).Methods("POST")
 	router.HandleFunc("/topic/title/{topicNo}", controller.UpdateTopicDescription).Methods("PUT")
 	router.HandleFunc("/topic/desc/{topicNo}", controller.UpdateTopicDescription).Methods("PUT")
 	router.HandleFunc("/topic/ban/{topicNo}", controller.UpdateTopicStatus).Methods("PUT")

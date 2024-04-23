@@ -3,6 +3,7 @@ package controller
 import (
 	"RPLL/api/model"
 	_ "image"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -56,8 +57,6 @@ func InsertTopic(w http.ResponseWriter, r *http.Request) {
 	}
 	topicFactory := model.NewTopicModelFactory()
 
-	log.Println(r.Form.Get("topicPicturePath"))
-
 	// Create a new topic instance
 	newTopic := topicFactory.CreateTopic(
 		0,
@@ -86,19 +85,30 @@ func InsertTopic(w http.ResponseWriter, r *http.Request) {
 }
 
 func SaveTopicPicture(w http.ResponseWriter, r *http.Request) {
-	file, handler, err := r.FormFile("file")
-	//fileName := r.FormValue("file_name")
-	//filepath := "../vue-frontend/src/assets/userUploadedFiles/topicPicture/" + fileName
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
+	file, _, _ := r.FormFile("topicPicture")
 
-	f, err := os.OpenFile(handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
+	filename := r.FormValue("filename")
+	//open a file for writing
+	filepath := "vue-frontend/src/assets/userUploadedFiles/topicPicture/" + filename
+	log.Println("Filepath = ", filepath)
+
+	// Buat file temp yang akan menyimpan gambar nantinya
+	tempFile, err := os.Create(filepath)
+
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
-	defer f.Close()
+
+	// Copy data gambar dari variable fileke path yang telah dibuat
+	// Use io.Copy to just dump the response body to the file. This supports huge files
+	_, err = io.Copy(tempFile, file)
+	if err == nil {
+		sendSuccessResponse(w, "Successfully saved topic picture", nil)
+	} else {
+		log.Println(err)
+		sendErrorResponse(w, "Failed to save topic picture")
+	}
+	tempFile.Close()
 }
 
 // Update judul/title sebuah topic
