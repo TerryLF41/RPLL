@@ -2,6 +2,7 @@ package controller
 
 import (
 	"RPLL/api/model"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -73,8 +74,6 @@ func InsertPost(w http.ResponseWriter, r *http.Request) {
 
 	// Get the value from the form
 	replyValue := r.Form.Get("replyTo")
-	log.Println(replyValue)
-	log.Println(r.Form.Get("postText"))
 
 	// Check if the value is empty
 	if replyValue == "" {
@@ -123,19 +122,37 @@ func InsertPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func SavePostPicture(w http.ResponseWriter, r *http.Request) {
-	file, handler, err := r.FormFile("file")
-	//fileName := r.FormValue("file_name")
-	//filepath := "../vue-frontend/src/assets/userUploadedFiles/topicPicture/" + fileName
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
+	postId, _ := strconv.Atoi(r.FormValue("postNo"))
+	formFileId := "postImage"
 
-	f, err := os.OpenFile(handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
-	if err != nil {
-		panic(err)
+	if postId != 0 {
+		formFileId = "postImage" + r.FormValue("postNo")
 	}
-	defer f.Close()
+
+	file, _, _ := r.FormFile(formFileId)
+
+	filename := r.FormValue("filename")
+	//open a file for writing
+	filepath := "vue-frontend/src/assets/userUploadedFiles/postPicture/" + filename
+	log.Println("Filepath = ", filepath)
+
+	// Buat file temp yang akan menyimpan gambar nantinya
+	tempFile, err := os.Create(filepath)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	// Copy data gambar dari variable fileke path yang telah dibuat
+	// Use io.Copy to just dump the response body to the file. This supports huge files
+	_, err = io.Copy(tempFile, file)
+	if err == nil {
+		sendSuccessResponse(w, "Successfully saved post picture", nil)
+	} else {
+		log.Println(err)
+		sendErrorResponse(w, "Failed to save post picture")
+	}
+	tempFile.Close()
 }
 
 // Update status post menjadi 0(unbanned) atau 1(banned)

@@ -34,10 +34,11 @@ import { computed } from 'vue';
                         
 
                         <div class="reply" style="position: absolute; bottom: 0; margin-bottom: 15px">
-                            <form class="formReply" method="POST">
+                            <form class="formReply" method="POST" :id="'idFormReply' + post.postNo" onsubmit="event.preventDefault();">
                                 <input :name="'textReply' + post.postNo" :id="'textReply' + post.postNo" type="textbox" placeholder="your comment here">
-                                <input :name="'replyImage' + post.postNo" :id="'replyImage' + post.postNo" type="file" accept="image/png, image/gif, image/jpeg"><br><br>
-                                <button type="submit" id="reply" @click="replyPost(post.postNo)">Comment</button>
+                                <input :name="'idFormReply' + post.postNo" :id="'idFormReply' + post.postNo" type="hidden" :value="'idFormReply' + post.postNo">
+                                <input :name="'postImage' + post.postNo" :id="'replyImage' + post.postNo" type="file" accept=".jpg, .jpeg, .png"><br><br>
+                                <button type="submit" :id="'reply' + post.postNo" @click="replyPost(post.postNo)">Comment</button>
                             </form>
                         </div>
                     </li>
@@ -68,9 +69,10 @@ import { computed } from 'vue';
                 </div>
                 <li class="list-group-item d-flex justify-content-between align-content-center">
                     <div class="d-flex flex-row">
-                        <form class="formPost" method="POST">
+                        <form class="formPost" id="idFormPost" method="POST" onsubmit="event.preventDefault();">
                             <input name="textComment" id="textComment" type="textbox" placeholder="your comment here">
-                            <input name="textImage" id="textImage" type="file" accept="image/png, image/gif, image/jpeg"><br><br>
+                            <input name="idFormPost" id="idFormPost'" type="hidden" value="idFormPost">
+                            <input name="postImage" id="textImage" type="file" accept=".jpg, .jpeg, .png"><br><br>
                             <button type="submit" id="post" @click="newPost">Comment</button>
                         </form>
                     </div>
@@ -103,80 +105,80 @@ import { computed } from 'vue';
     // Ambil usertype dari session
     var userType = userDataParsed.userType;
 
-  const userAndPost = computed(() => {
-    return postList.value.map(post => {
-        // Find the corresponding user for this post
-        const user = userList.value.find(user => user.userId === post.userId);
-        return {
-            ...post,
-            user
-        };
+    const userAndPost = computed(() => {
+        return postList.value.map(post => {
+            // Find the corresponding user for this post
+            const user = userList.value.find(user => user.userId === post.userId);
+            return {
+                ...post,
+                user
+            };
+        });
     });
-  });
 
-  const userAndReply = computed(() => {
-    return replyList.value.map(reply => {
-        // Find the corresponding user for this post
-        const user = userList.value.find(user => user.userId === reply.userId);
-        return {
-            ...reply,
-            user
-        };
+    const userAndReply = computed(() => {
+        return replyList.value.map(reply => {
+            // Find the corresponding user for this post
+            const user = userList.value.find(user => user.userId === reply.userId);
+            return {
+                ...reply,
+                user
+            };
+        });
     });
-  });
 
-  async function getPost() {
-    // Ambil nomor threadNo sekarang dari URL param
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    var threadNo = urlParams.get('threadNo')
-    var query = 'http://localhost:8181/post/' + threadNo;
-    const response = await fetch(query, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
-    });
-    if (response.ok) {
-      const data = await response.json()
-      if (data.status == '200'){
-        for (const key in data.data) {
-            if (data.data[key].replyTo == null) {
-                postList.value.push(data.data[key]);
+    async function getPost() {
+        // Ambil nomor threadNo sekarang dari URL param
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        var threadNo = urlParams.get('threadNo')
+        var query = 'http://localhost:8181/post/' + threadNo;
+        const response = await fetch(query, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        });
+        if (response.ok) {
+            const data = await response.json()
+            if (data.status == '200'){
+                for (const key in data.data) {
+                    if (data.data[key].replyTo == null) {
+                        postList.value.push(data.data[key]);
+                    }
+                }
+            } else {
+                console.error("Failed!", data.message);
             }
         }
-      } else {
-        console.error("Failed!", data.message);
-      }
     }
-  }
 
-  async function getReply() {
-    // Ambil nomor threadNo sekarang dari URL param
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    var threadNo = urlParams.get('threadNo')
-    var query = 'http://localhost:8181/post/' + threadNo;
-    const response = await fetch(query, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
-    });
-    if (response.ok) {
-      const data = await response.json()
-      if (data.status == '200'){
-        for (const key in data.data) {
-            if (data.data[key].replyTo != null) {
-                replyList.value.push(data.data[key]);
+    async function getReply() {
+        // Ambil nomor threadNo sekarang dari URL param
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        var threadNo = urlParams.get('threadNo')
+        var query = 'http://localhost:8181/post/' + threadNo;
+        const response = await fetch(query, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        });
+        if (response.ok) {
+        const data = await response.json()
+            if (data.status == '200'){
+                for (const key in data.data) {
+                    if (data.data[key].replyTo != null) {
+                        replyList.value.push(data.data[key]);
+                    }
+                }
+            } else {
+                console.error("Failed!", data.message);
             }
         }
-      } else {
-        console.error("Failed!", data.message);
-      }
     }
-  }
-  async function getUsers() {
+    async function getUsers() {
         const response = await fetch('http://localhost:8181/user', {
             method: "GET",
             headers: {
@@ -194,106 +196,177 @@ import { computed } from 'vue';
             }
         }
     }
-  onMounted(getPost);
-  onMounted(getReply);
-  onMounted(getUsers);
+    onMounted(getPost);
+    onMounted(getReply);
+    onMounted(getUsers);
 
   // Post
-  async function newPost() {
-    // Ambil threadNo dari URL param
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    var threadNo = urlParams.get('threadNo')
+    async function newPost() {
+        // Ambil threadNo dari URL param
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        var threadNo = urlParams.get('threadNo')
 
-    // Ambil data dari form
-    var postText = document.getElementById("textComment").value;
+        // Ambil data dari form
+        var postText = document.getElementById("textComment").value;
+        var button = document.getElementById("post");
+        var idForm = button.form.id;
+        
+        // Ambil user Id dari session
+        const userId = userDataParsed.userId;
 
-    // Ambil user Id dari session
-    const userId = userDataParsed.userId;
+        // Handle gambar yang diupload
+        var fileInput = document.getElementById('textImage');
 
-    // Handle gambar yang diupload
-    var fileInput = document.getElementById("textImage").value;
-    // Buat path url untuk image yang akan diupload ke database
-    var urlTopicPicture = "../src/assets/userUploadedFiles/postPicture/"
+        // Buat path url untuk image yang akan diupload ke database
+        var urlTopicPicture = "../src/assets/userUploadedFiles/postPicture/"
 
-    // Cek apakah input file kosong, kalau kosong, kasih path ke foto default
-    if(fileInput.files.length == 0){
-        urlTopicPicture += ""
-    } else {
-        // Ambil nama file yang diupload
-        var selectedFile = fileInput.files[0].name;
-        urlTopicPicture += selectedFile
-    }
-    const response = await fetch('http://localhost:8181/post', {
-        method: 'POST',
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },    
-        body: new URLSearchParams({
-            'threadNo': threadNo,
-            'postText': postText,
-            'postImage': urlTopicPicture,
-            'userId': userId,
-            'replyTo': ""
+        // Nama file gambar. Default adalah default.png
+        var filename = "default.png"
+
+        // Cek apakah input file kosong, kalau kosong, kasih path ke foto default
+        if(fileInput.files.length == 0){
+            urlTopicPicture += filename
+        } else {
+            // Ambil ekstensi file dari nama file
+            var selectedFile = fileInput.files[0].name;
+            var selectedFileExtension = selectedFile.split('.').pop();
+
+            // Buat nama file berdasarkan unix time
+            filename = Date.now() + "." + selectedFileExtension 
+            urlTopicPicture += filename
+        }
+        const response = await fetch('http://localhost:8181/post', {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },    
+            body: new URLSearchParams({
+                'threadNo': threadNo,
+                'postText': postText,
+                'postImage': urlTopicPicture,
+                'userId': userId,
+                'replyTo': ""
+            })
         })
-    })
-    if (response.ok) {
-        const data = await response.json()
-      if (data.status == '200'){
-        alert("Post berhasil ditambahkan!")
-      } else {
-        console.error("Failed!", data.message);
-        alert("Gagal menambahkan post")
-      }
+        if (response.ok) {
+            const data = await response.json()
+            if (data.status == '200'){
+                // Log create topic activity as "Create topic"
+                logUserActivity("Create post",userDataParsed.userId);
+                // Jika terdapat file yang diupload, handle gambar dan simpan gambar secara lokal
+                if(fileInput.files.length > 0){
+                    // Panggil fungsi untuk save gambar di Go
+                    savePostImage(filename, idForm, 0)
+                }
+                else {
+                    alert("Post berhasil ditambahkan!")
+                    // Reload page
+                    location.reload();
+                }
+            } else {
+                console.error("Failed!", data.message);
+                alert("Gagal mengajukan request post!")
+            }
+        }
     }
-  }
-  async function replyPost(postNo) {
-    // Ambil threadNo dari URL param
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    var threadNo = urlParams.get('threadNo')
+    async function replyPost(postNo) {
+        // Ambil threadNo dari URL param
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        var threadNo = urlParams.get('threadNo')
 
-    // Ambil data dari form
-    var textReply = document.getElementById("textReply"+postNo).value;
+        // Ambil data dari form
+        var textReply = document.getElementById("textReply" + postNo).value;
+        var button = document.getElementById("reply" + postNo);
+        var idForm = button.form.id;
 
-    const userId = userDataParsed.userId;
-    
-    // Handle gambar yang diupload
-    var fileInput = document.getElementById("replyImage"+postNo).value;
-    // Buat path url untuk image yang akan diupload ke database
-    var urlTopicPicture = "../src/assets/userUploadedFiles/postPicture/"
+        const userId = userDataParsed.userId;
+        
+        // Handle gambar yang diupload
+        var fileInput = document.getElementById("replyImage"+postNo);
+        // Buat path url untuk image yang akan diupload ke database
+        var urlTopicPicture = "../src/assets/userUploadedFiles/postPicture/"
 
-    // Cek apakah input file kosong, kalau kosong, kasih path ke foto default
-    if(fileInput.files.length == 0){
-        urlTopicPicture += ""
-    } else {
-        // Ambil nama file yang diupload
-        var selectedFile = fileInput.files[0].name;
-        urlTopicPicture += selectedFile
-    }
-    const response = await fetch('http://localhost:8181/post', {
-        method: 'POST',
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },    
-        body: new URLSearchParams({
-            'threadNo': threadNo,
-            'postText': textReply,
-            'postImage': urlTopicPicture,
-            'userId': userId,
-            'replyTo': postNo
+        // Nama file gambar. Default adalah default.png
+        var filename = "default.png"
+
+        // Cek apakah input file kosong, kalau kosong, kasih path ke foto default
+        if(fileInput.files.length == 0){
+            urlTopicPicture += filename
+        } else {
+            // Ambil ekstensi file dari nama file
+            var selectedFile = fileInput.files[0].name;
+            var selectedFileExtension = selectedFile.split('.').pop();
+
+            // Buat nama file berdasarkan unix time
+            filename = Date.now() + "." + selectedFileExtension 
+            urlTopicPicture += filename
+        }
+        const response = await fetch('http://localhost:8181/post', {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },    
+            body: new URLSearchParams({
+                'threadNo': threadNo,
+                'postText': textReply,
+                'postImage': urlTopicPicture,
+                'userId': userId,
+                'replyTo': postNo
+            })
         })
-    })
-    if (response.ok) {
-        const data = await response.json()
-      if (data.status == '200'){
-        alert("Post berhasil ditambahkan!")
-      } else {
-        console.error("Failed!", data.message);
-        alert("Gagal menambahkan post")
-      }
+        if (response.ok) {
+            const data = await response.json()
+            if (data.status == '200'){
+                // Log create topic activity as "Create topic"
+                logUserActivity("Create post",userDataParsed.userId);
+                // Jika terdapat file yang diupload, handle gambar dan simpan gambar secara lokal
+                if(fileInput.files.length > 0){
+                    // Panggil fungsi untuk save gambar di Go
+                    savePostImage(filename, idForm, postNo)
+                }
+                else {
+                    alert("Post berhasil ditambahkan!")
+                    // Reload page
+                    location.reload();
+                }
+            } else {
+                console.error("Failed!", data.message);
+                alert("Gagal mengajukan request post!")
+            }
+        }
     }
-  }
+
+    async function savePostImage(filename, idForm, postNo){
+        // Siapkan form data yang akan menampung data gambar dan masukkan data form
+        var formData = document.querySelector("#" + idForm);
+        var pictureFormData  = new FormData(formData);
+
+        // Input data gambar kedalam formdata
+        pictureFormData.append("filename", filename);
+        pictureFormData.append("postNo", postNo);
+
+        const responsePicture = await fetch('http://localhost:8181/post/picture', {
+            method: 'POST',
+            // Header akan diset otomatis oleh browser sebagai multipart/form-data
+            // Body yang memuat data gambar
+            body: pictureFormData
+        })
+        if (responsePicture.ok) {
+            const data = await responsePicture.json()
+            if (data.status == '200'){
+                // Log create thread activity as "Uploaded topic picture"
+                logUserActivity("Upload topic picture",userDataParsed.userId);
+                alert("Topic berhasil ditambahkan!")
+                location.reload();
+            } else {
+                console.error("Failed!", data.message);
+                alert("Gagal mengajukan request topic!")
+                location.reload();
+            }
+        }
+    }
 
     // Ban sebuah post
     async function banPost(postNo){
