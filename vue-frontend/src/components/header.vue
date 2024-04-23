@@ -35,6 +35,7 @@ function logout() {
   <div class='logo'><a href='homepage.html'><img src='../assets/background/chatters-logo.png'></a></div>
   <ul class="nav-links">
     <div class="menu">
+      <li><a href="homepage.html">Home</a></li>
       <li><a href="topic.html">Catalog</a></li>
       <li><a href="about.php">About</a></li>
       <li id="logoutbutton"><a @click="logout">Log Out</a></li> <!-- Add event handler for logout -->
