@@ -38,7 +38,7 @@ import { onMounted } from 'vue';
         </div>
     </main>
     <div class="modal-topic" id="modal">
-        <form class="form" method="POST">
+        <form class="form" method="POST" id="postTopic" onsubmit="event.preventDefault();">
             <h2 class="title">Add New Topic</h2>
             <label><b>Nama Topik</b></label><br>
             <input type="text" name="topicName" id="topicName" placeholder="Input nama topik" required><br>
@@ -52,164 +52,208 @@ import { onMounted } from 'vue';
     </div>
 </template>
 <script setup>
-import { logUserActivity } from '../activityLogger'; // Import user activity logger
-const temp = ref([]);
-// Retrieve and parse user data from session storage
-const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
-const profilePicture = userDataParsed.profilePicture;
-// Ambil usertype dari session
-var userType = userDataParsed.userType;
+    import { logUserActivity } from '../activityLogger'; // Import user activity logger
+    const temp = ref([]);
+    // Retrieve and parse user data from session storage
+    const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
+    const profilePicture = userDataParsed.profilePicture;
+    // Ambil usertype dari session
+    var userType = userDataParsed.userType;
 
-async function getTopic() {
-    const response = await fetch('http://localhost:8181/topic', {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
-    });
-    if (response.ok) {
-        const data = await response.json()
-        if (data.status == '200') {
-            for (const key in data.data) {
-                temp.value.push(data.data[key]);
-            }
-            console.log(data.data)
-        } else {
-            console.error("Failed!", data.message);
-        }
-    }
-}
-
-onMounted(getTopic);
-
-function goToThread(threadNo) {
-    var url = 'thread.html?topicNo=' + threadNo;
-    window.open(url, '_self');
-}
-
-// Post topic
-async function postTopic() {
-    // Ambil data dari form
-    var topicName = document.getElementById("topicName").value;
-    var topicDesc = document.getElementById("topicDesc").value;
-
-    // Handle gambar yang diupload
-    var fileInput = document.getElementById('topicPicture');
-
-    // Buat path url untuk image yang akan diupload ke database
-    var urlTopicPicture = "../src/assets/userUploadedFiles/topicPicture/"
-
-    // Cek apakah input file kosong, kalau kosong, kasih path ke foto default
-    if (fileInput.files.length == 0) {
-        urlTopicPicture += "default.png"
-    } else {
-        // Ambil nama file yang diupload
-        var selectedFile = fileInput.files[0].name;
-        urlTopicPicture += selectedFile
-    }
-    const response = await fetch('http://localhost:8181/topic', {
-        method: 'POST',
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: new URLSearchParams({
-            'topicTitle': topicName,
-            'topicDesc': topicDesc,
-            'topicPicture': urlTopicPicture
-        })
-    })
-    if (response.ok) {
-        const data = await response.json()
-        if (data.status == '200') {
-            // Log create topic activity as "Create topic"
-            logUserActivity("Create topic", userDataParsed.userId);
-            alert("Topic berhasil ditambahkan!")
-        } else {
-            console.error("Failed!", data.message);
-            alert("Gagal mengajukan request topic!")
-        }
-    }
-}
-
-// Kode ban topic
-// Admin only
-async function banTopic(topicNo) {
-    // Tampilkan prompt konfirmasi ban topic atau tidak
-    if (confirm('Apakah Anda yakin ingin memban topic?')) {
-        // Jika ya, ban topic
-        var url = "http://localhost:8181/topic/ban/" + topicNo;
-        const response = await fetch(url, {
-            method: 'PUT',
+    async function getTopic() {
+        const response = await fetch('http://localhost:8181/topic', {
+            method: "GET",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
-            },
+            }
+        });
+        if (response.ok) {
+            const data = await response.json()
+            if (data.status == '200'){
+                for (const key in data.data) {
+                    temp.value.push(data.data[key]);
+                }
+            } else {
+                console.error("Failed!", data.message);
+            }
+        }
+    }
+
+    onMounted(getTopic);
+
+    function goToThread(threadNo) {
+        var url = 'thread.html?topicNo='+threadNo;
+        window.open(url,'_self');
+    }
+
+    // Post topic
+    async function postTopic() {
+        // Ambil data dari form
+        var topicName = document.getElementById("topicName").value;
+        var topicDesc = document.getElementById("topicDesc").value;
+
+        // Handle gambar yang diupload
+        var fileInput = document.getElementById('topicPicture');
+
+        // Buat path url untuk image yang akan diupload ke database
+        var urlTopicPicture = "../src/assets/userUploadedFiles/topicPicture/"
+
+        // Nama file gambar. Default adalah default.png
+        var filename = "default.png"
+
+        // Cek apakah input file kosong, kalau kosong, kasih path ke foto default
+        if(fileInput.files.length == 0){
+            urlTopicPicture += filename
+        } else {
+            // Ambil ekstensi file dari nama file
+            var selectedFile = fileInput.files[0].name;
+            var selectedFileExtension = selectedFile.split('.').pop();
+
+            // Buat nama file berdasarkan unix time
+            filename = Date.now() + "." + selectedFileExtension 
+            urlTopicPicture += filename
+        }
+        const response = await fetch('http://localhost:8181/topic', {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },    
             body: new URLSearchParams({
-                'banStatus': 1,
+                'topicTitle': topicName,
+                'topicDesc': topicDesc,
+                'topicPicture': urlTopicPicture
             })
         })
         if (response.ok) {
             const data = await response.json()
-            if (data.status == '200') {
-                // Log ban topic activity as "Ban topic"
-                logUserActivity("Ban topic", userDataParsed.userId);
-                alert("Topic berhasil diban!")
-                window.open('/topic.html', '_self');
+            if (data.status == '200'){
+                // Log create topic activity as "Create topic"
+                logUserActivity("Create topic",userDataParsed.userId);
+                // Jika terdapat file yang diupload, handle gambar dan simpan gambar secara lokal
+                if(fileInput.files.length > 0){
+                    // Panggil fungsi untuk save gambar di Go
+                    saveTopicImage(filename)
+                }
+                else {
+                    alert("Topic berhasil ditambahkan!")
+                    // Reload page
+                    location.reload();
+                }
             } else {
                 console.error("Failed!", data.message);
-                alert("Gagal memban topic!")
+                alert("Gagal mengajukan request topic!")
             }
         }
     }
-}
 
-async function unbanTopic(topicNo) {
-    // Tampilkan prompt konfirmasi ban topic atau tidak
-    if (confirm('Apakah Anda yakin ingin memunban topic?')) {
-        // Jika ya, unban topic
-        var url = "http://localhost:8181/topic/ban/" + topicNo;
-        const response = await fetch(url, {
-            method: 'PUT',
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: new URLSearchParams({
-                'banStatus': 0,
-            })
+    async function saveTopicImage(filename){
+        // Siapkan form data yang akan menampung data gambar dan masukkan data form
+        var formData = document.querySelector("#postTopic")
+        var pictureFormData  = new FormData(formData);
+
+        // Input data gambar kedalam formdata
+        pictureFormData.append("filename", filename);
+
+        const responsePicture = await fetch('http://localhost:8181/topic/picture', {
+            method: 'POST',
+            // Header akan diset otomatis oleh browser sebagai multipart/form-data
+            // Body yang memuat data gambar
+            body: pictureFormData
         })
-        if (response.ok) {
-            const data = await response.json()
-            if (data.status == '200') {
-                // Log ban topic activity as "Unban topic"
-                logUserActivity("Unban topic", userDataParsed.userId);
-                alert("Topic berhasil diunban!")
-                window.open('/topic.html', '_self');
+        if (responsePicture.ok) {
+            const data = await responsePicture.json()
+            if (data.status == '200'){
+                // Log create thread activity as "Uploaded topic picture"
+                logUserActivity("Upload topic picture",userDataParsed.userId);
+                alert("Topic berhasil ditambahkan!")
+                location.reload();
             } else {
                 console.error("Failed!", data.message);
-                alert("Gagal memunban topic!")
+                alert("Gagal mengajukan request topic!")
+                location.reload();
             }
         }
     }
-}
 
-// Kode untuk modal
-function showModal() {
-    var modal = document.getElementById("modal");
-    modal.style.display = "block";
-}
-
-// Close modal
-function closeModal() {
-    var modal = document.getElementById("modal");
-    modal.style.display = "none"
-}
-
-// Close modal kalau klik diluar modal
-window.onclick = function (event) {
-    var modal = document.getElementById("modal");
-    if (event.target == modal) {
-        modal.style.display = "none";
+    // Kode ban topic
+    // Admin only
+    async function banTopic(topicNo){
+        // Tampilkan prompt konfirmasi ban topic atau tidak
+        if (confirm('Apakah Anda yakin ingin memban topic?')) {
+            // Jika ya, ban topic
+            var url = "http://localhost:8181/topic/ban/" + topicNo;
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },    
+                body: new URLSearchParams({
+                    'banStatus': 1,
+                })    
+            })
+            if (response.ok) {
+                const data = await response.json()
+                if (data.status == '200'){
+                    // Log ban topic activity as "Ban topic"
+                    logUserActivity("Ban topic",userDataParsed.userId);
+                    alert("Topic berhasil diban!")
+                    window.open('/topic.html','_self');
+                } else {
+                    console.error("Failed!", data.message);
+                    alert("Gagal memban topic!")
+                }
+            }
+        }
     }
-}
+
+    async function unbanTopic(topicNo){
+        // Tampilkan prompt konfirmasi ban topic atau tidak
+        if (confirm('Apakah Anda yakin ingin memunban topic?')) {
+            // Jika ya, unban topic
+            var url = "http://localhost:8181/topic/ban/" + topicNo;
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },    
+                body: new URLSearchParams({
+                    'banStatus': 0,
+                })    
+            })
+            if (response.ok) {
+                const data = await response.json()
+                if (data.status == '200'){
+                    // Log ban topic activity as "Unban topic"
+                    logUserActivity("Unban topic",userDataParsed.userId);
+                    alert("Topic berhasil diunban!")
+                    window.open('/topic.html','_self');
+                } else {
+                    console.error("Failed!", data.message);
+                    alert("Gagal memunban topic!")
+                }
+            }
+        }
+    }
+
+    // Kode untuk modal
+    function showModal(){
+        var modal = document.getElementById("modal");
+        modal.style.display = "block";
+    }
+    
+    // Close modal
+    function closeModal() {
+        var modal = document.getElementById("modal");
+        modal.style.display = "none"
+    }
+
+    // Close modal kalau klik diluar modal
+    window.onclick = function(event) {
+        var modal = document.getElementById("modal");
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
 </script>
 
 <style scoped>
