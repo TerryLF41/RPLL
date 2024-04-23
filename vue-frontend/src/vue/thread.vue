@@ -67,171 +67,180 @@ import { onMounted } from 'vue';
 </template>
 
 <script setup>
-import { logUserActivity } from '../activityLogger'; // Import user activity logger
-const temp = ref([]);
+    import { logUserActivity } from '../activityLogger'; // Import user activity logger
+    const temp = ref([]);
 
-// Retrieve and parse user data from session storage
-const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
-const profilePicture = userDataParsed.profilePicture;
-// Ambil usertype dari session
-var userType = userDataParsed.userType;
+    // Retrieve and parse user data from session storage
+    const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
+    const profilePicture = userDataParsed.profilePicture;
+    // Ambil usertype dari session
+    var userType = userDataParsed.userType;
 
-async function getThread() {
-    // Ambil nomor topic sekarang dari URL param
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    var topicNo = urlParams.get('topicNo')
-    var query = 'http://localhost:8181/thread/' + topicNo;
-    const response = await fetch(query, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
-    });
-    if (response.ok) {
-        const data = await response.json()
-        if (data.status == '200') {
-            for (const key in data.data) {
-                temp.value.push(data.data[key]);
+    async function getThread() {
+        // Ambil nomor topic sekarang dari URL param
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        var topicNo = urlParams.get('topicNo')
+        var query = 'http://localhost:8181/thread/' + topicNo;
+        const response = await fetch(query, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
             }
-        } else {
-            console.error("Failed!", data.message);
+        });
+        if (response.ok) {
+            const data = await response.json()
+            if (data.status == '200') {
+                for (const key in data.data) {
+                    // Format datetime agar lebih mudah dibaca
+                    data.data[key].createDate = dateTimeFormatter(data.data[key].createDate)
+                    temp.value.push(data.data[key]);
+                }
+            } else {
+                console.error("Failed!", data.message);
+            }
         }
     }
-}
 
-onMounted(getThread);
-
-function goToPost(threadNo) {
-    var url = 'post.html?threadNo=' + threadNo;
-    window.open(url, '_self');
-}
-
-// Post thread
-async function postThread() {
-    // Ambil nomor topic sekarang dari URL param
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    var topicNo = urlParams.get('topicNo')
-    // Ambil data dari form
-    var threadName = document.getElementById("threadName").value;
-    var threadDesc = document.getElementById("threadDesc").value;
-
-    const response = await fetch('http://localhost:8181/thread', {
-        method: 'POST',
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: new URLSearchParams({
-            'topicNo': topicNo,
-            'threadTitle': threadName,
-            'threadDesc': threadDesc
-        })
-    })
-    if (response.ok) {
-        const data = await response.json()
-        if (data.status == '200') {
-            // Log create thread activity as "Create thread"
-            logUserActivity("Create thread", userDataParsed.userId);
-            alert("Thread berhasil ditambahkan!")
-        } else {
-            console.error("Failed!", data.message);
-            alert("Gagal mengajukan request topic!")
+    // Format tanggal agar lebih mudah dibaca
+    function dateTimeFormatter(timestamp){
+            var date = timestamp.substring(0, 10)
+            var hour = timestamp.substring(11, 19)
+            return date + " " + hour
         }
-    }
-}
 
-// Kode ban thread
-// Admin only
-async function banThread(threadNo) {
-    // Tampilkan prompt konfirmasi ban topic atau tidak
-    if (confirm('Apakah Anda yakin ingin memban thread?')) {
-        // Jika ya, ban topic
-        var url = "http://localhost:8181/thread/ban/" + threadNo;
-        const response = await fetch(url, {
-            method: 'PUT',
+    onMounted(getThread);
+
+    function goToPost(threadNo) {
+        var url = 'post.html?threadNo=' + threadNo;
+        window.open(url, '_self');
+    }
+
+    // Post thread
+    async function postThread() {
+        // Ambil nomor topic sekarang dari URL param
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        var topicNo = urlParams.get('topicNo')
+        // Ambil data dari form
+        var threadName = document.getElementById("threadName").value;
+        var threadDesc = document.getElementById("threadDesc").value;
+
+        const response = await fetch('http://localhost:8181/thread', {
+            method: 'POST',
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
             body: new URLSearchParams({
-                'banStatus': 1,
+                'topicNo': topicNo,
+                'threadTitle': threadName,
+                'threadDesc': threadDesc
             })
         })
         if (response.ok) {
             const data = await response.json()
             if (data.status == '200') {
-                // Log ban thread activity as "Ban thread"
-                logUserActivity("Ban thread", userDataParsed.userId);
-
-                alert("Thread berhasil diban!")
-                // Ambil nomor topic sekarang dari URL param
-                const queryString = window.location.search;
-                const urlParams = new URLSearchParams(queryString);
-                var topicNo = urlParams.get('topicNo')
-                var url = '/thread.html?topicNo=' + topicNo;
-                window.open(url, '_self');
+                // Log create thread activity as "Create thread"
+                logUserActivity("Create thread", userDataParsed.userId);
+                alert("Thread berhasil ditambahkan!")
             } else {
                 console.error("Failed!", data.message);
-                alert("Gagal memban thread!")
+                alert("Gagal mengajukan request topic!")
             }
         }
     }
-}
 
-async function unbanThread(threadNo) {
-    // Tampilkan prompt konfirmasi ban topic atau tidak
-    if (confirm('Apakah Anda yakin ingin memunban thread?')) {
-        // Jika ya, ban topic
-        var url = "http://localhost:8181/thread/ban/" + threadNo;
-        const response = await fetch(url, {
-            method: 'PUT',
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: new URLSearchParams({
-                'banStatus': 0,
+    // Kode ban thread
+    // Admin only
+    async function banThread(threadNo) {
+        // Tampilkan prompt konfirmasi ban topic atau tidak
+        if (confirm('Apakah Anda yakin ingin memban thread?')) {
+            // Jika ya, ban topic
+            var url = "http://localhost:8181/thread/ban/" + threadNo;
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: new URLSearchParams({
+                    'banStatus': 1,
+                })
             })
-        })
-        if (response.ok) {
-            const data = await response.json()
-            if (data.status == '200') {
-                // Log ban thread activity as "Ban thread"
-                logUserActivity("Unban thread", userDataParsed.userId);
+            if (response.ok) {
+                const data = await response.json()
+                if (data.status == '200') {
+                    // Log ban thread activity as "Ban thread"
+                    logUserActivity("Ban thread", userDataParsed.userId);
 
-                alert("Thread berhasil diunban!")
-                // Ambil nomor topic sekarang dari URL param
-                const queryString = window.location.search;
-                const urlParams = new URLSearchParams(queryString);
-                var topicNo = urlParams.get('topicNo')
-                var url = '/thread.html?topicNo=' + topicNo;
-                window.open(url, '_self');
-            } else {
-                console.error("Failed!", data.message);
-                alert("Gagal memban thread!")
+                    alert("Thread berhasil diban!")
+                    // Ambil nomor topic sekarang dari URL param
+                    const queryString = window.location.search;
+                    const urlParams = new URLSearchParams(queryString);
+                    var topicNo = urlParams.get('topicNo')
+                    var url = '/thread.html?topicNo=' + topicNo;
+                    window.open(url, '_self');
+                } else {
+                    console.error("Failed!", data.message);
+                    alert("Gagal memban thread!")
+                }
             }
         }
     }
-}
 
-// Kode untuk modal
-function showModal() {
-    var modal = document.getElementById("modal");
-    modal.style.display = "block";
-}
+    async function unbanThread(threadNo) {
+        // Tampilkan prompt konfirmasi ban topic atau tidak
+        if (confirm('Apakah Anda yakin ingin memunban thread?')) {
+            // Jika ya, ban topic
+            var url = "http://localhost:8181/thread/ban/" + threadNo;
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: new URLSearchParams({
+                    'banStatus': 0,
+                })
+            })
+            if (response.ok) {
+                const data = await response.json()
+                if (data.status == '200') {
+                    // Log ban thread activity as "Ban thread"
+                    logUserActivity("Unban thread", userDataParsed.userId);
 
-// Close modal
-function closeModal() {
-    var modal = document.getElementById("modal");
-    modal.style.display = "none"
-}
-
-// Close modal kalau klik diluar modal
-window.onclick = function (event) {
-    var modal = document.getElementById("modal");
-    if (event.target == modal) {
-        modal.style.display = "none";
+                    alert("Thread berhasil diunban!")
+                    // Ambil nomor topic sekarang dari URL param
+                    const queryString = window.location.search;
+                    const urlParams = new URLSearchParams(queryString);
+                    var topicNo = urlParams.get('topicNo')
+                    var url = '/thread.html?topicNo=' + topicNo;
+                    window.open(url, '_self');
+                } else {
+                    console.error("Failed!", data.message);
+                    alert("Gagal memban thread!")
+                }
+            }
+        }
     }
-}
+
+    // Kode untuk modal
+    function showModal() {
+        var modal = document.getElementById("modal");
+        modal.style.display = "block";
+    }
+
+    // Close modal
+    function closeModal() {
+        var modal = document.getElementById("modal");
+        modal.style.display = "none"
+    }
+
+    // Close modal kalau klik diluar modal
+    window.onclick = function (event) {
+        var modal = document.getElementById("modal");
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
 </script>
 
 <style scoped>

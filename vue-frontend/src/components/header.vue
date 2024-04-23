@@ -37,7 +37,7 @@ function logout() {
     <div class="menu">
       <li><a href="homepage.html">Home</a></li>
       <li><a href="topic.html">Catalog</a></li>
-      <li><a href="about.php">About</a></li>
+      <li><a href="about.html">About</a></li>
       <li id="logoutbutton"><a @click="logout">Log Out</a></li> <!-- Add event handler for logout -->
       <div class="profile-picture">
         <a href="profile.html"><img class="profile-picture" :src="profilePicture"></a>
