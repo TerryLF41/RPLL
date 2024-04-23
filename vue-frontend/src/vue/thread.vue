@@ -9,7 +9,7 @@ import { onMounted } from 'vue';
         <nav class="navbar">
             <Header />
         </nav>
-        <h1>Daftar Topik</h1>
+        <h1>Thread List</h1>
         <button type="button" @click="showModal">Add New Thread</button> 
         <div class="container d-flex justify-content-center" onload="getThread()">
             <ul class="list-group mt-5 text-white">

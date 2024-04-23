@@ -9,8 +9,8 @@ import { onMounted } from 'vue';
         <nav class="navbar">
             <Header />
         </nav>
-        <h1>Daftar Topik</h1>  
-        <button type="button" @click="showModal">Add New Topic</button> 
+        <h1>Topic List</h1>  
+        <button type="button" @click="showModal" class="btn btn-primary">Add New Topic</button> 
         <div class="container d-flex justify-content-center" onload="getTopic()">
             <ul class="list-group mt-5 text-white">
                 <div class="wrapper-li" v-for="item in temp">
@@ -38,8 +38,8 @@ import { onMounted } from 'vue';
                             </div>
                         </div>
                     </li>
-                    <button id="banButton" v-if="userType==1 && item.banstatus==false" @click="banTopic(item.topicNo)">Ban Topic</button>
-                    <button id="unbanButton" v-if="userType==1 && item.banstatus==true" @click="unbanTopic(item.topicNo)">Unban Topic</button>
+                    <button id="banButton" v-if="userType==1 && item.banstatus==false" @click="banTopic(item.topicNo)" class="btn btn-danger">Ban Topic</button>
+                    <button id="unbanButton" v-if="userType==1 && item.banstatus==true" @click="unbanTopic(item.topicNo)" class="btn btn-info">Unban Topic</button>
                 </div>
             </ul>
         </div>
@@ -53,12 +53,11 @@ import { onMounted } from 'vue';
             <textarea name="topicDesc" id="topicDesc" placeholder="Input deskripsi topik" required></textarea><br>
             <label><b>Foto Topik</b></label><br>
             <input type="file" id="topicPicture" name="topicPicture" accept=".jpg, .jpeg, .png">
-            <button type="submit" id="submit" @click="postTopic">Submit</button>
-            <button type="reset" id="cancel" @click="closeModal">Cancel</button>
+            <button type="submit" id="submit" @click="postTopic" class="btn btn-primary">Submit</button>
+            <button type="reset" id="cancel" @click="closeModal" class="btn btn-secondary">Cancel</button>
         </form>
     </div>
 </template>
-
 <script setup>
     import { logUserActivity } from '../activityLogger'; // Import user activity logger
     const temp = ref([]);
