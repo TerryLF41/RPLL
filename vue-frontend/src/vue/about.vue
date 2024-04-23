@@ -10,8 +10,6 @@ if (!userData) {
   window.location.href = 'login.html'; // Redirect to the login page
 }
 
-// Ambil usertype dari session
-const userType = userData.userType;
 </script>
 
 <template>
