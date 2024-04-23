@@ -59,90 +59,99 @@ import { onMounted } from 'vue';
 </template>
 
 <script setup>
-import { logUserActivity } from '../activityLogger'; // Import user activity logger
-const temp = ref([]);
-// Retrieve and parse user data from session storage
-const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
+    import { logUserActivity } from '../activityLogger'; // Import user activity logger
+    const temp = ref([]);
+    // Retrieve and parse user data from session storage
+    const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
 
-async function getUsers() {
-    // Ambil nomor topic sekarang dari URL param
-    var query = 'http://localhost:8181/user';
-    const response = await fetch(query, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
-    });
-    if (response.ok) {
-        const data = await response.json()
-        if (data.status == '200') {
-            for (const key in data.data) {
-                temp.value.push(data.data[key]);
-                console.log(data.data[key])
+    async function getUsers() {
+        // Ambil nomor topic sekarang dari URL param
+        var query = 'http://localhost:8181/user';
+        const response = await fetch(query, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
             }
-        } else {
-            console.error("Failed!", data.message);
-        }
-    }
-}
-
-async function viewUserActivity(userId, username) {
-    // Buat link ke halaman useractivity
-    var url = '/useractivity.html?userId=' + userId
-
-    // Buka window baru yang menampilkan log activity user
-    newwindow = window.open(url, 'User Activity', 'height=450,width=800');
-    if (window.focus) {
-        newwindow.focus()
-    }
-    return false;
-
-}
-
-async function banUser(status, id) {
-    if (status == 1) {
-        status = 0
-        console.log(status)
-    } else {
-        status = 1
-        console.log(status)
-    }
-    const unbanresponse = await fetch('http://localhost:8181/user/ban/' + id, {
-        method: 'POST',
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: new URLSearchParams({
-            'banStatus': status,
-        })
-    })
-        .then(unbanresponse => {
-            if (unbanresponse.ok) {
-                return unbanresponse.json(); // Only proceed if the fetch is successful
-            } else {
-                console.error("Failed to fetch unban response:", unbanresponse.status);
-                throw new Error("Failed to unban user (fetch issue)"); // Or handle the error differently
-            }
-        })
-        .then(data => {
-            console.log(data.status)
-            if (data.status == '200') {
-                // Log change user ban status activity as "Change user ban status"
-                logUserActivity("Change user ban status", userDataParsed.userId);
-                alert("User is Banned/unbanned!");
-                window.location.reload();
-            } else {
-                console.error("Failed to unban user:", data.message);
-                alert("Failed to Ban/unban the user!");
-            }
-        })
-        .catch(error => {
-            console.error("Error banning/unbanning user:", error);
-            alert("An error occurred while unbanning the user."); // Handle errors more gracefully
         });
-}
+        if (response.ok) {
+            const data = await response.json()
+            if (data.status == '200') {
+                for (const key in data.data) {
+                    // Format datetime agar lebih mudah dibaca
+                    data.data[key].joinDate = dateTimeFormatter(data.data[key].joinDate)
+                    temp.value.push(data.data[key]);
+                    console.log(data.data[key])
+                }
+            } else {
+                console.error("Failed!", data.message);
+            }
+        }
+    }
 
-onMounted(getUsers);
+    // Format tanggal agar lebih mudah dibaca
+    function dateTimeFormatter(timestamp){
+        var date = timestamp.substring(0, 10)
+        var hour = timestamp.substring(11, 19)
+        return date + " " + hour
+    }
+
+    async function viewUserActivity(userId, username) {
+        // Buat link ke halaman useractivity
+        var url = '/useractivity.html?userId=' + userId
+
+        // Buka window baru yang menampilkan log activity user
+        newwindow = window.open(url, 'User Activity', 'height=450,width=800');
+        if (window.focus) {
+            newwindow.focus()
+        }
+        return false;
+
+    }
+
+    async function banUser(status, id) {
+        if (status == 1) {
+            status = 0
+            console.log(status)
+        } else {
+            status = 1
+            console.log(status)
+        }
+        const unbanresponse = await fetch('http://localhost:8181/user/ban/' + id, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+                'banStatus': status,
+            })
+        })
+            .then(unbanresponse => {
+                if (unbanresponse.ok) {
+                    return unbanresponse.json(); // Only proceed if the fetch is successful
+                } else {
+                    console.error("Failed to fetch unban response:", unbanresponse.status);
+                    throw new Error("Failed to unban user (fetch issue)"); // Or handle the error differently
+                }
+            })
+            .then(data => {
+                console.log(data.status)
+                if (data.status == '200') {
+                    // Log change user ban status activity as "Change user ban status"
+                    logUserActivity("Change user ban status", userDataParsed.userId);
+                    alert("User is Banned/unbanned!");
+                    window.location.reload();
+                } else {
+                    console.error("Failed to unban user:", data.message);
+                    alert("Failed to Ban/unban the user!");
+                }
+            })
+            .catch(error => {
+                console.error("Error banning/unbanning user:", error);
+                alert("An error occurred while unbanning the user."); // Handle errors more gracefully
+            });
+    }
+
+    onMounted(getUsers);
 
 </script>
 
