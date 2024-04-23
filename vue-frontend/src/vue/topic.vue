@@ -71,12 +71,21 @@ import { onMounted } from 'vue';
             const data = await response.json()
             if (data.status == '200'){
                 for (const key in data.data) {
+                    // Format datetime agar lebih mudah dibaca
+                    data.data[key].createDate = dateTimeFormatter(data.data[key].createDate)
                     temp.value.push(data.data[key]);
                 }
             } else {
                 console.error("Failed!", data.message);
             }
         }
+    }
+
+    // Format tanggal agar lebih mudah dibaca
+    function dateTimeFormatter(timestamp){
+        var date = timestamp.substring(0, 10)
+        var hour = timestamp.substring(11, 19)
+        return date + " " + hour
     }
 
     onMounted(getTopic);
