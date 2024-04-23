@@ -10,8 +10,6 @@ if (!userData) {
   window.location.href = 'login.html'; // Redirect to the login page
 }
 
-// Ambil usertype dari session
-const userType = userData.userType;
 </script>
 
 <template>
@@ -53,41 +51,17 @@ main {
   padding: 0;
 }
 
-.catalog {
-  border-radius: 25px;
-  border: 2px solid;
-  height: 20px;
-  padding-top: 5px;
-  width: 70px;
-  text-align: center;
-  background-color: #A9A9A9;
-}
-
-a, h2, p {
+h3, h2, p {
   color: white;
   text-decoration: none;
-}
-
-input[type=submit] {
-  background-color: grey;
-  border: 1px solid;
-  cursor: pointer;
-  text-decoration: none;
-  color: white;
-}
-
-h1, h2, #desc {
-  text-align: center;
 }
 
 h2 {
   margin-top: 0.5em;
   margin-bottom: 1.5em;
+  text-align: center;
 }
 
-h3 {
-    color: white;
-}
 
 img {
   display: block;
@@ -96,29 +70,4 @@ img {
   width: 50%;
 }
 
-form {
-  float: left;
-}
-
-.option {
-  display: flex;
-  justify-content: space-between; /* Tombol-tombol akan berderet dari kanan ke kiri */
-}
-
-.show {
-  background-color: grey;
-  border: none;
-  color: white;
-  padding: 15px 15px;
-  text-decoration: none;
-  margin: 4px 2px;
-  cursor: pointer;
-  font-size: 16px;
-  width: 30%; /* Lebar tombol */
-  text-align: center; /* Teks tengah */
-}
-
-.show:hover {
-  opacity: 0.75;
-}
 </style>
