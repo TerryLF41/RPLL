@@ -9,39 +9,32 @@ import { onMounted } from 'vue';
         <nav class="navbar">
             <Header />
         </nav>
-        <h1>Daftar Topik</h1>  
-        <button type="button" @click="showModal">Add New Topic</button> 
-        <div class="container d-flex justify-content-center" onload="getTopic()">
-            <ul class="list-group mt-5 text-white">
-                <div class="wrapper-li" v-for="item in temp">
-                    <li class="list-group-item d-flex justify-content-between align-content-center" v-if="item.banstatus==false" @click="goToThread(item.topicNo)">
-                        <div class="d-flex flex-row">
-                            <img v-bind:src="item.topicPicture" width="100" />
-                            <div class="ml-2 topicDesc">
-                                <h6 class="mb-0">{{ item.topicTitle }}</h6>
-                                <div class="about">
-                                    <span>{{ item.topicDesc }}</span><br>
-                                    <span>{{ item.createDate }}</span><br>
+        <div class="container my-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="display-4">Topic List</h1>
+                <button type="button" @click="showModal" class="btn btn-primary">Add New Topic</button>
+            </div>
+            <div class="row" onload="getTopic()">
+                <div class="col-md-6 col-lg-4" v-for="item in temp">
+                    <div class="card mb-4">
+                        <img :src="item.topicPicture" class="card-img-top img-thumbnail img-fluid" alt="Topic Image">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ item.topicTitle }}</h5>
+                            <p class="card-text">{{ item.topicDesc }}</p>
+                            <p class="card-text"><small class="text-muted">{{ item.createDate }}</small></p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button @click="goToThread(item.topicNo)" class="btn btn-primary">View Thread</button>
+                                <div v-if="userType == 1">
+                                    <button v-if="!item.banstatus" @click="banTopic(item.topicNo)"
+                                        class="btn btn-danger ml-2">Ban Topic</button>
+                                    <button v-else @click="unbanTopic(item.topicNo)" class="btn btn-info ml-2">Unban
+                                        Topic</button>
                                 </div>
                             </div>
                         </div>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-content-center" v-if="userType==1 && item.banstatus==true" @click="goToThread(item.topicNo)">
-                        <div class="d-flex flex-row">
-                            <img v-bind:src="item.topicPicture" width="100" />
-                            <div class="ml-2 topicDesc">
-                                <h6 class="mb-0">{{ item.topicTitle }}</h6>
-                                <div class="about">
-                                    <span>{{ item.topicDesc }}</span><br>
-                                    <span>{{ item.createDate }}</span><br>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <button id="banButton" v-if="userType==1 && item.banstatus==false" @click="banTopic(item.topicNo)">Ban Topic</button>
-                    <button id="unbanButton" v-if="userType==1 && item.banstatus==true" @click="unbanTopic(item.topicNo)">Unban Topic</button>
+                    </div>
                 </div>
-            </ul>
+            </div>
         </div>
     </main>
     <div class="modal-topic" id="modal">
@@ -53,12 +46,11 @@ import { onMounted } from 'vue';
             <textarea name="topicDesc" id="topicDesc" placeholder="Input deskripsi topik" required></textarea><br>
             <label><b>Foto Topik</b></label><br>
             <input type="file" id="topicPicture" name="topicPicture" accept=".jpg, .jpeg, .png">
-            <button type="submit" id="submit" @click="postTopic">Submit</button>
-            <button type="reset" id="cancel" @click="closeModal">Cancel</button>
+            <button type="submit" id="submit" @click="postTopic" class="btn btn-primary">Submit</button>
+            <button type="reset" id="cancel" @click="closeModal" class="btn btn-secondary">Cancel</button>
         </form>
     </div>
 </template>
-
 <script setup>
     import { logUserActivity } from '../activityLogger'; // Import user activity logger
     const temp = ref([]);
@@ -265,65 +257,106 @@ import { onMounted } from 'vue';
 </script>
 
 <style scoped>
-.list-group{
-	width: 100% !important;
+.card-img-top {
+    height: 200px;
+    /* Ubah nilai sesuai kebutuhan */
+    object-fit: cover;
+}
+
+.card-img-top {
+    position: relative;
+    overflow: hidden;
+}
+
+.card-img-top::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.card:hover .card-img-top::before {
+    opacity: 1;
+}
+
+.list-group {
+    width: 100% !important;
     border-radius: 0;
 }
-.list-group-item{
-	margin-top:15px;
-	cursor: pointer;
+
+.list-group-item {
+    margin-top: 15px;
+    cursor: pointer;
     border-style: none;
-	transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
     background-color: #ADA7A7;
 }
-.list-group-item:hover{
-	opacity: 0.8;
+
+.list-group-item:hover {
+    opacity: 0.8;
 }
-.about span{
-	font-size: 12px;
-	margin-right: 10px;
+
+.about span {
+    font-size: 12px;
+    margin-right: 10px;
 }
-.topicDesc{
+
+.topicDesc {
     margin-left: 10px;
 }
 
 body {
     color: white;
-    background-image:url("../upload/media/bg-topic.jpg");
+    background-image: url("../upload/media/bg-topic.jpg");
     background-repeat: no-repeat;
     background-size: cover;
 }
+
 main {
     min-height: 80vh;
     width: 66%;
     margin: auto;
     padding: 0;
 }
-h1,h2,#desc {
+
+h1,
+h2,
+#desc {
     text-align: center;
 }
-.list{
+
+.list {
     padding: 5px;
     width: 90%;
-    margin:auto;
+    margin: auto;
     border: 2px solid grey;
     border-radius: 10px;
 }
-a{
+
+a {
     color: white;
     text-decoration: none;
 }
-h1{
+
+h1 {
     color: white;
     padding-left: 5%;
 }
+
 .add {
     text-align: center;
     cursor: pointer;
 }
+
 ::placeholder {
     color: #cccccc;
 }
+
 .modal-topic {
     position: fixed;
     z-index: 999;
@@ -338,9 +371,11 @@ h1{
     transform: translate(-50%, -50%);
     overflow: auto;
     top: 50%;
-    left: 50%; 
+    left: 50%;
 }
-.modal-topic input, textarea {
+
+.modal-topic input,
+textarea {
     background-color: #696969;
     color: white;
     width: 100%;
@@ -350,6 +385,7 @@ h1{
     border: 1px solid #3f3f3f;
     box-sizing: border-box;
 }
+
 .modal-topic button {
     border: 2px solid black;
     background-color: #303030;
@@ -360,20 +396,25 @@ h1{
     float: left;
     width: 50%;
 }
+
 button:hover {
     opacity: 75%;
 }
+
 #cancel {
     background-color: #7a0800;
 }
+
 h2.title {
     text-align: center;
     margin-top: 0;
 }
+
 #banButton {
     background-color: #ff0000;
     font-size: small;
 }
+
 #unbanButton {
     background-color: #0e9fde;
     font-size: small;
