@@ -21,6 +21,7 @@ func main() {
 	// Handler untuk user
 	router.HandleFunc("/user", controller.GetAllUsers).Methods("GET")
 	router.HandleFunc("/user/ban/{userId}", controller.BanUser).Methods("POST")
+	router.HandleFunc("/user/picture", controller.SaveProfilePicture).Methods("POST")
 	router.HandleFunc("/register", controller.RegisterUser).Methods("POST")
 	router.HandleFunc("/login", controller.Login).Methods("POST")
 	router.HandleFunc("/logout", controller.Logout).Methods("POST")

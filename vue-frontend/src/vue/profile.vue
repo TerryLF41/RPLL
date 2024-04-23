@@ -14,37 +14,39 @@ const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
         </nav>
         <h1>User Profile</h1>  
         <div class="container rounded bg-black mt-5 mb-5" >
-    <div class="row">
-        <div class="col-md-3 border-right">
-            <div class="d-flex flex-column align-items-center text-center p-3 py-5"><img class="rounded-circle mt-5" width="150px" v-bind:src=userDataParsed.profilePicture><span class="font-weight-bold">{{ userDataParsed.username }}
-            </span><span class="text-white-50">{{userDataParsed.email}}
-            <input class="masukan" type="file" id="avatar" name="avatar" accept="image/png, image/jpeg">
-            </span><span> </span></div>
-        </div>
-        <div class="col-md-5 border-right">
-            <div class="p-3 py-5">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="text-right">Profile Settings</h4>
+            <div class="row">
+                <div class="col-md-3 border-right">
+                    <div class="d-flex flex-column align-items-center text-center p-3 py-5"><img class="rounded-circle mt-5" width="150px" v-bind:src=userDataParsed.profilePicture><span class="font-weight-bold">{{ userDataParsed.username }}
+                    </span><span class="text-white-50">{{userDataParsed.email}}
+                    <form class="form" method="POST" id="postProfilePicture" onsubmit="event.preventDefault();">
+                        <input type="file" class="masukan" id="avatar" name="avatar" accept=".jpg, .jpeg, .png">
+                    </form>
+                    </span><span> </span></div>
                 </div>
-                <div class="row mt-2">
-                    <div class="col-md-12"><label class="labels">Name</label><input type="text" id="userName" class="form-control" v-bind:value=userDataParsed.username></div>
+                <div class="col-md-5 border-right">
+                    <div class="p-3 py-5">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="text-right">Profile Settings</h4>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-12"><label class="labels">Name</label><input type="text" id="userName" class="form-control" v-bind:value=userDataParsed.username></div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-12"><label class="labels">Email</label><input type="text" id="email" class="form-control" v-bind:value=userDataParsed.email></div>
+                            <div class="col-md-12"><label class="labels">Profile Description</label><textarea id="description" class="form-control height:fit-content; form-control-sm" v-bind:value=userDataParsed.profileDesc></textarea></div>
+                        </div>
+                        <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="button" @click="changeProfile">Save Profile</button></div>
+                    </div>
                 </div>
-                <div class="row mt-3">
-                    <div class="col-md-12"><label class="labels">Email</label><input type="text" id="email" class="form-control" v-bind:value=userDataParsed.email></div>
-                    <div class="col-md-12"><label class="labels">Profile Description</label><textarea id="description" class="form-control height:fit-content; form-control-sm" v-bind:value=userDataParsed.profileDesc></textarea></div>
+                <div class="col-md-4">
+                    <div class="p-3 py-5">
+                        <div class="d-flex justify-content-between align-items-center experience" @click="changePassword"><span>Change Password</span><span class="border px-3 p-1 add-experience"><i class="fa fa-plus"></i>&nbsp;Change!</span></div><br>
+                        <div class="col-md-12"><label class="labels">Old password</label><input type="password" id="oldPass" class="form-control" placeholder="Input old password" value=""></div> <br>
+                        <div class="col-md-12"><label class="labels">New password</label><input type="password" id="newPass" class="form-control" placeholder="Input new password" value=""></div>
+                    </div>
                 </div>
-                <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="button" @click="changeProfile">Save Profile</button></div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="p-3 py-5">
-                <div class="d-flex justify-content-between align-items-center experience" @click="changePassword"><span>Change Password</span><span class="border px-3 p-1 add-experience"><i class="fa fa-plus"></i>&nbsp;Change!</span></div><br>
-                <div class="col-md-12"><label class="labels">Old password</label><input type="password" id="oldPass" class="form-control" placeholder="Input old password" value=""></div> <br>
-                <div class="col-md-12"><label class="labels">New password</label><input type="password" id="newPass" class="form-control" placeholder="Input new password" value=""></div>
-            </div>
-        </div>
-    </div>
-</div>
 
 
     </main>
@@ -73,13 +75,20 @@ const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
         var profilePicture = document.getElementById('avatar');
         var urlProfilePicture = "/src/assets/userUploadedFiles/userProfile/"
 
+        // Nama file gambar. Default adalah default.png
+        var filename = "default.png"
+
         // Cek apakah input file kosong, kalau kosong, kasih path ke foto default
         if(profilePicture.files.length == 0){
-           var urlProfilePicture = userDataParsed.profilePicture
+           urlProfilePicture = userDataParsed.profilePicture
         } else {
-            // Ambil nama file yang diupload
-            var userProfilePicture = profilePicture.files[0].name;
-            urlProfilePicture += userProfilePicture
+            // Ambil ekstensi file dari nama file
+            var selectedFile = profilePicture.files[0].name;
+            var selectedFileExtension = selectedFile.split('.').pop();
+
+            // Buat nama file berdasarkan unix time
+            filename = Date.now() + "." + selectedFileExtension 
+            urlProfilePicture += filename
         }
         const response = await fetch('http://localhost:8181/profile/'+ userDataParsed.userId, {
             method: 'PUT',
@@ -98,13 +107,18 @@ const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
             if (data.status == '200'){
                 // Log change profile activity as "Change profile"
                 logUserActivity("Change profile",userDataParsed.userId);
-                alert("Profile berhasil diganti!")
+
+                // Jika terdapat file yang diupload, handle gambar dan simpan gambar secara lokal
+                if(profilePicture.files.length > 0){
+                    // Panggil fungsi untuk save gambar di Go
+                    saveProfileImage(filename)
+                }
                 userDataParsed.username = userName
                 userDataParsed.email = email
                 userDataParsed.profileDesc = description
                 userDataParsed.profilePicture = urlProfilePicture
                 sessionStorage.setItem('userData', JSON.stringify(userDataParsed));
-                console.log(userDataParsed)
+                alert("Profile berhasil diganti!")
                 window.location.reload();
             } else {
                 console.error("Failed!", data.message);
@@ -112,6 +126,34 @@ const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
             }
         }
     }
+
+    async function saveProfileImage(filename){
+        // Siapkan form data yang akan menampung data gambar dan masukkan data form
+        var formData = document.querySelector("#postProfilePicture")
+        var pictureFormData  = new FormData(formData);
+
+        // Input data gambar kedalam formdata
+        pictureFormData.append("filename", filename);
+
+        const responsePicture = await fetch('http://localhost:8181/user/picture', {
+            method: 'POST',
+            // Header akan diset otomatis oleh browser sebagai multipart/form-data
+            // Body yang memuat data gambar
+            body: pictureFormData
+        })
+        if (responsePicture.ok) {
+            const data = await responsePicture.json()
+            if (data.status == '200'){
+                // Log create thread activity as "Upload profile picture"
+                logUserActivity("Upload profile picture",userDataParsed.userId);
+            } else {
+                console.error("Failed!", data.message);
+                alert("Gagal mengajukan request topic!")
+                location.reload();
+            }
+        }
+    }
+
     async function changePassword(){
         var oldPass = document.getElementById("oldPass").value;
         var newPass = document.getElementById("newPass").value;
