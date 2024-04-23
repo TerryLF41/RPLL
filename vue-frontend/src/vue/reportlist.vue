@@ -77,6 +77,8 @@ import { onMounted } from 'vue';
             const data = await response.json();
             if (data.status == '200') {
                 for (const key in data.data) {
+                    // Format datetime agar lebih mudah dibaca
+                    data.data[key].reportDate = dateTimeFormatter(data.data[key].reportDate)
                     reportPostList.value.push(data.data[key]);
                     console.log(data.data[key])
                 }
@@ -86,6 +88,13 @@ import { onMounted } from 'vue';
         } else {
             console.error('Failed to fetch report posts');
         }
+    }
+
+    // Format tanggal agar lebih mudah dibaca
+    function dateTimeFormatter(timestamp){
+        var date = timestamp.substring(0, 10)
+        var hour = timestamp.substring(11, 19)
+        return date + " " + hour
     }
 
     async function resolveReport(postNo) {
