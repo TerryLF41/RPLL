@@ -37,7 +37,7 @@ function logout() {
     <div class="menu">
       <li><a href="topic.html">Catalog</a></li>
       <li><a href="about.php">About</a></li>
-      <li><a @click="logout">Log Out</a></li> <!-- Add event handler for logout -->
+      <li id="logoutbutton"><a @click="logout">Log Out</a></li> <!-- Add event handler for logout -->
       <div class="profile-picture">
         <a href="profile.html"><img class="profile-picture" :src="profilePicture"></a>
       </div>
@@ -61,7 +61,6 @@ a {
 }
 li {
     list-style: none;
-    cursor: pointer;
 }
 nav {
     top: 0;
@@ -106,9 +105,17 @@ li a {
     display: inline-block;
 }
 .profile-picture {
-    height: 45px;
-    width: 45px;
+    margin-top: auto;
+    height: 40px;
+    width: 40px;
     border-radius: 50%;
+}
+.menu #logoutbutton :hover{
+    cursor: pointer;
+}
+
+.menu #logoutbutton a{
+    color: #fff;
 }
 
 </style>
