@@ -32,7 +32,7 @@ import { computed } from 'vue';
                             </div>
                         </div>
                         
-                        
+
                         <div class="reply" style="position: absolute; bottom: 0; margin-bottom: 15px">
                             <form class="formReply" method="POST">
                                 <input :name="'textReply' + post.postNo" :id="'textReply' + post.postNo" type="textbox" placeholder="your comment here">
