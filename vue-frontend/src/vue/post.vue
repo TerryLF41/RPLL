@@ -35,7 +35,7 @@ import { computed } from 'vue';
 
                         <div class="reply" style="position: absolute; bottom: 0; margin-bottom: 15px">
                             <form class="formReply" method="POST" :id="'idFormReply' + post.postNo" onsubmit="event.preventDefault();">
-                                <input :name="'textReply' + post.postNo" :id="'textReply' + post.postNo" type="textbox" placeholder="your comment here">
+                                <input :name="'textReply' + post.postNo" :id="'textReply' + post.postNo" type="textbox" placeholder="Your comment here">
                                 <input :name="'idFormReply' + post.postNo" :id="'idFormReply' + post.postNo" type="hidden" :value="'idFormReply' + post.postNo">
                                 <input :name="'postImage' + post.postNo" :id="'replyImage' + post.postNo" type="file" accept=".jpg, .jpeg, .png"><br><br>
                                 <button type="submit" :id="'reply' + post.postNo" @click="replyPost(post.postNo)">Comment</button>
@@ -70,7 +70,7 @@ import { computed } from 'vue';
                 <li class="list-group-item d-flex justify-content-between align-content-center">
                     <div class="d-flex flex-row">
                         <form class="formPost" id="idFormPost" method="POST" onsubmit="event.preventDefault();">
-                            <input name="textComment" id="textComment" type="textbox" placeholder="your comment here">
+                            <input name="textComment" id="textComment" type="textbox" placeholder="Your comment here">
                             <input name="idFormPost" id="idFormPost'" type="hidden" value="idFormPost">
                             <input name="postImage" id="textImage" type="file" accept=".jpg, .jpeg, .png"><br><br>
                             <button type="submit" id="post" @click="newPost">Comment</button>
@@ -144,6 +144,8 @@ import { computed } from 'vue';
             if (data.status == '200'){
                 for (const key in data.data) {
                     if (data.data[key].replyTo == null) {
+                        // Format datetime agar lebih mudah dibaca
+                        data.data[key].postDate = dateTimeFormatter(data.data[key].postDate)
                         postList.value.push(data.data[key]);
                     }
                 }
@@ -170,6 +172,8 @@ import { computed } from 'vue';
             if (data.status == '200'){
                 for (const key in data.data) {
                     if (data.data[key].replyTo != null) {
+                        // Format datetime agar lebih mudah dibaca
+                        data.data[key].postDate = dateTimeFormatter(data.data[key].postDate)
                         replyList.value.push(data.data[key]);
                     }
                 }
@@ -196,6 +200,14 @@ import { computed } from 'vue';
             }
         }
     }
+
+    // Format tanggal agar lebih mudah dibaca
+    function dateTimeFormatter(timestamp){
+        var date = timestamp.substring(0, 10)
+        var hour = timestamp.substring(11, 19)
+        return date + " " + hour
+    }
+
     onMounted(getPost);
     onMounted(getReply);
     onMounted(getUsers);
@@ -226,7 +238,7 @@ import { computed } from 'vue';
 
         // Cek apakah input file kosong, kalau kosong, kasih path ke foto default
         if(fileInput.files.length == 0){
-            urlTopicPicture += filename
+            urlTopicPicture = ""
         } else {
             // Ambil ekstensi file dari nama file
             var selectedFile = fileInput.files[0].name;
@@ -293,7 +305,7 @@ import { computed } from 'vue';
 
         // Cek apakah input file kosong, kalau kosong, kasih path ke foto default
         if(fileInput.files.length == 0){
-            urlTopicPicture += filename
+            urlTopicPicture = ""
         } else {
             // Ambil ekstensi file dari nama file
             var selectedFile = fileInput.files[0].name;
@@ -473,7 +485,6 @@ import { computed } from 'vue';
     background-color: #959090; /* Adjust color if needed */
     margin-top: 5px; /* Add margin to create indentation */
 }
-
 body {
     color: white;
     background-image:url("../upload/media/bg-topic.jpg");
