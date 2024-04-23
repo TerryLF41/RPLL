@@ -18,7 +18,7 @@ import { computed } from 'vue';
                         <div class="post d-flex flex-row">
                             <div class="profileUser">
                                 <span>{{ post.user.username }}</span><br>
-                                <span><img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /></span>
+                                <span><img v-bind:src="'..' + post.user.profilePicture" width="100" /></span>
                             </div>
                             <div class="ml-2 PostDesc">
                                 <h6 class="mb-0"> {{ post.postDate }}</h6>
@@ -28,7 +28,7 @@ import { computed } from 'vue';
                             </div>
                             <div class="ml-2 PostImage">
                                 <h6 class="mb-0">No. {{ post.postNo }}</h6>
-                                <span><img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /></span>
+                                <span><img v-bind:src="post.postImage" width="100" /></span>
                             </div>
                         </div>
                         
@@ -36,7 +36,7 @@ import { computed } from 'vue';
                         <div class="reply" style="position: absolute; bottom: 0; margin-bottom: 15px">
                             <form class="formReply" method="POST">
                                 <input :name="'textReply' + post.postNo" :id="'textReply' + post.postNo" type="textbox" placeholder="your comment here">
-                                <input :name="'textReply' + post.postNo" :id="'replyImage' + post.postNo" type="file" accept="image/png, image/gif, image/jpeg"><br><br>
+                                <input :name="'replyImage' + post.postNo" :id="'replyImage' + post.postNo" type="file" accept="image/png, image/gif, image/jpeg"><br><br>
                                 <button type="submit" id="reply" @click="replyPost(post.postNo)">Comment</button>
                             </form>
                         </div>
@@ -49,7 +49,7 @@ import { computed } from 'vue';
                                     <div class="d-flex flex-row">
                                         <div class="profileUser">
                                             <span>{{ reply.user.username }}</span><br>
-                                            <span><img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /></span>
+                                            <span><img v-bind:src="'..' + reply.user.profilePicture" width="100" /></span>
                                         </div>
                                         <div class="ml-2 PostDesc">
                                             <h6 class="mb-0"> {{ reply.postDate }}</h6>
@@ -59,7 +59,7 @@ import { computed } from 'vue';
                                         </div>
                                         <div class="ml-2 PostImage">
                                             <h6 class="mb-0">No. {{ reply.postNo }}</h6>
-                                            <span><img src="../assets/userUploadedFiles/userProfile/default.png" width="100" /></span>
+                                            <span><img v-bind:src="reply.postImage" width="100" /></span>
                                         </div>
                                     </div>
                                 </li>
@@ -77,7 +77,7 @@ import { computed } from 'vue';
                 </li>
             </ul>
         </div>
-        <div class="modal-thread" id="modal">
+        <!-- <div class="modal-thread" id="modal">
             <form class="form" method="POST">
                 <h2 class="title">Add New Thread</h2>
                 <label><b>Nama Topik</b></label><br>
@@ -87,7 +87,7 @@ import { computed } from 'vue';
                 <button type="submit" id="submit" @click="postThread">Submit</button>
                 <button type="reset" id="cancel" @click="closeModal">Cancel</button>
             </form>
-        </div>
+        </div> -->
     </main>
     
 </template>
@@ -207,12 +207,23 @@ import { computed } from 'vue';
 
     // Ambil data dari form
     var postText = document.getElementById("textComment").value;
-    // var textImage = document.getElementById("textImage").value;
-    var postImage = "../assets/userUploadedFiles/userProfile/default.png"
 
     // Ambil user Id dari session
     const userId = userDataParsed.userId;
 
+    // Handle gambar yang diupload
+    var fileInput = document.getElementById("textImage").value;
+    // Buat path url untuk image yang akan diupload ke database
+    var urlTopicPicture = "../src/assets/userUploadedFiles/postPicture/"
+
+    // Cek apakah input file kosong, kalau kosong, kasih path ke foto default
+    if(fileInput.files.length == 0){
+        urlTopicPicture += ""
+    } else {
+        // Ambil nama file yang diupload
+        var selectedFile = fileInput.files[0].name;
+        urlTopicPicture += selectedFile
+    }
     const response = await fetch('http://localhost:8181/post', {
         method: 'POST',
         headers: {
@@ -221,7 +232,7 @@ import { computed } from 'vue';
         body: new URLSearchParams({
             'threadNo': threadNo,
             'postText': postText,
-            'postImage': postImage,
+            'postImage': urlTopicPicture,
             'userId': userId,
             'replyTo': ""
         })
@@ -244,11 +255,22 @@ import { computed } from 'vue';
 
     // Ambil data dari form
     var textReply = document.getElementById("textReply"+postNo).value;
-    // var textImage = document.getElementById("textImage"+postNo).value;
-    var replyImage = "../assets/userUploadedFiles/userProfile/default.png"
-    // Ambil user Id dari sesion
-    const userId = userDataParsed.userId;
 
+    const userId = userDataParsed.userId;
+    
+    // Handle gambar yang diupload
+    var fileInput = document.getElementById("replyImage"+postNo).value;
+    // Buat path url untuk image yang akan diupload ke database
+    var urlTopicPicture = "../src/assets/userUploadedFiles/postPicture/"
+
+    // Cek apakah input file kosong, kalau kosong, kasih path ke foto default
+    if(fileInput.files.length == 0){
+        urlTopicPicture += ""
+    } else {
+        // Ambil nama file yang diupload
+        var selectedFile = fileInput.files[0].name;
+        urlTopicPicture += selectedFile
+    }
     const response = await fetch('http://localhost:8181/post', {
         method: 'POST',
         headers: {
@@ -257,7 +279,7 @@ import { computed } from 'vue';
         body: new URLSearchParams({
             'threadNo': threadNo,
             'postText': textReply,
-            'postImage': replyImage,
+            'postImage': urlTopicPicture,
             'userId': userId,
             'replyTo': postNo
         })

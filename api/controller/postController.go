@@ -4,6 +4,7 @@ import (
 	"RPLL/api/model"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -119,6 +120,22 @@ func InsertPost(w http.ResponseWriter, r *http.Request) {
 		sendErrorResponse(w, "Failed to insert post to database")
 		log.Println(errQuery)
 	}
+}
+
+func SavePostPicture(w http.ResponseWriter, r *http.Request) {
+	file, handler, err := r.FormFile("file")
+	//fileName := r.FormValue("file_name")
+	//filepath := "../vue-frontend/src/assets/userUploadedFiles/topicPicture/" + fileName
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	f, err := os.OpenFile(handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
 }
 
 // Update status post menjadi 0(unbanned) atau 1(banned)
