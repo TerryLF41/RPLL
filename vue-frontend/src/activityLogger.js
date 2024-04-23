@@ -13,7 +13,7 @@ export async function logUserActivity(activity,userId) {
     if (response.ok) {
         const data = await response.json()
         if (data.status == '200'){
-            console.error("Log success!", data.message);
+            console.log("Log success!", data.message);
         } else {
             console.error("Failed!", data.message);
         }

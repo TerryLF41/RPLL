@@ -5,8 +5,10 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"encoding/hex"
+	"io"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -260,6 +262,33 @@ func ChangeProfile(w http.ResponseWriter, r *http.Request) {
 	} else {
 		sendErrorResponse(w, "Failed to update user information")
 	}
+}
+
+func SaveProfilePicture(w http.ResponseWriter, r *http.Request) {
+	file, _, _ := r.FormFile("avatar")
+
+	filename := r.FormValue("filename")
+	//open a file for writing
+	filepath := "vue-frontend/src/assets/userUploadedFiles/userProfile/" + filename
+	log.Println("Filepath = ", filepath)
+
+	// Buat file temp yang akan menyimpan gambar nantinya
+	tempFile, err := os.Create(filepath)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	// Copy data gambar dari variable fileke path yang telah dibuat
+	// Use io.Copy to just dump the response body to the file. This supports huge files
+	_, err = io.Copy(tempFile, file)
+	if err == nil {
+		sendSuccessResponse(w, "Successfully saved topic picture", nil)
+	} else {
+		log.Println(err)
+		sendErrorResponse(w, "Failed to save topic picture")
+	}
+	tempFile.Close()
 }
 
 func BanUser(w http.ResponseWriter, r *http.Request) {
