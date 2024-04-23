@@ -5,45 +5,36 @@ import { onMounted } from 'vue';
 </script>
 
 <template>
-    <main>
-        <nav class="navbar">
-            <Header />
-        </nav>
-        <h1>Topic List</h1>  
-        <button type="button" @click="showModal" class="btn btn-primary">Add New Topic</button> 
-        <div class="container d-flex justify-content-center" onload="getTopic()">
-            <ul class="list-group mt-5 text-white">
-                <div class="wrapper-li" v-for="item in temp">
-                    <li class="list-group-item d-flex justify-content-between align-content-center" v-if="item.banstatus==false" @click="goToThread(item.topicNo)">
-                        <div class="d-flex flex-row">
-                            <img v-bind:src="item.topicPicture" width="100" />
-                            <div class="ml-2 topicDesc">
-                                <h6 class="mb-0">{{ item.topicTitle }}</h6>
-                                <div class="about">
-                                    <span>{{ item.topicDesc }}</span><br>
-                                    <span>{{ item.createDate }}</span><br>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-content-center" v-if="userType==1 && item.banstatus==true" @click="goToThread(item.topicNo)">
-                        <div class="d-flex flex-row">
-                            <img v-bind:src="item.topicPicture" width="100" />
-                            <div class="ml-2 topicDesc">
-                                <h6 class="mb-0">{{ item.topicTitle }}</h6>
-                                <div class="about">
-                                    <span>{{ item.topicDesc }}</span><br>
-                                    <span>{{ item.createDate }}</span><br>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    <button id="banButton" v-if="userType==1 && item.banstatus==false" @click="banTopic(item.topicNo)" class="btn btn-danger">Ban Topic</button>
-                    <button id="unbanButton" v-if="userType==1 && item.banstatus==true" @click="unbanTopic(item.topicNo)" class="btn btn-info">Unban Topic</button>
+      <main>
+    <nav class="navbar">
+      <Header />
+    </nav>
+    <div class="container my-5">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-4">Topic List</h1>
+        <button type="button" @click="showModal" class="btn btn-primary">Add New Topic</button>
+      </div>
+      <div class="row" onload="getTopic()">
+        <div class="col-md-6 col-lg-4" v-for="item in temp">
+          <div class="card mb-4">
+            <img :src="item.topicPicture" class="card-img-top img-thumbnail img-fluid" alt="Topic Image">
+            <div class="card-body">
+              <h5 class="card-title">{{ item.topicTitle }}</h5>
+              <p class="card-text">{{ item.topicDesc }}</p>
+              <p class="card-text"><small class="text-muted">{{ item.createDate }}</small></p>
+              <div class="d-flex justify-content-between align-items-center">
+                <button @click="goToThread(item.topicNo)" class="btn btn-primary">View Thread</button>
+                <div v-if="userType==1">
+                  <button v-if="!item.banstatus" @click="banTopic(item.topicNo)" class="btn btn-danger ml-2">Ban Topic</button>
+                  <button v-else @click="unbanTopic(item.topicNo)" class="btn btn-info ml-2">Unban Topic</button>
                 </div>
-            </ul>
+              </div>
+            </div>
+          </div>
         </div>
-    </main>
+      </div>
+    </div>
+  </main>
     <div class="modal-topic" id="modal">
         <form class="form" method="POST">
             <h2 class="title">Add New Topic</h2>
@@ -220,6 +211,32 @@ import { onMounted } from 'vue';
 </script>
 
 <style scoped>
+.card-img-top {
+  height: 200px; /* Ubah nilai sesuai kebutuhan */
+  object-fit: cover;
+}
+
+.card-img-top {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-img-top::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card:hover .card-img-top::before {
+  opacity: 1;
+}
+
 .list-group{
 	width: 100% !important;
     border-radius: 0;
