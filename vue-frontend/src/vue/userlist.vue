@@ -151,8 +151,19 @@ import { onMounted } from 'vue';
             });
     }
 
-    onMounted(getUsers);
-
+    function authorization() {
+        // Ambil usertype dari session
+        const userType = userDataParsed.userType;
+        console.log(userType)
+        
+        if (userType != 1) {
+            window.location.href = 'homepage.html';
+        }
+        if (userType == 1) {
+            getUsers();
+        }
+    }
+    onMounted(authorization);
 </script>
 
 <style scoped>

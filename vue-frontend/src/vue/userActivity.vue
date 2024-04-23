@@ -41,7 +41,8 @@ import { onMounted } from 'vue';
 
 <script setup>
     const temp = ref([]);
-
+    const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
+    
     async function getUserActivity() {
         // Ambil nomor user sekarang dari URL param
         const queryString = window.location.search;
@@ -77,8 +78,20 @@ import { onMounted } from 'vue';
         return date + " " + hour
     }
 
+    function authorization() {
+        // Ambil usertype dari session
+        const userType = userDataParsed.userType;
+        console.log(userType)
+        
+        if (userType != 1) {
+            window.location.href = 'homepage.html';
+        }
+        if (userType == 1) {
+            getUserActivity();
+        }
+    }
     // Load function saat page dimuat
-    onMounted(getUserActivity);
+    onMounted(authorization);
 
 </script>
 

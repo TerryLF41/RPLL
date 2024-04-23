@@ -67,17 +67,9 @@ const reportPostList = ref([]);
 const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
 
 // If user data is not present, redirect to the login page
-if (!userData) {
+if (!userDataParsed) {
     alert('You haven\'t logged in yet.');
     window.location.href = 'login.html'; // Redirect to the login page
-}
-
-// Ambil usertype dari session
-const userType = userData.userType;
-
-if (userType != 1) {
-    alert('Intruder detected! (non-admin)');
-    window.location.href = 'homepage.html';
 }
 
 async function getReportPosts() {
@@ -135,36 +127,24 @@ async function resolveReport(postNo) {
     }
 }
 
-
-// async function getUsername(userId) {
-//     const response = await fetch(`http://localhost:8181/user/username/${userId}`, {
-//         method: 'GET',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         }
-//     });
-//     if (response.ok) {
-//         const data = await response.json();
-//         if (data.status == '200') {
-//             console.log(data.data);
-//             return data.data;
-
-//         } else {
-//             console.error('Failed to fetch username:', data.message);
-//             return null;
-//         }
-//     } else {
-//         console.error('Failed to fetch username');
-//         return null;
-//     }
-// }
-
 function openPost(postNo, userId) {
     // Redirect to the post page with postNo and userId
     window.location.href = `post.html?postNo=${postNo}&userId=${userId}`;
 }
 
-onMounted(getReportPosts);
+function authorization() {
+    // Ambil usertype dari session
+    const userType = userDataParsed.userType;
+    console.log(userType)
+    
+    if (userType != 1) {
+        window.location.href = 'homepage.html';
+    }
+    if (userType == 1) {
+        getReportPosts();
+    }
+}
+onMounted(authorization);
 
 </script>
 
