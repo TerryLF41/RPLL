@@ -60,66 +60,80 @@ import { onMounted } from 'vue';
 
 
 <script setup>
-    import { logUserActivity } from '../activityLogger'; // Import user activity logger
-    const reportPostList = ref([]);
+import { logUserActivity } from '../activityLogger'; // Import user activity logger
+const reportPostList = ref([]);
 
-    // Retrieve and parse user data from session storage
-    const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
+// Retrieve and parse user data from session storage
+const userDataParsed = JSON.parse(sessionStorage.getItem('userData'));
 
-    async function getReportPosts() {
-        const response = await fetch('http://localhost:8181/reportpostu', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        if (response.ok) {
-            const data = await response.json();
-            if (data.status == '200') {
-                for (const key in data.data) {
-                    // Format datetime agar lebih mudah dibaca
-                    data.data[key].reportDate = dateTimeFormatter(data.data[key].reportDate)
-                    reportPostList.value.push(data.data[key]);
-                    console.log(data.data[key])
-                }
-            } else {
-                console.error('Failed!', data.message);
-            }
-        } else {
-            console.error('Failed to fetch report posts');
+// If user data is not present, redirect to the login page
+if (!userData) {
+    alert('You haven\'t logged in yet.');
+    window.location.href = 'login.html'; // Redirect to the login page
+}
+
+// Ambil usertype dari session
+const userType = userData.userType;
+
+if (userType != 1) {
+    alert('Intruder detected! (non-admin)');
+    window.location.href = 'homepage.html';
+}
+
+async function getReportPosts() {
+    const response = await fetch('http://localhost:8181/reportpostu', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
         }
-    }
-
-    // Format tanggal agar lebih mudah dibaca
-    function dateTimeFormatter(timestamp){
-        var date = timestamp.substring(0, 10)
-        var hour = timestamp.substring(11, 19)
-        return date + " " + hour
-    }
-
-    async function resolveReport(postNo) {
-        const response = await fetch(`http://localhost:8181/reportpost/resolve/${postNo}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        if (response.ok) {
-            const data = await response.json();
-            if (data.status == '200') {
-                // Log resolve report activity as "Resolve report"
-                logUserActivity("Resolve report",userDataParsed.userId);
-                alert('Report resolved successfully!');
-                window.location.reload();
-            } else {
-                console.error('Failed to resolve report:', data.message);
-                alert('Failed to resolve report');
+    });
+    if (response.ok) {
+        const data = await response.json();
+        if (data.status == '200') {
+            for (const key in data.data) {
+                // Format datetime agar lebih mudah dibaca
+                data.data[key].reportDate = dateTimeFormatter(data.data[key].reportDate)
+                reportPostList.value.push(data.data[key]);
+                console.log(data.data[key])
             }
         } else {
-            console.error('Failed to resolve report');
+            console.error('Failed!', data.message);
+        }
+    } else {
+        console.error('Failed to fetch report posts');
+    }
+}
+
+// Format tanggal agar lebih mudah dibaca
+function dateTimeFormatter(timestamp) {
+    var date = timestamp.substring(0, 10)
+    var hour = timestamp.substring(11, 19)
+    return date + " " + hour
+}
+
+async function resolveReport(postNo) {
+    const response = await fetch(`http://localhost:8181/reportpost/resolve/${postNo}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    if (response.ok) {
+        const data = await response.json();
+        if (data.status == '200') {
+            // Log resolve report activity as "Resolve report"
+            logUserActivity("Resolve report", userDataParsed.userId);
+            alert('Report resolved successfully!');
+            window.location.reload();
+        } else {
+            console.error('Failed to resolve report:', data.message);
             alert('Failed to resolve report');
         }
+    } else {
+        console.error('Failed to resolve report');
+        alert('Failed to resolve report');
     }
+}
 
 
 // async function getUsername(userId) {
@@ -134,7 +148,7 @@ import { onMounted } from 'vue';
 //         if (data.status == '200') {
 //             console.log(data.data);
 //             return data.data;
-            
+
 //         } else {
 //             console.error('Failed to fetch username:', data.message);
 //             return null;
