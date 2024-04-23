@@ -52,7 +52,7 @@ func GetAllReportPostU(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	// Query ke SQL
-	query := "SELECT a.userId, b.username, a.postNo, a.reportText, a.reportDate, a.reportStatus FROM reportpost a, user b where a.userId = b.userId"
+	query := "SELECT a.userId, b.username, a.postNo, c.threadNo, a.reportText, a.reportDate, a.reportStatus FROM reportpost a, user b, post c WHERE a.userId = b.userId AND a.postNo = c.postNo"
 
 	rows, err := db.Query(query)
 
@@ -66,6 +66,7 @@ func GetAllReportPostU(w http.ResponseWriter, r *http.Request) {
 		UserID       int       `json:"userId"`
 		Username     string    `json:"username"`
 		PostNo       int       `json:"postNo"`
+		ThreadNo     int       `json:"threadNo"`
 		ReportText   string    `json:"reportText"`
 		ReportDate   time.Time `json:"reportDate"`
 		ReportStatus bool      `json:"reportStatus"`
@@ -75,7 +76,7 @@ func GetAllReportPostU(w http.ResponseWriter, r *http.Request) {
 	var reportPost ReportPostWithUser
 	// Looping untuk mengambil data dari rows
 	for rows.Next() {
-		if err := rows.Scan(&reportPost.UserID, &reportPost.Username, &reportPost.PostNo, &reportPost.ReportText, &reportPost.ReportDate, &reportPost.ReportStatus); err != nil {
+		if err := rows.Scan(&reportPost.UserID, &reportPost.Username, &reportPost.PostNo, &reportPost.ThreadNo, &reportPost.ReportText, &reportPost.ReportDate, &reportPost.ReportStatus); err != nil {
 			log.Println(err)
 			return
 		} else {

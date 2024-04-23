@@ -41,7 +41,7 @@ import { onMounted } from 'vue';
                                         <td>{{ item.reportStatus ? 'Solved' : 'Open' }}</td>
                                         <td class="text-end">
                                             <div v-if="item.reportStatus == 0">
-                                                <button @click="openPost(item.postNo, item.userID)"
+                                                <button @click="openPost(item.threadNo)"
                                                     class="btn btn-sm btn-primary">Open Post</button>
                                                 <button @click="resolveReport(item.postNo)"
                                                     class="btn btn-sm btn-success">Resolve</button>
@@ -122,32 +122,9 @@ import { onMounted } from 'vue';
     }
 
 
-// async function getUsername(userId) {
-//     const response = await fetch(`http://localhost:8181/user/username/${userId}`, {
-//         method: 'GET',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         }
-//     });
-//     if (response.ok) {
-//         const data = await response.json();
-//         if (data.status == '200') {
-//             console.log(data.data);
-//             return data.data;
-            
-//         } else {
-//             console.error('Failed to fetch username:', data.message);
-//             return null;
-//         }
-//     } else {
-//         console.error('Failed to fetch username');
-//         return null;
-//     }
-// }
-
-function openPost(postNo, userId) {
+function openPost(threadNo) {
     // Redirect to the post page with postNo and userId
-    window.location.href = `post.html?postNo=${postNo}&userId=${userId}`;
+    window.location.href = `post.html?threadNo=${threadNo}`;
 }
 
 onMounted(getReportPosts);
