@@ -26,7 +26,7 @@ import { computed } from 'vue';
                       <button @click="banPost(post.postNo)" class="btn btn-outline-danger btn-sm">Ban Post</button>
                     </div>
                   </div>
-                  <h6 class="card-subtitle mb-2 text-muted">{{ post.postDate }}</h6>
+                  <h6 class="card-subtitle mb-2">{{ post.postDate }}</h6>
                   <p class="card-text" v-html="post.postText"></p>
                   <img v-bind:src="post.postImage" class="img-fluid mt-3" style="max-width:75%;">
                   <div class="d-flex justify-content-end align-items-center mt-3">

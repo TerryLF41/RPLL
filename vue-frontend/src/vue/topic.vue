@@ -26,7 +26,7 @@ import { onMounted } from 'vue';
                             <h5 class="card-title">{{ item.topicTitle }}</h5>
                             <p class="card-text">{{ item.topicDesc }}</p>
                             <p class="card-text">{{ item.threadCount + ' thread(s)'}} </p>
-                            <p class="card-text"><small class="text-muted">{{ item.createDate }}</small></p>
+                            <p class="card-text text-light"><small class="">{{ item.createDate }}</small></p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <button @click="goToThread(item.topicNo)" class="btn btn-primary">View Thread</button>
                                 <div v-if="userType == 1">
