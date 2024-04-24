@@ -38,7 +38,7 @@ import { computed } from 'vue';
             <div class="card-footer">
               <form class="formReply mb-3" method="POST" :id="'idFormReply' + post.postNo" @submit.prevent="replyPost(post.postNo)">
                 <div class="input-group">
-                  <textarea :name="'textReply' + post.postNo" :id="'textReply' + post.postNo" class="form-control" placeholder="Your comment here" rows="2"></textarea>
+                  <textarea :name="'textReply' + post.postNo" :id="'textReply' + post.postNo" class="form-control" placeholder="Your comment here" rows="2" style="background-color: #ffffff; color: #000000;"></textarea>
                   <input :name="'idFormReply' + post.postNo" :id="'idFormReply' + post.postNo" type="hidden" :value="'idFormReply' + post.postNo">
                   <input :name="'postImage' + post.postNo" :id="'replyImage' + post.postNo" type="file" class="form-control" accept=".jpg, .jpeg, .png">
                   <div class="input-group-append">
@@ -68,7 +68,7 @@ import { computed } from 'vue';
         </div>
         <div class="card mt-5">
           <div class="card-body">
-            <form class="formPost" id="idFormPost" method="POST" @submit.prevent="newPost">
+            <form class="formPost" id="idFormPost" method="POST" onsubmit="event.preventDefault();">
                 <input name="idFormPost" id="idFormPost'" type="hidden" value="idFormPost">
                 <div class="form-group">
                 <label for="textComment">Comment:</label>
@@ -617,9 +617,5 @@ h2.title {
 #textComment {
     background-color: #ffffff; /* Change to a lighter color */
     color: #000000; /* Change to a darker text color if necessary */
-}
-
-.replyList {
-    border: black 2px;
 }
 </style>
