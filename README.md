@@ -31,26 +31,26 @@ Used in Go to choose a specific type of query for getting list of topics
 
 ## Responsibilities
 
-### Jericho Kuskanto
+### 1121004 - Jericho Kuskanto
 - Login
 - Profile
 - Password Change
 - User Management
 
-### Terry Louis Fujinami
+### 1121015 - Terry Louis Fujinami
 - Finishing
 - Post
 - Topic
 - Thread
 
-### Friendly Sejati Bunardi
+### 1121018 - Friendly Sejati Bunardi
 - Homepage
 - Register
 - Report Management
 - Topic Management
 - User Log Activity
 
-### Jonathan Hadiwijaya Ang
+### 1121024 - Jonathan Hadiwijaya Ang
 - Post Reporting
 - Report Management
 - Post Management
