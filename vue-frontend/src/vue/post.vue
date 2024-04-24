@@ -69,13 +69,14 @@ import { computed } from 'vue';
         <div class="card mt-5">
           <div class="card-body">
             <form class="formPost" id="idFormPost" method="POST" @submit.prevent="newPost">
-              <div class="form-group">
+                <input name="idFormPost" id="idFormPost'" type="hidden" value="idFormPost">
+                <div class="form-group">
                 <label for="textComment">Comment:</label>
                 <textarea name="textComment" id="textComment" class="form-control" rows="3" placeholder="Your comment here"></textarea>
               </div>
               <div class="form-group">
                 <label for="postImage">Image:</label>
-                <input name="postImage" id="postImage" type="file" class="form-control-file" accept=".jpg, .jpeg, .png">
+                <input name="postImage" id="textImage" type="file" class="form-control-file" accept=".jpg, .jpeg, .png">
               </div>
               <button type="submit" id="post" class="btn btn-outline-primary" @click="newPost">Submit Post</button>
             </form>
