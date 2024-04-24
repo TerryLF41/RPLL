@@ -33,7 +33,7 @@ func main() {
 	router.HandleFunc("/userLog", controller.InsertUserLog).Methods("POST")
 
 	// Handler untuk topic
-	router.HandleFunc("/topic", controller.GetAllTopic).Methods("GET")
+	router.HandleFunc("/topic/{orderBy}", controller.GetAllTopic).Methods("GET")
 	router.HandleFunc("/topic", controller.InsertTopic).Methods("POST")
 	router.HandleFunc("/topic/picture", controller.SaveTopicPicture).Methods("POST")
 	router.HandleFunc("/topic/title/{topicNo}", controller.UpdateTopicDescription).Methods("PUT")

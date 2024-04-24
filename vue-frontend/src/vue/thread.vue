@@ -20,6 +20,7 @@ import { onMounted } from 'vue';
                         <div class="card-body">
                             <h5 class="card-title">{{ item.threadTitle }}</h5>
                             <p class="card-text">{{ item.threadDesc }}</p>
+                            <p class="card-text">{{ item.postCount + ' post(s)'}} </p>
                             <p class="card-text"><small class="text-muted">{{ item.createDate }}</small></p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <button @click="goToPost(item.threadNo)" class="btn btn-primary">View Posts</button>
@@ -36,34 +37,18 @@ import { onMounted } from 'vue';
             </div>
         </div>
     </main>
- <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalLabel">Add New Thread</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form>
-            <div class="form-group">
-              <label for="threadName">Thread Name</label>
-              <input type="text" class="form-control" id="threadName" placeholder="Enter thread name" required>
-            </div>
-            <div class="form-group">
-              <label for="threadDesc">Description</label>
-              <textarea class="form-control" id="threadDesc" rows="3" placeholder="Enter thread description" required></textarea>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="closeModal">Cancel</button>
-          <button type="button" class="btn btn-primary" @click="postThread">Submit</button>
-        </div>
-      </div>
+ 
+    <div class="modal-thread" id="modal">
+    <form class="form" method="POST" id="postTopic" onsubmit="event.preventDefault();">
+        <h2 class="title">Add New Thread</h2>
+        <label><b>Nama Thread</b></label><br>
+        <input type="text" name="threadName" id="threadName" placeholder="Input nama thread" required><br>
+        <label><b>Deskripsi Thread</b></label><br>
+        <textarea name="threadDesc" id="threadDesc" placeholder="Input deskripsi thread" required></textarea><br>
+        <button type="submit" id="submit" @click="postThread" class="btn btn-primary">Submit</button>
+        <button type="reset" id="cancel" @click="closeModal" class="btn btn-secondary">Cancel</button>
+    </form>
     </div>
-  </div>
 </template>
 
 <script setup>
@@ -143,6 +128,7 @@ import { onMounted } from 'vue';
                 // Log create thread activity as "Create thread"
                 logUserActivity("Create thread", userDataParsed.userId);
                 alert("Thread berhasil ditambahkan!")
+                location.reload();
             } else {
                 console.error("Failed!", data.message);
                 alert("Gagal mengajukan request topic!")
@@ -244,6 +230,33 @@ import { onMounted } from 'vue';
 </script>
 
 <style scoped>
+.card-img-top {
+    height: 200px;
+    /* Ubah nilai sesuai kebutuhan */
+    object-fit: cover;
+}
+
+.card-img-top {
+    position: relative;
+    overflow: hidden;
+}
+
+.card-img-top::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.card:hover .card-img-top::before {
+    opacity: 1;
+}
+
 .list-group {
     width: 100% !important;
     border-radius: 0;
@@ -266,8 +279,19 @@ import { onMounted } from 'vue';
     margin-right: 10px;
 }
 
-.threadDesc {
+.topicDesc {
     margin-left: 10px;
+}
+
+img {
+    transition: transform .2s;
+}
+
+.card-img-top:hover {
+    transform: scale(1.25);
+    z-index: 999;
+    height: 20%;
+    object-fit:cover;
 }
 
 body {
@@ -298,38 +322,14 @@ h2,
     border-radius: 10px;
 }
 
-table tr td a {
-    margin-top: 10px;
-    display: block;
-    width: 100%;
-    height: 100%;
-    text-decoration: none;
-}
-
 a {
     color: white;
     text-decoration: none;
 }
 
-td,
-th {
-    border-bottom: 1px inset grey;
-    height: 30px;
-}
-
-tr:hover {
-    background-color: #5c757e;
-    color: Black;
-}
-
 h1 {
     color: white;
     padding-left: 5%;
-}
-
-.topik {
-    float: right;
-    padding-right: 5%;
 }
 
 .add {
@@ -402,6 +402,16 @@ h2.title {
 #unbanButton {
     background-color: #0e9fde;
     font-size: small;
+}
+
+#popularButton {
+    background-color: #0f9020;
+    border: none;
+}
+#latestButton {
+    background-color: #0e31de;
+    border: none;
+
 }
 
 </style>
