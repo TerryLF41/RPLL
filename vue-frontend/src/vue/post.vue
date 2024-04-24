@@ -37,9 +37,9 @@ import { computed } from 'vue';
             </div>
             <div class="card-footer">
               <form class="formReply mb-1" method="POST" :id="'idFormReply' + post.postNo" @submit.prevent="replyPost(post.postNo)">
-                  <textarea :name="'textReply' + post.postNo" :id="'textReply' + post.postNo" class="form-control" placeholder="Your comment here" rows="2" style="background-color: #ffffff; color: #000000;"></textarea>
+                  <textarea :name="'textReply' + post.postNo" :id="'textReply' + post.postNo" class="form-contro text-light bg-dark" placeholder="Your comment here" rows="2" style="background-color: #ffffff; color: #000000;"></textarea>
                   <input :name="'idFormReply' + post.postNo" :id="'idFormReply' + post.postNo" type="hidden" :value="'idFormReply' + post.postNo">
-                  <input :name="'postImage' + post.postNo" :id="'replyImage' + post.postNo" type="file" class="form-control" accept=".jpg, .jpeg, .png"><br>
+                  <input :name="'postImage' + post.postNo" :id="'replyImage' + post.postNo" type="file" class="form-control text-light bg-dark" accept=".jpg, .jpeg, .png"><br>
                   <button class="btn btn-primary" type="submit" :id="'reply' + post.postNo">Comment</button>
               </form>
               <div class="reply-container">
@@ -63,15 +63,15 @@ import { computed } from 'vue';
           </div>
         </div>
         <div class="card mt-5">
-          <div class="card-body">
+          <div class="card-body text-light bg-dark">
             <form class="formPost" id="idFormPost" method="POST" onsubmit="event.preventDefault();">
                 <input name="idFormPost" id="idFormPost'" type="hidden" value="idFormPost">
                 <div class="form-group">
                 <label for="textComment">Comment:</label>
-                <textarea name="textComment" id="textComment" class="form-control" rows="3" placeholder="Your comment here"></textarea>
+                <textarea name="textComment" id="textComment" class="form-control text-light bg-dark" rows="3" placeholder="Your comment here"></textarea>
               </div>
               <div class="form-group">
-                <input name="postImage" id="textImage" type="file" class="form-control-file" accept=".jpg, .jpeg, .png"><br>
+                <input name="postImage" id="textImage" type="file" class="form-control text-light bg-dark" accept=".jpg, .jpeg, .png"><br>
               </div>
               <button type="submit" id="post" class="btn btn-outline-primary" @click="newPost">Submit Post</button>
             </form>
@@ -587,7 +587,7 @@ textarea {
     padding: 10px 10px;
     margin: 8px 0;
     display: inline-block;
-    border: 1px solid #3f3f3f;
+    border: 1px solid lightgray;
     box-sizing: border-box;
 }
 
