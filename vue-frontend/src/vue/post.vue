@@ -14,8 +14,8 @@ import { computed } from 'vue';
         <div class="container d-flex justify-content-center">
             <ul class="list-group mt-5 text-white" >
                 <div v-for="(post, index) in userAndPost" :key="index">
-                    <li class="list-group-item d-flex justify-content-between align-content-center" v-if="post.banStatus == 0" style="height: calc(13.5em + 2.5rem + 2px);">
-                        <div class="post d-flex flex-row">
+                    <li class="list-post list-group-item d-flex justify-content-between align-content-center" v-if="post.banStatus == 0">
+                        <div class="post d-flex flex-row" >
                             <div class="profileUser">
                                 <span>{{ post.user.username }}</span><br>
                                 <span><img v-bind:src="'..' + post.user.profilePicture" width="100" /></span>
@@ -31,9 +31,7 @@ import { computed } from 'vue';
                                 <span><img v-bind:src="post.postImage" width="100" /></span>
                             </div>
                         </div>
-                        
-
-                        <div class="reply" style="position: absolute; bottom: 0; margin-bottom: 15px">
+                        <div class="reply">
                             <form class="formReply" method="POST" :id="'idFormReply' + post.postNo" onsubmit="event.preventDefault();">
                                 <input :name="'textReply' + post.postNo" :id="'textReply' + post.postNo" type="textbox" placeholder="Your comment here">
                                 <input :name="'idFormReply' + post.postNo" :id="'idFormReply' + post.postNo" type="hidden" :value="'idFormReply' + post.postNo">
@@ -45,27 +43,27 @@ import { computed } from 'vue';
                     <button id="banButton" v-if="userType==1 && post.banStatus == 0" @click="banPost(post.postNo)">Ban Post</button>
                     <button id="reportButton" v-if="post.banStatus == 0" @click="reportPost(post.postNo)">Report Post</button>
                     <ul class="list-group mt-5 text-white">
-                            <div class="wrapper-li d-flex" v-for="(reply, index) in userAndReply" :key="index">
-                                <li class="list-group-item d-flex justify-content-between align-content-center" v-if="reply.replyTo === post.postNo">
-                                    <div class="d-flex flex-row">
-                                        <div class="profileUser">
-                                            <span>{{ reply.user.username }}</span><br>
-                                            <span><img v-bind:src="'..' + reply.user.profilePicture" width="100" /></span>
-                                        </div>
-                                        <div class="ml-2 PostDesc">
-                                            <h6 class="mb-0"> {{ reply.postDate }}</h6>
-                                            <div class="about">
-                                                <span>{{ reply.postText }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="ml-2 PostImage">
-                                            <h6 class="mb-0">No. {{ reply.postNo }}</h6>
-                                            <span><img v-bind:src="reply.postImage" width="100" /></span>
+                        <div class="wrapper-li d-flex" v-for="(reply, index) in userAndReply" :key="index">
+                            <li class="list-group-item d-flex justify-content-between align-content-center" v-if="reply.replyTo === post.postNo">
+                                <div class="replyList d-flex flex-row">
+                                    <div class="profileUser">
+                                        <span>{{ reply.user.username }}</span><br>
+                                        <span><img v-bind:src="'..' + reply.user.profilePicture" width="100" /></span>
+                                    </div>
+                                    <div class="ml-2 PostDesc">
+                                        <h6 class="mb-0"> {{ reply.postDate }}</h6>
+                                        <div class="about">
+                                            <span>{{ reply.postText }}</span>
                                         </div>
                                     </div>
-                                </li>
-                            </div>
-                        </ul>
+                                    <div class="ml-2 PostImage">
+                                        <h6 class="mb-0">No. {{ reply.postNo }}</h6>
+                                        <span><img v-bind:src="reply.postImage" width="100" /></span>
+                                    </div>
+                                </div>
+                            </li>
+                        </div>
+                    </ul>
                 </div>
                 <li class="list-group-item d-flex justify-content-between align-content-center">
                     <div class="d-flex flex-row">
@@ -460,134 +458,157 @@ import { computed } from 'vue';
 </script>
 
 <style scoped>
-.list-group{
-	width: 100% !important;
-    border-radius: 0;
-}
-.list-group-item{
-	margin-top:15px;
-	cursor: pointer;
-    border-style: none;
-	transition: all 0.3s ease-in-out;
-    background-color: #ADA7A7;
-}
-.about span{
-	font-size: 12px;
-	margin-right: 10px;
-}
-.PostDesc{
-    margin-left: 10px;
-}
-.PostImage{
-    margin-left: 10px;
-}
-.list-group .list-group-item .list-group-item {
-    background-color: #959090; /* Adjust color if needed */
-    margin-top: 5px; /* Add margin to create indentation */
-}
-body {
-    color: white;
-    background-image:url("../upload/media/bg-topic.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
-}
-main {
-    min-height: 80vh;
-    width: 66%;
-    margin: auto;
+/* Reset default margin and padding */
+* {
+    margin: 0;
     padding: 0;
-}
-h1,h2,#desc {
-    text-align: center;
-}
-.list{
-    padding: 5px;
-    width: 90%;
-    margin:auto;
-    border: 2px solid grey;
-    border-radius: 10px;
-}
-table tr td a {
-    margin-top: 10px;
-    display: block;
-    width: 100%;
-    height: 100%;
-    text-decoration: none;
-}
-a{
-    color: white;
-    text-decoration: none;
-}
-td,th{
-    border-bottom:1px inset grey;
-    height:30px;
-}
-tr:hover{
-    background-color:#5c757e;
-    color: Black;
-}
-h1{
-    color: white;
-    padding-left: 5%;
-}
-.topik{
-    float:right;
-    padding-right: 5%;
-}
-.add {
-    text-align: center;
-    cursor: pointer;
-}
-::placeholder {
-    color: #cccccc;
-}
-.modal-thread {
-    position: fixed;
-    z-index: 999;
-    border: 2px solid black;
-    padding: 2.5%;
-    width: 35%;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    background-color: #454545;
-    color: white;
-    display: none;
-    font-family: Arial, Helvetica, sans-serif;
-    transform: translate(-50%, -50%);
-    overflow: auto;
-    top: 50%;
-    left: 50%; 
-}
-.modal-thread input, textarea {
-    background-color: #696969;
-    color: white;
-    width: 100%;
-    padding: 10px 10px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #3f3f3f;
     box-sizing: border-box;
 }
-.modal-thread button {
-    border: 2px solid black;
-    background-color: #303030;
-    color: white;
-    padding: 12px 20px;
+
+/* Set font family */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #2c3e50; /* Dark background color */
+    color: #ecf0f1; /* Light text color */
+}
+
+/* Main container styles */
+main {
+    min-height: 100vh;
+    width: 80%; /* Adjust as needed */
+    margin: auto;
+    padding: 20px;
+}
+
+/* Post container styles */
+.list-group {
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* Individual post styles */
+.list-group-item {
+    background-color: #34495e; /* Darker background color */
+    border: 1px solid #2c3e50; /* Same as main background color */
+    border-radius: 5px;
+    margin-bottom: 20px;
+    padding: 20px;
+    transition: all 0.3s ease-in-out;
+    position: relative; /* Ensure relative positioning for the post div */
+    height: auto;
+}
+
+.list-post {
+    padding-bottom: 9em;
+}
+
+.profileUser {
+    text-align: center; /* Align text center */
+}
+
+.profileUser span {
+    font-weight: bold;
+}
+
+.PostImage {
+    text-align: center; /* Align text center */
+    display: flex;
+    flex-direction: column;
+    right: 0;
+}
+
+.PostImage span {
+    font-weight: bold;
+}
+
+.PostDesc {
+    width: 100%;
+}
+
+/* Date styles */
+.PostDesc .mb-0 {
+    font-size: 14px;
+    color: #bdc3c7; /* Light gray color for date */
+}
+
+.replyList {
+    width: 100%;
+}
+
+/* Text styles */
+.about span {
+    font-size: 14px;
+    color: #ecf0f1; /* Light text color */
+}
+
+/* Form styles */
+.formPost, .formReply {
+    margin-top: 20px;
+}
+
+/* Input styles */
+.formPost input[type="textbox"],
+.formReply input[type="textbox"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #34495e; /* Same as post background color */
+    border-radius: 5px;
+    background-color: #2c3e50; /* Same as main background color */
+    color: #ecf0f1; /* Light text color */
+}
+
+/* Button styles */
+button[type="submit"] {
+    background-color: #3498db; /* Blue submit button */
+    color: #ecf0f1;
+    padding: 10px 20px;
     border: none;
+    border-radius: 5px;
     cursor: pointer;
-    float: left;
-    width: 50%;
+    transition: background-color 0.3s ease-in-out;
 }
-button:hover {
-    opacity: 75%;
+
+button[type="submit"]:hover {
+    background-color: #2980b9; /* Darker blue on hover */
 }
-#banButton {
-    background-color: #ff0000;
+
+/* Ban and report button styles */
+#banButton, #reportButton {
+    background-color: #e74c3c; /* Red color for ban button */
+    color: #ecf0f1;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    margin-right: 10px;
 }
+
 #reportButton {
-    background-color: #eda02d;
+    background-color: #f39c12; /* Yellow color for report button */
 }
-h2.title {
-    text-align: center;
-    margin-top: 0;
+
+#banButton:hover, #reportButton:hover {
+    background-color: #c0392b; /* Darker red on hover */
+}
+
+/* Positioning for formReply div */
+.reply {
+    position: absolute;
+    bottom: 1em; /* Adjust as needed */
+    left: 20px;
+    width: calc(100% - 40px); /* Adjust to accommodate left and right padding */
+    z-index: 0; /* Ensure the reply form is behind other content */
+}
+
+/* Adjust the margin of the .post div to prevent overlap */
+.post {
+    margin-bottom: 50px;
+    width: 100%
+}
+
+.profileUser, .PostDesc {
+    padding-right: 2em;
 }
 </style>
