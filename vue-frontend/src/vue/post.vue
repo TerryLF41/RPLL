@@ -44,7 +44,7 @@ import { computed } from 'vue';
                     <button id="reportButton" v-if="post.banStatus == 0" @click="reportPost(post.postNo)">Report Post</button>
                     <ul class="list-group mt-5 text-white">
                         <div class="wrapper-li d-flex" v-for="(reply, index) in userAndReply" :key="index">
-                            <li class="list-group-item d-flex justify-content-between align-content-center" v-if="reply.replyTo === post.postNo">
+                            <li class="list-reply list-group-item d-flex justify-content-between align-content-center" v-if="reply.replyTo === post.postNo">
                                 <div class="replyList d-flex flex-row">
                                     <div class="profileUser">
                                         <span>{{ reply.user.username }}</span><br>
@@ -500,6 +500,11 @@ main {
 
 .list-post {
     padding-bottom: 9em;
+}
+
+.list-reply {
+    width: 100%;
+    margin-left: 5em;
 }
 
 .profileUser {
