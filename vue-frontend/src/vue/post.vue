@@ -7,84 +7,83 @@ import { computed } from 'vue';
 
 <template>
     <main>
-        <nav class="navbar">
-            <Header />
-        </nav>
-        <div class="container mt-5">
-            <h1 class="text-center mb-5">Posts</h1>
-            <div v-for="(post, index) in userAndPost" :key="index">
-                <div class="card mb-5" v-if="post.banStatus == 0">
-                    <div class="row g-0">
-                        <div class="col-md-2 d-flex align-items-center" style="padding-left: 1em;">
-                            <img v-bind:src="'..' + post.user.profilePicture" class="img-fluid rounded-start">
-                        </div>
-                        <div class="col-md-10">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ post.user.username }}</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">{{ post.postDate }}</h6>
-                                <p class="card-text">{{ post.postText }}</p>
-                                <img v-bind:src="post.postImage" class="img-fluid" style="max-width: 75%;"">
-                                <div class="d-flex justify-content-between align-items-center mt-3">
-                                    <button v-if="userType == 1" @click="banPost(post.postNo)"
-                                        class="btn btn-danger">Ban Post</button>
-                                    <button @click="reportPost(post.postNo)" class="btn btn-warning">Report
-                                        Post</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <form class="formReply" method="POST" :id="'idFormReply' + post.postNo"
-                            @submit.prevent="replyPost(post.postNo)">
-                            <div class="input-group mb-3">
-                                <input :name="'textReply' + post.postNo" :id="'textReply' + post.postNo" type="textbox"
-                                    class="form-control" placeholder="Your comment here">
-                                <input :name="'idFormReply' + post.postNo" :id="'idFormReply' + post.postNo"
-                                    type="hidden" :value="'idFormReply' + post.postNo">
-                                <input :name="'postImage' + post.postNo" :id="'replyImage' + post.postNo" type="file"
-                                    class="form-control" accept=".jpg, .jpeg, .png">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="submit"
-                                        :id="'reply' + post.postNo">Comment</button>
-                                </div>
-                            </div>
-                        </form>
-                        <div class="reply-container mt-3">
-                            <div class="wrapper-li mb-3 replyList" v-for="(reply, index) in userAndReply" :key="index">
-                                <div class="d-flex flex-row" v-if="reply.replyTo === post.postNo" style="border-bottom: 2px solid black;">
-                                    <div class="col-md-2 d-flex align-items-center">
-                                        <img v-bind:src="'..' + reply.user.profilePicture" class="img-fluid rounded-start">
-                                    </div>
-                                    <div class="card-body">
-                                        <h5 class="card-title">{{ reply.user.username }}</h5>
-                                        <h6 class="card-subtitle mb-2 text-muted">{{ reply.postDate }}</h6>
-                                        <p class="card-text">{{ reply.postText }}</p>
-                                        <img v-bind:src="reply.postImage" class="img-fluid" style="max-width: 33%;" >
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card mt-5">
+      <nav class="navbar">
+        <Header />
+      </nav>
+      <div class="container mt-5">
+        <h1 class="text-center mb-5">Posts</h1>
+        <div v-for="(post, index) in userAndPost" :key="index">
+          <div class="card mb-5" v-if="post.banStatus == 0">
+            <div class="row g-0">
+              <div class="col-md-2 d-flex align-items-center" style="padding-left: 1em;">
+                <img v-bind:src="'..' + post.user.profilePicture" class="img-fluid rounded-circle">
+              </div>
+              <div class="col-md-10">
                 <div class="card-body">
-                    <form class="formPost" id="idFormPost" method="POST" @submit.prevent="newPost">
-                        <div class="form-group">
-                            <label for="textComment">Comment:</label>
-                            <textarea name="textComment" id="textComment" class="form-control" rows="3" placeholder="Your comment here"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="postImage">Image:</label>
-                            <input name="postImage" id="postImage" type="file" class="form-control-file" accept=".jpg, .jpeg, .png">
-                        </div>
-                        <button type="submit" class="btn btn-primary">Submit Post</button>
-                    </form>
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="card-title m-0">{{ post.user.username }}</h5>
+                    <div v-if="userType == 1">
+                      <button @click="banPost(post.postNo)" class="btn btn-outline-danger btn-sm">Ban Post</button>
+                    </div>
+                  </div>
+                  <h6 class="card-subtitle mb-2 text-muted">{{ post.postDate }}</h6>
+                  <p class="card-text" v-html="post.postText"></p>
+                  <img v-bind:src="post.postImage" class="img-fluid mt-3" style="max-width: 75%;">
+                  <div class="d-flex justify-content-end align-items-center mt-3">
+                    <button @click="reportPost(post.postNo)" class="btn btn-outline-warning btn-sm">Report Post</button>
+                  </div>
                 </div>
+              </div>
             </div>
+            <div class="card-footer">
+              <form class="formReply mb-3" method="POST" :id="'idFormReply' + post.postNo" @submit.prevent="replyPost(post.postNo)">
+                <div class="input-group">
+                  <textarea :name="'textReply' + post.postNo" :id="'textReply' + post.postNo" class="form-control" placeholder="Your comment here" rows="2"></textarea>
+                  <input :name="'idFormReply' + post.postNo" :id="'idFormReply' + post.postNo" type="hidden" :value="'idFormReply' + post.postNo">
+                  <input :name="'postImage' + post.postNo" :id="'replyImage' + post.postNo" type="file" class="form-control" accept=".jpg, .jpeg, .png">
+                  <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit" :id="'reply' + post.postNo">Comment</button>
+                  </div>
+                </div>
+              </form>
+              <div class="reply-container mt-3">
+                <div class="wrapper-li mb-3 replyList" v-for="(reply, index) in userAndReply" :key="index">
+                  <div class="d-flex flex-row" v-if="reply.replyTo === post.postNo" style="border-bottom: 2px solid black;">
+                    <div class="col-md-2 d-flex align-items-center">
+                      <img v-bind:src="'..' + reply.user.profilePicture" class="img-fluid rounded-circle">
+                    </div>
+                    <div class="card-body">
+                      <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="card-title m-0">{{ reply.user.username }}</h5>
+                      </div>
+                      <h6 class="card-subtitle mb-2 text-muted">{{ reply.postDate }}</h6>
+                      <p class="card-text" v-html="reply.postText"></p>
+                      <img v-bind:src="reply.postImage" class="img-fluid mt-3" style="max-width: 33%;">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+        <div class="card mt-5">
+          <div class="card-body">
+            <form class="formPost" id="idFormPost" method="POST" @submit.prevent="newPost">
+              <div class="form-group">
+                <label for="textComment">Comment:</label>
+                <textarea name="textComment" id="textComment" class="form-control" rows="3" placeholder="Your comment here"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="postImage">Image:</label>
+                <input name="postImage" id="postImage" type="file" class="form-control-file" accept=".jpg, .jpeg, .png">
+              </div>
+              <button type="submit" id="post" class="btn btn-outline-primary" @click="newPost">Submit Post</button>
+            </form>
+          </div>
+        </div>
+      </div>
     </main>
-</template>
+  </template>
 
 <script setup>
 import { logUserActivity } from '../activityLogger'; // Import user activity logger
