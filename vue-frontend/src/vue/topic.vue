@@ -227,7 +227,7 @@ import { onMounted } from 'vue';
                     // Log ban topic activity as "Ban topic"
                     logUserActivity("Ban topic",userDataParsed.userId);
                     alert("Topic berhasil diban!")
-                    window.open('/topic.html','_self');
+                    location.reload();
                 } else {
                     console.error("Failed!", data.message);
                     alert("Gagal memban topic!")
@@ -256,7 +256,7 @@ import { onMounted } from 'vue';
                     // Log ban topic activity as "Unban topic"
                     logUserActivity("Unban topic",userDataParsed.userId);
                     alert("Topic berhasil diunban!")
-                    window.open('/topic.html','_self');
+                    location.reload();
                 } else {
                     console.error("Failed!", data.message);
                     alert("Gagal memunban topic!")
