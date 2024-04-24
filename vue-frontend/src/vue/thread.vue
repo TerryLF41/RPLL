@@ -17,7 +17,7 @@ import { onMounted } from 'vue';
             <div class="row" onload="getThread()">
                 <div class="col-md-6" v-for="item in temp">
                     <div class="card mb-4">
-                        <div class="card-body">
+                        <div class="card-body text-light bg-dark">
                             <h5 class="card-title">{{ item.threadTitle }}</h5>
                             <p class="card-text">{{ item.threadDesc }}</p>
                             <p class="card-text">{{ item.postCount + ' post(s)'}} </p>

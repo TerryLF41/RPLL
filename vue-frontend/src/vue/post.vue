@@ -13,7 +13,7 @@ import { computed } from 'vue';
       <div class="container mt-5">
         <h1 class="text-center mb-5">Posts</h1>
         <div v-for="(post, index) in userAndPost" :key="index">
-          <div class="card mb-5" v-if="post.banStatus == 0">
+          <div class="card mb-5 text-light bg-dark" v-if="post.banStatus == 0">
             <div class="row g-0">
               <div class="col-md-2 d-flex align-items-center" style="padding-left: 1em;">
                 <img v-bind:src="'..' + post.user.profilePicture" class="img-fluid rounded-circle profile-picture">

@@ -20,7 +20,7 @@ import { onMounted } from 'vue';
             </div>
             <div class="row">
                 <div class="col-md-6 col-lg-4" v-for="item in temp">
-                    <div class="card mb-4">
+                    <div class="card mb-4 text-light bg-dark">
                         <img :src="item.topicPicture" class="card-img-top img-thumbnail img-fluid" alt="Topic Image">
                         <div class="card-body">
                             <h5 class="card-title">{{ item.topicTitle }}</h5>
