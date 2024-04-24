@@ -589,6 +589,7 @@ textarea {
     display: inline-block;
     border: 1px solid lightgray;
     box-sizing: border-box;
+    resize: none;
 }
 
 .modal-thread button {
