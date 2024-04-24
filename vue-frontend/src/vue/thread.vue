@@ -21,7 +21,7 @@ import { onMounted } from 'vue';
                             <h5 class="card-title">{{ item.threadTitle }}</h5>
                             <p class="card-text">{{ item.threadDesc }}</p>
                             <p class="card-text">{{ item.postCount + ' post(s)'}} </p>
-                            <p class="card-text"><small class="text-muted">{{ item.createDate }}</small></p>
+                            <p class="card-text"><small>{{ item.createDate }}</small></p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <button @click="goToPost(item.threadNo)" class="btn btn-primary">View Posts</button>
                                 <div v-if="userType == 1">
