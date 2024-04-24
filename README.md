@@ -25,28 +25,29 @@ Used in Go to choose a specific type of query for getting list of topics
 
 # Project Member
 Pembagian Tugas<br>
-<br>1121004 - Jericho Kuskanto<br>
-- UI/UX<br>
-- Login<br>
-- Profile<br>
-- Password Change<br>
-- User management
-<br>1121015 - Terry Louis Fujinami<br>
-- Software modeling<br>
-- Finishing<br>
-- Post<br>
-- Topic<br>
-- Thread
-<br>1121018 - Friendly Sejati Bunardi<br>
-- Data Modeling<br>
-- Homepage<br>
-- Register<br>
-- Report Management<br>
-- Topic Management<br>
-- User Log activity
-<br>1121024 - Jonathan Hadiwijaya Ang<br>
-- Implementation<br>
-- Post reporting<br>
-- Report Management<br>
-- Post management<br>
-- Thread Management<br>
+1121004 - Jericho Kuskanto<br>
+# UI/UX
+# Login
+# Profile
+# Password Change
+# User management
+1121015 - Terry Louis Fujinami
+Software modeling
+Finishing
+Post
+Topic
+Thread
+1121018 - Friendly Sejati Bunardi
+Data Modeling
+Homepage
+Register
+Report Management
+Topic Management
+User Log activity
+1121024 - Jonathan Hadiwijaya Ang
+Implementation
+Post reporting
+Report Management
+Post management
+Thread Management
+
