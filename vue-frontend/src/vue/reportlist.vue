@@ -151,7 +151,7 @@ async function resolveReport(postNo) {
 //     }
 // }
 
-function openPost(postNo, userId) {
+function openPost(threadNo) {
     // Redirect to the post page with postNo and userId
     window.location.href = `post.html?threadNo=${threadNo}`;
 }

@@ -16,7 +16,7 @@ import { computed } from 'vue';
           <div class="card mb-5" v-if="post.banStatus == 0">
             <div class="row g-0">
               <div class="col-md-2 d-flex align-items-center" style="padding-left: 1em;">
-                <img v-bind:src="'..' + post.user.profilePicture" class="img-fluid rounded-circle">
+                <img v-bind:src="'..' + post.user.profilePicture" class="img-fluid rounded-circle profile-picture">
               </div>
               <div class="col-md-10">
                 <div class="card-body">
@@ -28,7 +28,7 @@ import { computed } from 'vue';
                   </div>
                   <h6 class="card-subtitle mb-2 text-muted">{{ post.postDate }}</h6>
                   <p class="card-text" v-html="post.postText"></p>
-                  <img v-bind:src="post.postImage" class="img-fluid mt-3" style="max-width: 75%;">
+                  <img v-bind:src="post.postImage" class="img-fluid mt-3" style="max-width:75%;">
                   <div class="d-flex justify-content-end align-items-center mt-3">
                     <button @click="reportPost(post.postNo)" class="btn btn-outline-warning btn-sm">Report Post</button>
                   </div>
@@ -36,21 +36,17 @@ import { computed } from 'vue';
               </div>
             </div>
             <div class="card-footer">
-              <form class="formReply mb-3" method="POST" :id="'idFormReply' + post.postNo" @submit.prevent="replyPost(post.postNo)">
-                <div class="input-group">
+              <form class="formReply mb-1" method="POST" :id="'idFormReply' + post.postNo" @submit.prevent="replyPost(post.postNo)">
                   <textarea :name="'textReply' + post.postNo" :id="'textReply' + post.postNo" class="form-control" placeholder="Your comment here" rows="2" style="background-color: #ffffff; color: #000000;"></textarea>
                   <input :name="'idFormReply' + post.postNo" :id="'idFormReply' + post.postNo" type="hidden" :value="'idFormReply' + post.postNo">
-                  <input :name="'postImage' + post.postNo" :id="'replyImage' + post.postNo" type="file" class="form-control" accept=".jpg, .jpeg, .png">
-                  <div class="input-group-append">
-                    <button class="btn btn-primary" type="submit" :id="'reply' + post.postNo">Comment</button>
-                  </div>
-                </div>
+                  <input :name="'postImage' + post.postNo" :id="'replyImage' + post.postNo" type="file" class="form-control" accept=".jpg, .jpeg, .png"><br>
+                  <button class="btn btn-primary" type="submit" :id="'reply' + post.postNo">Comment</button>
               </form>
-              <div class="reply-container mt-3">
-                <div class="wrapper-li mb-3 replyList" v-for="(reply, index) in userAndReply" :key="index">
+              <div class="reply-container">
+                <div class="wrapper-li" v-for="(reply, index) in userAndReply" :key="index">
                   <div class="d-flex flex-row" v-if="reply.replyTo === post.postNo" style="border-bottom: 2px solid black;">
                     <div class="col-md-2 d-flex align-items-center">
-                      <img v-bind:src="'..' + reply.user.profilePicture" class="img-fluid rounded-circle">
+                      <img v-bind:src="'..' + reply.user.profilePicture" class="img-fluid rounded-circle profile-picture">
                     </div>
                     <div class="card-body">
                       <div class="d-flex justify-content-between align-items-center mb-2">
@@ -58,7 +54,7 @@ import { computed } from 'vue';
                       </div>
                       <h6 class="card-subtitle mb-2 text-muted">{{ reply.postDate }}</h6>
                       <p class="card-text" v-html="reply.postText"></p>
-                      <img v-bind:src="reply.postImage" class="img-fluid mt-3" style="max-width: 33%;">
+                      <img v-bind:src="reply.postImage" class="img-fluid mt-3" style="max-width: 50%;">
                     </div>
                   </div>
                 </div>
@@ -480,6 +476,16 @@ async function reportPost(postNo) {
 
 .PostImage img {
     margin-left: 10px;
+}
+
+.profile-picture {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+}
+
+img[src=""] {
+    display: none;
 }
 
 .list-group .list-group-item .list-group-item {
