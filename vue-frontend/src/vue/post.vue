@@ -52,7 +52,7 @@ import { computed } from 'vue';
                       <div class="d-flex justify-content-between align-items-center mb-2">
                         <h5 class="card-title m-0">{{ reply.user.username }}</h5>
                       </div>
-                      <h6 class="card-subtitle mb-2 text-muted">{{ reply.postDate }}</h6>
+                      <h6 class="card-subtitle mb-2">{{ reply.postDate }}</h6>
                       <p class="card-text" v-html="reply.postText"></p>
                       <img v-bind:src="reply.postImage" class="img-fluid mt-3" style="max-width: 50%;">
                     </div>
@@ -589,6 +589,7 @@ textarea {
     display: inline-block;
     border: 1px solid lightgray;
     box-sizing: border-box;
+    resize: none;
 }
 
 .modal-thread button {
