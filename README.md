@@ -30,20 +30,20 @@ Pembagian Tugas<br>
 - Login<br>
 - Profile<br>
 - Password Change<br>
-- User management<br>
+- User management
 1121015 - Terry Louis Fujinami<br>
 - Software modeling<br>
 - Finishing<br>
 - Post<br>
 - Topic<br>
-- Thread<br>
+- Thread
 1121018 - Friendly Sejati Bunardi<br>
 - Data Modeling<br>
 - Homepage<br>
 - Register<br>
 - Report Management<br>
 - Topic Management<br>
-- User Log activity<br>
+- User Log activity
 1121024 - Jonathan Hadiwijaya Ang<br>
 - Implementation<br>
 - Post reporting<br>
