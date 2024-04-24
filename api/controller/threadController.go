@@ -15,7 +15,11 @@ func GetAllThreads(w http.ResponseWriter, r *http.Request) {
 	db := connect()
 	defer db.Close()
 
-	query := "SELECT * FROM thread"
+	query := "SELECT thread.threadNo, thread.topicNo, thread.threadTitle, thread.threadDesc, thread.createDate, thread.banStatus,"
+	query += "(SELECT COUNT(*) FROM post WHERE thread.threadNo = post.threadNo) AS postCount "
+	query += "FROM thread GROUP BY thread.threadNo"
+
+	log.Println(query)
 
 	rows, err := db.Query(query)
 	if err != nil {
@@ -27,13 +31,14 @@ func GetAllThreads(w http.ResponseWriter, r *http.Request) {
 	var threadList []model.Thread
 	for rows.Next() {
 		if err := rows.Scan(&thread.ThreadNo, &thread.TopicNo, &thread.ThreadTitle,
-			&thread.ThreadDesc, &thread.CreateDate, &thread.BanStatus); err != nil {
+			&thread.ThreadDesc, &thread.CreateDate, &thread.BanStatus, &thread.PostCount); err != nil {
 			log.Println(err)
 			return
 		} else {
 			threadList = append(threadList, thread)
 		}
 	}
+	log.Println(threadList[0])
 
 	// Kirim response ke client
 	// Response dibuat dengan factory di responseHandler
@@ -56,12 +61,11 @@ func GetTopicThreads(w http.ResponseWriter, r *http.Request) {
 
 	topicId := vars["topicno"]
 
-	sqlStatement := `
-		Select * 
-		From thread
-		where topicNo = ` + topicId
+	query := "SELECT thread.threadNo, thread.topicNo, thread.threadTitle, thread.threadDesc, thread.createDate, thread.banStatus,"
+	query += "(SELECT COUNT(*) FROM post WHERE thread.threadNo = post.threadNo) AS postCount "
+	query += "FROM thread WHERE thread.topicNo = " + topicId + " GROUP BY thread.threadNo ORDER By postCount DESC"
 
-	rows, err := db.Query(sqlStatement)
+	rows, err := db.Query(query)
 	if err != nil {
 		log.Println(err)
 		return
@@ -71,7 +75,7 @@ func GetTopicThreads(w http.ResponseWriter, r *http.Request) {
 	var threadList []model.Thread
 	for rows.Next() {
 		if err := rows.Scan(&thread.ThreadNo, &thread.TopicNo, &thread.ThreadTitle,
-			&thread.ThreadDesc, &thread.CreateDate, &thread.BanStatus); err != nil {
+			&thread.ThreadDesc, &thread.CreateDate, &thread.BanStatus, &thread.PostCount); err != nil {
 			log.Println(err)
 			return
 		} else {
@@ -109,6 +113,7 @@ func InsertThread(w http.ResponseWriter, r *http.Request) {
 		r.Form.Get("threadDesc"),
 		time.Now(),
 		false,
+		nil,
 		nil,
 	)
 

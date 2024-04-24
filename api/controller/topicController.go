@@ -20,19 +20,30 @@ func GetAllTopic(w http.ResponseWriter, r *http.Request) {
 
 	var topicList []model.Topic
 
-	searchType := r.URL.Query().Get("orderBy")
+	vars := mux.Vars(r)
+	orderBy := vars["orderBy"]
 
 	context := &SearchContext{}
 
-	if searchType == "time" {
+	if orderBy == "latest" {
 		// Cari dari topic yang paling baru dibuat
+		// Set strategy query menjadi latest topic search strategy
 		context.SetStrategy(&LatestTopicSearchStrategy{})
-		topicList = context.PerformSearch("SELECT * FROM topic ORDER BY createDate DESC")
-	} else {
+		// Buat query
+		query := "SELECT topic.topicNo, topic.topicTitle, topic.topicDesc, topic.createDate, topic.banStatus, topic.topicPicture,"
+		query += "(SELECT COUNT(*) FROM thread WHERE topic.topicNo = thread.topicNo) AS threadCount FROM "
+		query += "topic GROUP BY topic.topicNo ORDER BY topic.createDate DESC"
+		topicList = context.PerformSearch(query)
+	}
+	if orderBy == "popularity" {
 		// Cari dari dengan jumlah thread terbanyak
-		// TODO : Ganti query agar bisa cari berdasarkan jumlah thread terbanyak
+		// Set strategy query menjadi popularity search strategy
 		context.SetStrategy(&PopularitySearchStrategy{})
-		topicList = context.PerformSearch("SELECT * FROM topic ORDER BY createDate ASC")
+		// Buat query
+		query := "SELECT topic.topicNo, topic.topicTitle, topic.topicDesc, topic.createDate, topic.banStatus, topic.topicPicture,"
+		query += "(SELECT COUNT(*) FROM thread WHERE topic.topicNo = thread.topicNo) AS threadCount FROM "
+		query += "topic GROUP BY topic.topicNo ORDER BY threadCount DESC"
+		topicList = context.PerformSearch(query)
 	}
 
 	// Kirim response ke client
@@ -65,6 +76,7 @@ func InsertTopic(w http.ResponseWriter, r *http.Request) {
 		time.Now(),
 		false,
 		r.Form.Get("topicPicture"),
+		nil,
 		nil,
 	)
 

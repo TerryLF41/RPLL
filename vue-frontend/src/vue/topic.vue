@@ -14,13 +14,18 @@ import { onMounted } from 'vue';
                 <h1 class="display-4">Topic List</h1>
                 <button type="button" @click="showModal" class="btn btn-primary">Add New Topic</button>
             </div>
-            <div class="row" onload="getTopic()">
+            <div class="d-flex align-items-left mb-4 ml-10"> 
+                <button type="button" @click="viewPopularTopic" class="btn btn-primary" id="popularButton">Sort by Popular Topic</button>&nbsp;
+                <button type="button" @click="viewLatestTopic" class="btn btn-primary" id="latestButton">Sort by Latest Topic</button><br>
+            </div>
+            <div class="row">
                 <div class="col-md-6 col-lg-4" v-for="item in temp">
                     <div class="card mb-4">
                         <img :src="item.topicPicture" class="card-img-top img-thumbnail img-fluid" alt="Topic Image">
                         <div class="card-body">
                             <h5 class="card-title">{{ item.topicTitle }}</h5>
                             <p class="card-text">{{ item.topicDesc }}</p>
+                            <p class="card-text">{{ item.threadCount + ' thread(s)'}} </p>
                             <p class="card-text"><small class="text-muted">{{ item.createDate }}</small></p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <button @click="goToThread(item.topicNo)" class="btn btn-primary">View Thread</button>
@@ -60,8 +65,23 @@ import { onMounted } from 'vue';
     // Ambil usertype dari session
     var userType = userDataParsed.userType;
 
+    // Catat tipe order topic yang digunakan
+    const orderByPopularity = true
+
+    function viewLatestTopic(){
+        window.open('topic.html?orderBy=latest', '_self')
+    }
+
+    function viewPopularTopic(){
+        window.open('topic.html?orderBy=popularity', '_self')
+    }
+
     async function getTopic() {
-        const response = await fetch('http://localhost:8181/topic', {
+        // Ambil nomor topic sekarang dari URL param
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        var orderBy = urlParams.get('orderBy')
+        const response = await fetch('http://localhost:8181/topic/' + orderBy, {
             method: "GET",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
@@ -75,6 +95,7 @@ import { onMounted } from 'vue';
                     data.data[key].createDate = dateTimeFormatter(data.data[key].createDate)
                     temp.value.push(data.data[key]);
                 }
+                console.log(data.data)
             } else {
                 console.error("Failed!", data.message);
             }
@@ -88,7 +109,7 @@ import { onMounted } from 'vue';
         return date + " " + hour
     }
 
-    onMounted(getTopic);
+    onMounted(getTopic());
 
     function goToThread(threadNo) {
         var url = 'thread.html?topicNo='+threadNo;
@@ -319,6 +340,17 @@ import { onMounted } from 'vue';
     margin-left: 10px;
 }
 
+img {
+    transition: transform .2s;
+}
+
+.card-img-top:hover {
+    transform: scale(1.25);
+    z-index: 999;
+    height: 20%;
+    object-fit:cover;
+}
+
 body {
     color: white;
     background-image: url("../upload/media/bg-topic.jpg");
@@ -427,5 +459,14 @@ h2.title {
 #unbanButton {
     background-color: #0e9fde;
     font-size: small;
+}
+
+#popularButton {
+    background-color: #0f9020;
+    border: none;
+}
+#latestButton {
+    background-color: #0e31de;
+    border: none;
 }
 </style>

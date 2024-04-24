@@ -10,19 +10,20 @@ type Thread struct {
 	ThreadDesc  string    `json:"threadDesc"`
 	CreateDate  time.Time `json:"createDate"`
 	BanStatus   bool      `json:"banStatus"`
+	PostCount   *int      `json:"postCount"`
 	PostList    []Post    `json:"post,omitempty"`
 }
 
 // ThreadModelFactory interface defines methods for thread model
 type ThreadModelFactory interface {
-	CreateThread(threadNo int, topicNo int, threadTitle string, threadDesc string, createDate time.Time, banStatus bool, postList []Post) *Thread
+	CreateThread(threadNo int, topicNo int, threadTitle string, threadDesc string, createDate time.Time, banStatus bool, postCount *int, postList []Post) *Thread
 }
 
 // ConcreteThreadModelFactory struct implements ThreadModelFactory interface
 type ConcreteThreadModelFactory struct{}
 
 // CreateThread creates a new thread instance
-func (factory *ConcreteThreadModelFactory) CreateThread(threadNo int, topicNo int, threadTitle, threadDesc string, createDate time.Time, banStatus bool, postList []Post) *Thread {
+func (factory *ConcreteThreadModelFactory) CreateThread(threadNo int, topicNo int, threadTitle, threadDesc string, createDate time.Time, banStatus bool, postCount *int, postList []Post) *Thread {
 	return &Thread{
 		ThreadNo:    threadNo,
 		TopicNo:     topicNo,
@@ -30,6 +31,7 @@ func (factory *ConcreteThreadModelFactory) CreateThread(threadNo int, topicNo in
 		ThreadDesc:  threadDesc,
 		CreateDate:  createDate,
 		BanStatus:   banStatus,
+		PostCount:   postCount,
 		PostList:    postList,
 	}
 }
