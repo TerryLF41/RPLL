@@ -15,7 +15,7 @@ import { computed } from 'vue';
             <div v-for="(post, index) in userAndPost" :key="index">
                 <div class="card mb-5" v-if="post.banStatus == 0">
                     <div class="row g-0">
-                        <div class="col-md-2 d-flex align-items-center">
+                        <div class="col-md-2 d-flex align-items-center" style="padding-left: 1em;">
                             <img v-bind:src="'..' + post.user.profilePicture" class="img-fluid rounded-start">
                         </div>
                         <div class="col-md-10">
@@ -23,7 +23,7 @@ import { computed } from 'vue';
                                 <h5 class="card-title">{{ post.user.username }}</h5>
                                 <h6 class="card-subtitle mb-2 text-muted">{{ post.postDate }}</h6>
                                 <p class="card-text">{{ post.postText }}</p>
-                                <img v-bind:src="post.postImage" class="img-fluid">
+                                <img v-bind:src="post.postImage" class="img-fluid" style="max-width: 75%;"">
                                 <div class="d-flex justify-content-between align-items-center mt-3">
                                     <button v-if="userType == 1" @click="banPost(post.postNo)"
                                         class="btn btn-danger">Ban Post</button>
@@ -50,8 +50,8 @@ import { computed } from 'vue';
                             </div>
                         </form>
                         <div class="reply-container mt-3">
-                            <div class="wrapper-li mb-3" v-for="(reply, index) in userAndReply" :key="index">
-                                <div class="d-flex flex-row" v-if="reply.replyTo === post.postNo">
+                            <div class="wrapper-li mb-3 replyList" v-for="(reply, index) in userAndReply" :key="index">
+                                <div class="d-flex flex-row" v-if="reply.replyTo === post.postNo" style="border-bottom: 2px solid black;">
                                     <div class="col-md-2 d-flex align-items-center">
                                         <img v-bind:src="'..' + reply.user.profilePicture" class="img-fluid rounded-start">
                                     </div>
@@ -59,7 +59,7 @@ import { computed } from 'vue';
                                         <h5 class="card-title">{{ reply.user.username }}</h5>
                                         <h6 class="card-subtitle mb-2 text-muted">{{ reply.postDate }}</h6>
                                         <p class="card-text">{{ reply.postText }}</p>
-                                        <img v-bind:src="reply.postImage" class="img-fluid" style="max-width: 33%;">
+                                        <img v-bind:src="reply.postImage" class="img-fluid" style="max-width: 33%;" >
                                     </div>
                                 </div>
                             </div>
@@ -617,5 +617,9 @@ h2.title {
 #textComment {
     background-color: #ffffff; /* Change to a lighter color */
     color: #000000; /* Change to a darker text color if necessary */
+}
+
+.replyList {
+    border: black 2px;
 }
 </style>
