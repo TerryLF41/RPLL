@@ -16,15 +16,14 @@ import { computed } from 'vue';
                 <div class="card mb-5" v-if="post.banStatus == 0">
                     <div class="row g-0">
                         <div class="col-md-2 d-flex align-items-center">
-                            <img v-bind:src="'..' + post.user.profilePicture" class="img-fluid rounded-start"
-                                alt="User Profile">
+                            <img v-bind:src="'..' + post.user.profilePicture" class="img-fluid rounded-start">
                         </div>
                         <div class="col-md-10">
                             <div class="card-body">
                                 <h5 class="card-title">{{ post.user.username }}</h5>
                                 <h6 class="card-subtitle mb-2 text-muted">{{ post.postDate }}</h6>
                                 <p class="card-text">{{ post.postText }}</p>
-                                <img v-bind:src="post.postImage" class="img-fluid" alt="Post Image">
+                                <img v-bind:src="post.postImage" class="img-fluid">
                                 <div class="d-flex justify-content-between align-items-center mt-3">
                                     <button v-if="userType == 1" @click="banPost(post.postNo)"
                                         class="btn btn-danger">Ban Post</button>
@@ -53,19 +52,14 @@ import { computed } from 'vue';
                         <div class="reply-container mt-3">
                             <div class="wrapper-li mb-3" v-for="(reply, index) in userAndReply" :key="index">
                                 <div class="d-flex flex-row" v-if="reply.replyTo === post.postNo">
-                                    <div class="profileUser">
-                                        <span>{{ reply.user.username }}</span><br>
-                                        <span><img v-bind:src="'..' + reply.user.profilePicture" width="100" /></span>
+                                    <div class="col-md-2 d-flex align-items-center">
+                                        <img v-bind:src="'..' + reply.user.profilePicture" class="img-fluid rounded-start">
                                     </div>
-                                    <div class="ml-2 PostDesc">
-                                        <h6 class="mb-0"> {{ reply.postDate }}</h6>
-                                        <div class="about">
-                                            <span>{{ reply.postText }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="ml-2 PostImage">
-                                        <h6 class="mb-0">No. {{ reply.postNo }}</h6>
-                                        <span><img v-bind:src="reply.postImage" width="100" /></span>
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ reply.user.username }}</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted">{{ reply.postDate }}</h6>
+                                        <p class="card-text">{{ reply.postText }}</p>
+                                        <img v-bind:src="reply.postImage" class="img-fluid" style="max-width: 33%;">
                                     </div>
                                 </div>
                             </div>
@@ -76,16 +70,15 @@ import { computed } from 'vue';
             <div class="card mt-5">
                 <div class="card-body">
                     <form class="formPost" id="idFormPost" method="POST" @submit.prevent="newPost">
-                        <div class="input-group mb-3">
-                            <input name="textComment" id="textComment" type="textbox" class="form-control"
-                                placeholder="Your comment here">
-                            <input name="idFormPost" id="idFormPost'" type="hidden" value="idFormPost">
-                            <input name="postImage" id="textImage" type="file" class="form-control"
-                                accept=".jpg, .jpeg, .png">
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" type="submit" id="post">Comment</button>
-                            </div>
+                        <div class="form-group">
+                            <label for="textComment">Comment:</label>
+                            <textarea name="textComment" id="textComment" class="form-control" rows="3" placeholder="Your comment here"></textarea>
                         </div>
+                        <div class="form-group">
+                            <label for="postImage">Image:</label>
+                            <input name="postImage" id="postImage" type="file" class="form-control-file" accept=".jpg, .jpeg, .png">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit Post</button>
                     </form>
                 </div>
             </div>
@@ -485,6 +478,10 @@ async function reportPost(postNo) {
     margin-left: 10px;
 }
 
+.PostImage img {
+    margin-left: 10px;
+}
+
 .list-group .list-group-item .list-group-item {
     background-color: #959090;
     /* Adjust color if needed */
@@ -539,10 +536,7 @@ th {
     height: 30px;
 }
 
-tr:hover {
-    background-color: #5c757e;
-    color: Black;
-}
+
 
 h1 {
     color: white;
@@ -618,5 +612,10 @@ button:hover {
 h2.title {
     text-align: center;
     margin-top: 0;
+}
+
+#textComment {
+    background-color: #ffffff; /* Change to a lighter color */
+    color: #000000; /* Change to a darker text color if necessary */
 }
 </style>
