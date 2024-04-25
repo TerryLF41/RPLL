@@ -39,7 +39,7 @@ import { computed } from 'vue';
               <form class="formReply mb-1" method="POST" :id="'idFormReply' + post.postNo" @submit.prevent="replyPost(post.postNo)">
                   <textarea :name="'textReply' + post.postNo" :id="'textReply' + post.postNo" class="form-contro text-light bg-dark" placeholder="Your comment here" rows="2" style="background-color: #ffffff; color: #000000;"></textarea>
                   <input :name="'idFormReply' + post.postNo" :id="'idFormReply' + post.postNo" type="hidden" :value="'idFormReply' + post.postNo">
-                  <input :name="'postImage' + post.postNo" :id="'replyImage' + post.postNo" type="file" class="form-control text-light bg-dark" accept=".jpg, .jpeg, .png"><br>
+                  <input :name="'postImage' + post.postNo" :id="'replyImage' + post.postNo" type="file" class="form-control text-light bg-dark" accept=".jpg, .jpeg, .png, .gif"><br>
                   <button class="btn btn-primary" type="submit" :id="'reply' + post.postNo">Comment</button>
               </form>
               <div class="reply-container">
@@ -357,11 +357,11 @@ async function savePostImage(filename, idForm, postNo) {
         if (data.status == '200') {
             // Log create thread activity as "Uploaded topic picture"
             logUserActivity("Upload topic picture", userDataParsed.userId);
-            alert("Topic berhasil ditambahkan!")
+            alert("Reply berhasil ditambahkan!")
             location.reload();
         } else {
             console.error("Failed!", data.message);
-            alert("Gagal mengajukan request topic!")
+            alert("Gagal reply!")
             location.reload();
         }
     }
@@ -590,6 +590,7 @@ textarea {
     border: 1px solid lightgray;
     box-sizing: border-box;
     resize: none;
+    border-radius: 8px
 }
 
 .modal-thread button {

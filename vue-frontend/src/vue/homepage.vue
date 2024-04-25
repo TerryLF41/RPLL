@@ -85,7 +85,8 @@ form {
 
 .option {
   display: flex;
-  justify-content: space-between; /* Tombol-tombol akan berderet dari kanan ke kiri */
+  /* justify-content: space-around; Tombol-tombol akan berderet dari kanan ke kiri */
+  justify-content: center;
 }
 
 .show {
