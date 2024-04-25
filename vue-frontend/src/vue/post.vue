@@ -590,6 +590,7 @@ textarea {
     border: 1px solid lightgray;
     box-sizing: border-box;
     resize: none;
+    border-radius: 8px
 }
 
 .modal-thread button {
